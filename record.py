@@ -27,27 +27,31 @@ panda.move_to_start()
 # input('Press enter to move through the three poses.')
 # panda.move_to_joint_position(positions)
 
-LEN = 10
+LEN = 1
 input(f'Next, teach a trajectory for {LEN} seconds. Press enter to begin.')
 panda.teaching_mode(True)
 panda.enable_logging(LEN * 1000)
 time.sleep(LEN)
 panda.teaching_mode(False)
 
-q = panda.get_log()['q']
-dq = panda.get_log()['dq']
+log=panda.get_log()
+log.keys()
 
-input('Press enter to replay trajectory')
-panda.move_to_joint_position(q[0])
-i = 0
-# ctrl = controllers.JointPosition()
-ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
-panda.start_controller(ctrl)
-with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
-  while ctx.ok():
-    ctrl.set_control(q[i], dq[i])
-    i += 1
-    # simpanda.fkine(panda.q)
+# q = panda.get_log()['q']
+# dq = panda.get_log()['dq']
+
+# input('Press enter to replay trajectory')
+# panda.move_to_joint_position(q[0])
+# i = 0
+# # ctrl = controllers.JointPosition()
+# ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
+# panda.start_controller(ctrl)
+# with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
+#   while ctx.ok():
+#     ctrl.set_control(
+#     # ctrl.set_control(q[i], dq[i])
+#     i += 1
+#     # simpanda.fkine(panda.q)
 
 # ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
 # x0 = panda.get_position()
