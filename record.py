@@ -28,7 +28,7 @@ panda.move_to_start()
 # input('Press enter to move through the three poses.')
 # panda.move_to_joint_position(positions)
 
-LEN = 1
+LEN = 10
 input(f'Next, teach a trajectory for {LEN} seconds. Press enter to begin.')
 panda.teaching_mode(True)
 panda.enable_logging(LEN * 1000)
@@ -42,7 +42,7 @@ endeffs=endeffs.reshape((-1, 4, 4)).transpose((0, 2, 1))
 poss=[endeff[:3,3] for endeff in endeffs]
 rots=[smb.r2q(endeff[:3,:3],order="xyzs") for endeff in endeffs]
 
-print(f"endeffs: {endeffs[0:2]}")
+print(f"endeffs: {endeffs[0:2]} total size:{endeffs.shape}")
 print(f"pos/rot for first: {poss[0]} {rots[0]}")
 
 q = panda.get_log()['q']
