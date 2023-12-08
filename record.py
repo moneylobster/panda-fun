@@ -3,7 +3,7 @@ import time
 
 import panda_py
 from panda_py import controllers
-import spatialmath as sm
+import spatialmath.base as smb
 # import swift
 
 
@@ -40,7 +40,7 @@ print(log.keys())
 endeffs=np.array(log["O_T_EE"])
 endeffs=endeffs.reshape((-1, 4, 4)).transpose((0, 2, 1))
 poss=[endeff[:3,3] for endeff in endeffs]
-rots=[sm.r2q(endeff[:3,:3],order="xyzs") for endeff in endeffs]
+rots=[smb.r2q(endeff[:3,:3],order="xyzs") for endeff in endeffs]
 
 print(f"endeffs: {endeffs[0:2]}")
 print(f"pos/rot for first: {poss[0]} {rots[0]}")
