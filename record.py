@@ -3,6 +3,7 @@ import time
 
 import panda_py
 from panda_py import controllers
+import roboticstoolbox as rtb
 # import swift
 
 
@@ -35,7 +36,9 @@ time.sleep(LEN)
 panda.teaching_mode(False)
 
 log=panda.get_log()
-log.keys()
+print(log.keys())
+endeffs=log["O_T_EE"]
+print(endeffs[0:2])
 
 # q = panda.get_log()['q']
 # dq = panda.get_log()['dq']
