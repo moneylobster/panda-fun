@@ -1,14 +1,14 @@
 import numpy as np
 import panda_py
 from panda_py import controllers
-import swift
+# import swift
 
 
 panda=panda_py.Panda("10.0.0.2")
 
-env = swift.Swift()
-env.launch(realtime=True)
-simpanda = rtb.models.Panda()
+# env = swift.Swift()
+# env.launch(realtime=True)
+# simpanda = rtb.models.Panda()
 
 panda.move_to_start()
 
@@ -45,7 +45,7 @@ with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
   while ctx.ok():
     ctrl.set_control(q[i], dq[i])
     i += 1
-    simpanda.fkine(panda.q)
+    # simpanda.fkine(panda.q)
 
 # ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
 # x0 = panda.get_position()
