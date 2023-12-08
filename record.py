@@ -3,7 +3,7 @@ import time
 
 import panda_py
 from panda_py import controllers
-import roboticstoolbox as rtb
+import spatialmath
 # import swift
 
 
@@ -38,23 +38,27 @@ panda.teaching_mode(False)
 log=panda.get_log()
 print(log.keys())
 endeffs=log["O_T_EE"]
+endeffs_T=[endeff.transpose() for endeff in endeffs]
+poss=[endeff[:3,3] for endeff in endeffs]
+rots=[sm.r2q(endeff[:3,:3],order="xyzs") for endeff in endeffs]
+
 print(endeffs[0:2])
 
-# q = panda.get_log()['q']
+q = panda.get_log()['q']
 # dq = panda.get_log()['dq']
 
-# input('Press enter to replay trajectory')
-# panda.move_to_joint_position(q[0])
-# i = 0
-# # ctrl = controllers.JointPosition()
-# ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
-# panda.start_controller(ctrl)
-# with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
-#   while ctx.ok():
-#     ctrl.set_control(
-#     # ctrl.set_control(q[i], dq[i])
-#     i += 1
-#     # simpanda.fkine(panda.q)
+input('Press enter to replay trajectory')
+panda.move_to_joint_position(q[0])
+i = 0
+# ctrl = controllers.JointPosition()
+ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
+panda.start_controller(ctrl)
+with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
+  while ctx.ok():
+    ctrl.set_control(poss[i], rots[i])
+    # ctrl.set_control(q[i], dq[i])
+    i += 1
+    # simpanda.fkine(panda.q)
 
 # ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
 # x0 = panda.get_position()
