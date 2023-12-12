@@ -78,6 +78,7 @@ class Teleop():
         if self.real:
             # self.panda.move_to_joint_position(panda_py.ik(self._endeff.data[0]))
             self.ctrl.set_control(self._endeff.t, UnitQuaternion(self._endeff).vec_xyzs)
+            print(self._endeff)
         else:
             #TODO implement movement in simulator
             pass
@@ -163,6 +164,6 @@ class Teleop():
         
 # init
 teleop=Teleop("real", "10.0.0.2")
-with teleop.panda.create_context(frequency=100) as ctx:
+with teleop.panda.create_context(frequency=1000) as ctx:
     while ctx.ok():
         teleop.process_key(getch())
