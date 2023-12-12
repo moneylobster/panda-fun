@@ -21,6 +21,7 @@ def translate_input(char):
         'e': "up",
         ' ': "gripper",
         'h': "home",
+        'u': "update",
         't': "quit",
     }
     return keymap[char]
@@ -105,6 +106,8 @@ class Teleop():
             self.gripper()
         elif cmd=="home":
             self.home()
+        elif cmd=="update":
+            self.update_endeff()
         elif cmd=="quit":
             quit()
         else:
