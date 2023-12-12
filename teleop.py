@@ -114,16 +114,16 @@ class Teleop():
             print(f"Invalid command {cmd}")
 
     def forward(self):
-        self.endeff=SE3.Trans(0,self.moveeps,0) * self._endeff
-
-    def backward(self):
-        self.endeff=SE3.Trans(0,-self.moveeps,0) * self._endeff
-
-    def right(self):
         self.endeff=SE3.Trans(self.moveeps,0,0) * self._endeff
 
-    def left(self):
+    def backward(self):
         self.endeff=SE3.Trans(-self.moveeps,0,0) * self._endeff
+
+    def right(self):
+        self.endeff=SE3.Trans(0,self.moveeps,0) * self._endeff
+
+    def left(self):
+        self.endeff=SE3.Trans(0,-self.moveeps,0) * self._endeff
 
     def up(self):
         self.endeff=SE3.Trans(0,0,self.moveeps) * self._endeff
@@ -136,6 +136,7 @@ class Teleop():
         try:
             self.panda.move_to_start()
             self.update_endeff()
+            self.panda.start_controller(self.ctrl)
         except Exception as e:
             print(e)
         
