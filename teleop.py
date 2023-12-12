@@ -130,7 +130,7 @@ class Teleop():
     def home(self):
         try:
             self.panda.move_to_start()
-            self.panda.update_endeff()
+            self.update_endeff()
         except Exception as e:
             print(e)
         
