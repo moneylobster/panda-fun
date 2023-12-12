@@ -52,7 +52,7 @@ class Teleop():
             self.real=False
 
         # how much to move by in each press
-        self.moveeps=0.01
+        self.moveeps=0.05
 
     @property
     def endeff(self):
