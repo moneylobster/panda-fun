@@ -120,10 +120,10 @@ class Teleop():
         self.endeff=SE3.Trans(-self.moveeps,0,0) * self._endeff
 
     def right(self):
-        self.endeff=SE3.Trans(0,self.moveeps,0) * self._endeff
+        self.endeff=SE3.Trans(0,-self.moveeps,0) * self._endeff
 
     def left(self):
-        self.endeff=SE3.Trans(0,-self.moveeps,0) * self._endeff
+        self.endeff=SE3.Trans(0,self.moveeps,0) * self._endeff
 
     def up(self):
         self.endeff=SE3.Trans(0,0,self.moveeps) * self._endeff
@@ -132,15 +132,13 @@ class Teleop():
         self.endeff=SE3.Trans(0,0,-self.moveeps) * self._endeff
 
     def home(self):
-        # TODO fix this stopping the controller
         try:
             self.panda.move_to_start()
             self.update_endeff()
             self.panda.start_controller(self.ctrl)
         except Exception as e:
-            print(e)
-        
-        
+            # will give an error if in sim, likely
+            print(e)  
         
 # init
 teleop=Teleop("real", "10.0.0.2")
