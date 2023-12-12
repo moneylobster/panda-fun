@@ -98,6 +98,7 @@ class Teleop():
         
         
         
-# init 
+# init
+teleop=Teleop("real", "10.0.0.2")
 while True:
-    print(getch())
+    teleop.process_key(getch())
