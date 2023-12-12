@@ -131,8 +131,8 @@ class Teleop():
         try:
             self.panda.move_to_start()
             self.panda.update_endeff()
-        except:
-            print("Can't home!")
+        except Exception as e:
+            print(e)
         
         
         
