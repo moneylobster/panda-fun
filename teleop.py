@@ -18,6 +18,7 @@ def translate_input(char):
         'e': "up",
         ' ': "gripper",
         'h': "home",
+        't': "quit",
     }
     return keymap[char]
 
@@ -49,6 +50,9 @@ class Teleop():
             # self.panda=False
             # self.endeff=False
             self.real=False
+
+        # how much to move by in each press
+        self.moveeps=0.1
 
     @property
     def endeff(self):
@@ -93,6 +97,8 @@ class Teleop():
             self.gripper()
         elif cmd=="home":
             self.home()
+        elif cmd=="quit":
+            quit()
         else:
             print(f"Invalid command {cmd}")
 
@@ -100,12 +106,14 @@ class Teleop():
         """
         Move endeff forward. (in x direction)
         """
-        self.endeff=self.endeff @ SE3.Trans(0.01,0,0)
+        self.endeff=self.endeff @ SE3.Trans(self.moveeps,0,0)
+
+    def backward(self):
+        self.endeff=self.endeff @ SE3.Trans(-self.moveeps,0,0)
         
         
         
 # init
-# teleop=Teleop("real", "10.0.0.2")
+teleop=Teleop("real", "10.0.0.2")
 while True:
-    # teleop.process_key(getch())
-    print(getch())
+    teleop.process_key(getch())
