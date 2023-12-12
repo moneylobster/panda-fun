@@ -114,13 +114,13 @@ class Teleop():
             print(f"Invalid command {cmd}")
 
     def forward(self):
-        self.endeff=self._endeff @ SE3.Trans(0,self.moveeps,0)
+        self.endeff=SE3.Trans(0,self.moveeps,0) @ self.endeff 
 
     def backward(self):
-        self.endeff=self.endeff @ SE3.Trans(0,-self.moveeps,0)
+        self.endeff=SE3.Trans(0,-self.moveeps,0) @ self.endeff
 
     def right(self):
-        self.endeff=self.endeff @ SE3.Trans(self.moveeps,0,0)
+        self.endeff=SE3.Trans(self.moveeps,0,0) @ self.endeff
 
     def left(self):
         self.endeff=self.endeff @ SE3.Trans(-self.moveeps,0,0)
