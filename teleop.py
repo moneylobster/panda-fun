@@ -56,7 +56,7 @@ class Teleop():
 
     @property
     def endeff(self):
-        return self._endeff
+        return SE3(self._endeff)
     
     @endeff.setter
     def endeff(self, val):
