@@ -39,26 +39,30 @@ class Teleop():
             import panda_py.libfranka
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
-            self.endeff=self.panda.get_pose()
+            self._endeff=self.panda.get_pose()
             self.real=True
         else:
             # run in simulation maybe?
             # TODO complete
             import swift
             self.env=swift.Swift()
-            self.panda=False
-            self.endeff=False
+            # self.panda=False
+            # self.endeff=False
             self.real=False
 
+    @property
+    def endeff(self):
+        return self._endeff
+    
     @endeff.setter
-    def endeff_set(self, val):
+    def endeff(self, val):
         """
         set endeff pose and move robot to new pose
         """
-        self.endeff=val
+        self._endeff=val
         if self.real:
             # TODO change into CartesianImpedanceController sometime
-            self.panda.move_to_pose(self.endeff)
+            self.panda.move_to_pose(self._endeff)
         else:
             #TODO implement movement in simulator
             pass
