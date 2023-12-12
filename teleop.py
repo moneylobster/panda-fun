@@ -75,7 +75,7 @@ class Teleop():
         self._endeff=val
         if self.real:
             # self.panda.move_to_joint_position(panda_py.ik(self._endeff.data[0]))
-            self.ctrl.set_control(self._endeff.t, UnitQuaternion(self._endeff))
+            self.ctrl.set_control(self._endeff.t, UnitQuaternion(self._endeff).vec_xyzs)
         else:
             #TODO implement movement in simulator
             pass
@@ -114,7 +114,7 @@ class Teleop():
             print(f"Invalid command {cmd}")
 
     def forward(self):
-        self.endeff=SE3.Trans(0,self.moveeps,0) @ self._endeff
+        self.endeff=self._endeff @ SE3.Trans(0,self.moveeps,0)
 
     def backward(self):
         self.endeff=self.endeff @ SE3.Trans(0,-self.moveeps,0)
