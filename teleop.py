@@ -52,7 +52,7 @@ class Teleop():
             self.real=False
 
         # how much to move by in each press
-        self.moveeps=0.05
+        self.moveeps=0.01
 
     @property
     def endeff(self):
@@ -70,7 +70,7 @@ class Teleop():
         print(self._endeff)
         if self.real:
             # TODO change into CartesianImpedanceController sometime
-            self.panda.move_to_pose(self._endeff.data[0])
+            self.panda.move_to_joint_position(panda_py.ik(self._endeff.data[0]))
         else:
             #TODO implement movement in simulator
             pass
@@ -123,6 +123,10 @@ class Teleop():
 
     def down(self):
         self.endeff=self.endeff @ SE3.Trans(0,0,-self.moveeps)
+
+    def home(self):
+        try:
+            self.panda.move_to_start()
         
         
         
