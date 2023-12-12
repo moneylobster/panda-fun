@@ -10,14 +10,14 @@ def translate_input(char):
     turn keypress into appropriate command.
     '''
     keymap={
-        b'w': "forward",
-        b's': "backward",
-        b'a': "left",
-        b'd': "right",
-        b'q': "down",
-        b'e': "up",
-        b' ': "gripper",
-        b'h': "home",
+        'w': "forward",
+        's': "backward",
+        'a': "left",
+        'd': "right",
+        'q': "down",
+        'e': "up",
+        ' ': "gripper",
+        'h': "home",
     }
     return keymap[char]
 
@@ -105,6 +105,7 @@ class Teleop():
         
         
 # init
-teleop=Teleop("real", "10.0.0.2")
+# teleop=Teleop("real", "10.0.0.2")
 while True:
-    teleop.process_key(getch())
+    # teleop.process_key(getch())
+    print(getch())
