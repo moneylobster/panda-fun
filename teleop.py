@@ -3,8 +3,9 @@ simple teleoperation with the end-effector orientation staying constant.
 '''
 
 from utils.getch import getch
-from spatialmath import SE3
+from spatialmath import SE3,UnitQuaternion
 import panda_py
+from panda_py import controllers
 import panda_py.libfranka
 
 def translate_input(char):
@@ -38,21 +39,27 @@ class Teleop():
         """
         if mode=="real":
             # run in real life
+            self.real=True
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
             self._endeff=SE3(self.panda.get_pose()) #store as SE3
-            self.real=True
+            # use a cartesianimpedance controller
+            self.ctrl=controllers.CartesianImpedance(filter_coeff=1.0)
+            self.panda.start_controller(self.ctrl)
         else:
             # run in simulation maybe?
             # TODO complete
             import swift
+            self.real=False
             self.env=swift.Swift()
             # self.panda=False
             # self.endeff=False
-            self.real=False
 
         # how much to move by in each press
         self.moveeps=0.01
+
+    def update_endeff(self):
+        self._endeff=SE3(self.panda.get_pose())
 
     @property
     def endeff(self):
@@ -63,14 +70,10 @@ class Teleop():
         """
         set endeff pose and move robot to new pose
         """
-        print("BEFORE:")
-        print(self._endeff)
         self._endeff=val
-        print("AFTER:")
-        print(self._endeff)
         if self.real:
-            # TODO change into CartesianImpedanceController sometime
-            self.panda.move_to_joint_position(panda_py.ik(self._endeff.data[0]))
+            # self.panda.move_to_joint_position(panda_py.ik(self._endeff.data[0]))
+            self.ctrl.set_control(self._endeff.t, UnitQuaternion(self._endeff))
         else:
             #TODO implement movement in simulator
             pass
@@ -127,6 +130,7 @@ class Teleop():
     def home(self):
         try:
             self.panda.move_to_start()
+            self.panda.update_endeff()
         except:
             print("Can't home!")
         
@@ -134,5 +138,6 @@ class Teleop():
         
 # init
 teleop=Teleop("real", "10.0.0.2")
-while True:
-    teleop.process_key(getch())
+with panda.create_context(frequency=100) as ctx:
+    while ctx.ok():
+        teleop.process_key(getch())
