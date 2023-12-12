@@ -138,6 +138,6 @@ class Teleop():
         
 # init
 teleop=Teleop("real", "10.0.0.2")
-with panda.create_context(frequency=100) as ctx:
+with teleop.panda.create_context(frequency=100) as ctx:
     while ctx.ok():
         teleop.process_key(getch())
