@@ -20,7 +20,7 @@ def translate_input(char):
         'd': "right",
         'q': "down",
         'e': "up",
-        ' ': "gripper",
+        ' ': "vacuum",
         'h': "home",
         'u': "update",
         't': "quit",
@@ -105,8 +105,8 @@ class Teleop():
             self.down()
         elif cmd=="up":
             self.up()
-        elif cmd=="gripper":
-            self.gripper()
+        elif cmd=="vacuum":
+            self.vacuum()
         elif cmd=="home":
             self.home()
         elif cmd=="update":
