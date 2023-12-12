@@ -127,6 +127,8 @@ class Teleop():
     def home(self):
         try:
             self.panda.move_to_start()
+        except:
+            print("Can't home!")
         
         
         
