@@ -114,22 +114,22 @@ class Teleop():
             print(f"Invalid command {cmd}")
 
     def forward(self):
-        self.endeff=self._endeff * SE3.Trans(0,self.moveeps,0)
+        self.endeff=SE3.Trans(0,self.moveeps,0) * self._endeff
 
     def backward(self):
-        self.endeff=self.endeff * SE3.Trans(0,-self.moveeps,0)
+        self.endeff=SE3.Trans(0,-self.moveeps,0) * self._endeff
 
     def right(self):
-        self.endeff=self.endeff * SE3.Trans(self.moveeps,0,0)
+        self.endeff=SE3.Trans(self.moveeps,0,0) * self._endeff
 
     def left(self):
-        self.endeff=self.endeff * SE3.Trans(-self.moveeps,0,0)
+        self.endeff=SE3.Trans(-self.moveeps,0,0) * self._endeff
 
     def up(self):
-        self.endeff=self.endeff * SE3.Trans(0,0,self.moveeps)
+        self.endeff=SE3.Trans(0,0,self.moveeps) * self._endeff
 
     def down(self):
-        self.endeff=self.endeff * SE3.Trans(0,0,-self.moveeps)
+        self.endeff=SE3.Trans(0,0,-self.moveeps) * self._endeff
 
     def home(self):
         # TODO fix this stopping the controller
