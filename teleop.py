@@ -40,7 +40,7 @@ class Teleop():
             import panda_py.libfranka
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
-            self._endeff=self.panda.get_pose()
+            self._endeff=SE3(self.panda.get_pose()) #store as SE3
             self.real=True
         else:
             # run in simulation maybe?
@@ -56,7 +56,7 @@ class Teleop():
 
     @property
     def endeff(self):
-        return SE3(self._endeff)
+        return self._endeff
     
     @endeff.setter
     def endeff(self, val):
@@ -66,7 +66,7 @@ class Teleop():
         self._endeff=val
         if self.real:
             # TODO change into CartesianImpedanceController sometime
-            self.panda.move_to_pose(self._endeff)
+            self.panda.move_to_pose(self._endeff.data[0])
         else:
             #TODO implement movement in simulator
             pass
