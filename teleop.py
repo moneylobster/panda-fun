@@ -39,13 +39,15 @@ class Teleop():
             import panda_py.libfranka
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
-            self.endeff=panda.get_pose()
+            self.endeff=self.panda.get_pose()
             self.real=True
-        elif mode=="sim":
+        else:
             # run in simulation maybe?
             # TODO complete
             import swift
             self.env=swift.Swift()
+            self.panda=False
+            self.endeff=False
             self.real=False
 
     @endeff.setter
