@@ -4,6 +4,7 @@ simple teleoperation with the end-effector orientation staying constant.
 
 from utils.getch import getch
 from spatialmath import SE3,UnitQuaternion
+from datetime import timedelta
 import panda_py
 from panda_py import controllers
 import panda_py.libfranka
@@ -59,6 +60,8 @@ class Teleop():
 
         # how much to move by in each press
         self.moveeps=0.01
+        # how long to try to vacuum for
+        self.gripeps=timedelta(seconds=0.5)
 
     def update_endeff(self):
         self._endeff=SE3(self.panda.get_pose())
@@ -109,6 +112,7 @@ class Teleop():
         elif cmd=="update":
             self.update_endeff()
         elif cmd=="quit":
+            self.gripper.stop()
             quit()
         else:
             print(f"Invalid command {cmd}")
@@ -138,7 +142,16 @@ class Teleop():
             self.panda.start_controller(self.ctrl)
         except Exception as e:
             # will give an error if in sim, likely
-            print(e)  
+            print(e)
+
+    def vacuum(self):
+        # is vacuum on?
+        state=self.gripper.read_once()
+        if state.part_present:
+            self.gripper.drop_off(self.gripeps)
+        else:
+            self.gripper.vacuum(3,self.gripeps)
+        
         
 # init
 teleop=Teleop("real", "10.0.0.2")
