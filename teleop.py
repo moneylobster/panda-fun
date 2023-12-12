@@ -52,7 +52,7 @@ class Teleop():
             self.real=False
 
         # how much to move by in each press
-        self.moveeps=0.1
+        self.moveeps=0.01
 
     @property
     def endeff(self):
@@ -103,13 +103,22 @@ class Teleop():
             print(f"Invalid command {cmd}")
 
     def forward(self):
-        """
-        Move endeff forward. (in x direction)
-        """
-        self.endeff=self.endeff @ SE3.Trans(self.moveeps,0,0)
+        self.endeff=self.endeff @ SE3.Trans(0,self.moveeps,0)
 
     def backward(self):
+        self.endeff=self.endeff @ SE3.Trans(0,-self.moveeps,0)
+
+    def right(self):
+        self.endeff=self.endeff @ SE3.Trans(self.moveeps,0,0)
+
+    def left(self):
         self.endeff=self.endeff @ SE3.Trans(-self.moveeps,0,0)
+
+    def up(self):
+        self.endeff=self.endeff @ SE3.Trans(0,0,self.moveeps)
+
+    def down(self):
+        self.endeff=self.endeff @ SE3.Trans(0,0,-self.moveeps)
         
         
         
