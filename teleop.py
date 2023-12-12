@@ -78,7 +78,6 @@ class Teleop():
         if self.real:
             # self.panda.move_to_joint_position(panda_py.ik(self._endeff.data[0]))
             self.ctrl.set_control(self._endeff.t, UnitQuaternion(self._endeff).vec_xyzs)
-            print(self._endeff)
         else:
             #TODO implement movement in simulator
             pass
@@ -117,7 +116,6 @@ class Teleop():
         else:
             print(f"Invalid command {cmd}")
 
-    # TODO endeff orientation is still kinda weird, fix.
     def forward(self):
         self.endeff=SE3.Trans(self.moveeps,0,0) * self._endeff
 
