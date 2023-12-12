@@ -4,6 +4,8 @@ simple teleoperation with the end-effector orientation staying constant.
 
 from utils.getch import getch
 from spatialmath import SE3
+import panda_py
+import panda_py.libfranka
 
 def translate_input(char):
     '''
@@ -36,8 +38,6 @@ class Teleop():
         """
         if mode=="real":
             # run in real life
-            import panda_py
-            import panda_py.libfranka
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
             self._endeff=SE3(self.panda.get_pose()) #store as SE3
