@@ -44,7 +44,6 @@ class Teleop():
             self.real=True
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
-            self.panda.move_to_start()
             self._endeff=SE3(self.panda.get_pose()) #store as SE3
             # use a cartesianimpedance controller
             self.ctrl=controllers.CartesianImpedance(filter_coeff=1.0)
@@ -117,6 +116,7 @@ class Teleop():
         else:
             print(f"Invalid command {cmd}")
 
+    # TODO endeff orientation is still kinda weird, fix.
     def forward(self):
         self.endeff=SE3.Trans(self.moveeps,0,0) * self._endeff
 
@@ -148,9 +148,17 @@ class Teleop():
         # is vacuum on?
         state=self.gripper.read_once()
         if state.part_present:
-            self.gripper.drop_off(self.gripeps)
+            try:
+                self.gripper.drop_off(self.gripeps)
+            except:
+                # if unsuccessful
+                self.gripper.stop()
         else:
-            self.gripper.vacuum(3,self.gripeps)
+            try:
+                self.gripper.vacuum(3,self.gripeps)
+            except:
+                # if unsuccessful
+                self.gripper.stop()
         
         
 # init
