@@ -63,7 +63,11 @@ class Teleop():
         """
         set endeff pose and move robot to new pose
         """
+        print("BEFORE:")
+        print(self._endeff)
         self._endeff=val
+        print("AFTER:")
+        print(self._endeff)
         if self.real:
             # TODO change into CartesianImpedanceController sometime
             self.panda.move_to_pose(self._endeff.data[0])
