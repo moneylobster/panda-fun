@@ -42,6 +42,7 @@ class Teleop():
             self.real=True
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
+            self.panda.move_to_start()
             self._endeff=SE3(self.panda.get_pose()) #store as SE3
             # use a cartesianimpedance controller
             self.ctrl=controllers.CartesianImpedance(filter_coeff=1.0)
@@ -128,6 +129,7 @@ class Teleop():
         self.endeff=self.endeff @ SE3.Trans(0,0,-self.moveeps)
 
     def home(self):
+        # TODO fix this stopping the controller
         try:
             self.panda.move_to_start()
             self.update_endeff()
