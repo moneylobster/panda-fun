@@ -1,3 +1,6 @@
+'''
+operate arm and record as binarized np array
+'''
 import numpy as np
 import time
 
@@ -28,7 +31,7 @@ panda.move_to_start()
 # input('Press enter to move through the three poses.')
 # panda.move_to_joint_position(positions)
 
-LEN = 10
+LEN = 4
 input(f'Next, teach a trajectory for {LEN} seconds. Press enter to begin.')
 panda.teaching_mode(True)
 panda.enable_logging(LEN * 1000)
