@@ -46,7 +46,7 @@ class Teleop():
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
             self._endeff=SE3(self.panda.get_pose()) #store as SE3
             # use a cartesianimpedance controller
-            self.ctrl=controllers.CartesianImpedance(filter_coeff=1.0)
+            self.ctrl=controllers.CartesianImpedance(nullspace_stiffness=0.1, filter_coeff=1.0)
             self.panda.start_controller(self.ctrl)
         else:
             # run in simulation maybe?
