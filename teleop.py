@@ -1,7 +1,7 @@
 '''
 simple teleoperation with the end-effector orientation staying constant.
 '''
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import numpy as np
 from spatialmath import SE3, UnitQuaternion
@@ -28,7 +28,7 @@ def translate_input(char):
     return keymap[char]
 
 class Teleop():
-    def __init__(self, mode="real", ip="10.0.0.2"):
+    def __init__(self, mode="real", ip="10.0.0.2", record=False):
         """
         
         Parameters
@@ -39,6 +39,8 @@ class Teleop():
             ip of robot for "real" option
 
         """
+        self.record=record
+        
         if mode=="real":
             # run in real life
             self.real=True
@@ -48,6 +50,9 @@ class Teleop():
             # use a cartesianimpedance controller
             self.ctrl=controllers.CartesianImpedance(nullspace_stiffness=0.1, filter_coeff=1.0)
             self.panda.start_controller(self.ctrl)
+            if self.record:
+                # start logging
+                self.panda.enable_logging()
         else:
             # run in simulation maybe?
             self.real=False
@@ -176,14 +181,23 @@ class Teleop():
     def quit(self):
         if self.real:
             self.gripper.stop()
+            if self.record:
+                # stop logging, save log
+                self.panda.disable_logging()
+                log=self.panda.get_log()
+                filename=f"log_{datetime.now().isoformat()}.npy"
+                np.save(filename,log)
+                print(f"Saved log as {filename}")
         quit()
         
 
 if __name__=="__main__":
+    # read second argument to see if we run it in sim or real
     import sys
     if len(sys.argv)==1:
         print("Specify sim or real.")
     elif sys.argv[1]=="real":
+        # real
         import panda_py
         import panda_py.libfranka
         from panda_py import controllers
@@ -192,6 +206,7 @@ if __name__=="__main__":
             while ctx.ok():
                 teleop.process_key(getch())
     elif sys.argv[1]=="sim":
+        # sim
         import roboticstoolbox as rtb
         import swift
         teleop=Teleop("sim")
