@@ -61,6 +61,8 @@ class Teleop():
             self.panda=rtb.models.Panda()
             self._endeff=self.panda.fkine(self.panda.q)
             self.env.add(self.panda)
+            if self.record:
+                print("WARNING: recording in sim not implemented yet")
 
         # how much to move by in each press
         self.moveeps=0.01
