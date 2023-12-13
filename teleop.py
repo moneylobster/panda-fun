@@ -1,10 +1,13 @@
 '''
 simple teleoperation with the end-effector orientation staying constant.
 '''
+from datetime import timedelta
+
+import numpy as np
+from spatialmath import SE3, UnitQuaternion
 
 from utils.getch import getch
-from spatialmath import SE3,UnitQuaternion
-from datetime import timedelta
+
 
 def translate_input(char):
     '''
@@ -39,8 +42,8 @@ class Teleop():
         if mode=="real":
             # run in real life
             import panda_py
-            from panda_py import controllers
             import panda_py.libfranka
+            from panda_py import controllers
             self.real=True
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
@@ -51,11 +54,14 @@ class Teleop():
         else:
             # run in simulation maybe?
             # TODO complete
+            import roboticstoolbox as rtb
             import swift
             self.real=False
             self.env=swift.Swift()
-            # self.panda=False
-            # self.endeff=False
+            self.env.launch(realtime=True)
+            self.panda=rtb.models.Panda()
+            self._endeff=self.panda.fkine(self.panda.q)
+            self.env.add(self.panda)
 
         # how much to move by in each press
         self.moveeps=0.01
@@ -63,7 +69,12 @@ class Teleop():
         self.gripeps=timedelta(seconds=0.5)
 
     def update_endeff(self):
-        self._endeff=SE3(self.panda.get_pose())
+        if self.real:
+            #real
+            self._endeff=SE3(self.panda.get_pose())
+        else:
+            #sim
+            self._endeff=self.panda.fkine(self.panda.q)
 
     @property
     def endeff(self):
@@ -76,11 +87,14 @@ class Teleop():
         """
         self._endeff=val
         if self.real:
+            #real
             # self.panda.move_to_joint_position(panda_py.ik(self._endeff.data[0]))
             self.ctrl.set_control(self._endeff.t, UnitQuaternion(self._endeff).vec_xyzs)
         else:
-            #TODO implement movement in simulator
-            pass
+            #sim
+            v,arrived=rtb.p_servo(self.panda.fkine(self.panda.q),self._endeff,1)
+            self.panda.qd = np.linalg.pinv(self.panda.jacobe(self.panda.q)) @ v
+            
 
     def process_key(self,char):
         """
@@ -135,13 +149,14 @@ class Teleop():
         self.endeff=SE3.Trans(0,0,-self.moveeps) * self._endeff
 
     def home(self):
-        try:
+        if self.real:
+            #real
             self.panda.move_to_start()
             self.update_endeff()
             self.panda.start_controller(self.ctrl)
-        except Exception as e:
-            # will give an error if in sim, likely
-            print(e)
+        else:
+            #sim
+            self.panda
 
     def vacuum(self):
         # is vacuum on?
@@ -161,7 +176,11 @@ class Teleop():
         
         
 # init
-teleop=Teleop("real", "10.0.0.2")
-with teleop.panda.create_context(frequency=1000) as ctx:
-    while ctx.ok():
-        teleop.process_key(getch())
+# teleop=Teleop("real", "10.0.0.2")
+# with teleop.panda.create_context(frequency=1000) as ctx:
+    # while ctx.ok():
+        # teleop.process_key(getch())
+teleop=Teleop("sim")
+while True:
+    teleop.process_key(getch())
+    teleop.env.step(0.05)
