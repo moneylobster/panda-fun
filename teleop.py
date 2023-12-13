@@ -86,8 +86,9 @@ class Teleop():
             self.ctrl.set_control(self._endeff.t, UnitQuaternion(self._endeff).vec_xyzs)
         else:
             #sim
-            v,arrived=rtb.p_servo(self.panda.fkine(self.panda.q),self._endeff,1)
-            self.panda.qd = np.linalg.pinv(self.panda.jacobe(self.panda.q)) @ v
+            # v,arrived=rtb.p_servo(self.panda.fkine(self.panda.q),self._endeff,1)
+            # self.panda.qd = np.linalg.pinv(self.panda.jacobe(self.panda.q)) @ v
+            self.panda.q=self.panda.ikine_LM(self._endeff, q0=self.panda.q).q
             
 
     def process_key(self,char):
@@ -150,7 +151,8 @@ class Teleop():
             self.panda.start_controller(self.ctrl)
         else:
             #sim
-            self.panda
+            self.panda.q=self.panda.qr
+            self.update_endeff()
 
     def vacuum(self):
         # is vacuum on?
