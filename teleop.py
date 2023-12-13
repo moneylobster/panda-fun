@@ -5,9 +5,6 @@ simple teleoperation with the end-effector orientation staying constant.
 from utils.getch import getch
 from spatialmath import SE3,UnitQuaternion
 from datetime import timedelta
-import panda_py
-from panda_py import controllers
-import panda_py.libfranka
 
 def translate_input(char):
     '''
@@ -41,6 +38,9 @@ class Teleop():
         """
         if mode=="real":
             # run in real life
+            import panda_py
+            from panda_py import controllers
+            import panda_py.libfranka
             self.real=True
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
