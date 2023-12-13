@@ -123,8 +123,7 @@ class Teleop():
         elif cmd=="update":
             self.update_endeff()
         elif cmd=="quit":
-            self.gripper.stop()
-            quit()
+            self.quit()
         else:
             print(f"Invalid command {cmd}")
 
@@ -173,6 +172,11 @@ class Teleop():
             except:
                 # if unsuccessful
                 self.gripper.stop()
+
+    def quit(self):
+        if self.real:
+            self.gripper.stop()
+        quit()
         
         
 # init
