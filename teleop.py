@@ -41,9 +41,6 @@ class Teleop():
         """
         if mode=="real":
             # run in real life
-            import panda_py
-            import panda_py.libfranka
-            from panda_py import controllers
             self.real=True
             self.panda=panda_py.Panda(ip)
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
@@ -53,9 +50,6 @@ class Teleop():
             self.panda.start_controller(self.ctrl)
         else:
             # run in simulation maybe?
-            # TODO complete
-            import roboticstoolbox as rtb
-            import swift
             self.real=False
             self.env=swift.Swift()
             self.env.launch(realtime=True)
@@ -176,10 +170,16 @@ class Teleop():
         
         
 # init
+# import panda_py
+# import panda_py.libfranka
+# from panda_py import controllers
 # teleop=Teleop("real", "10.0.0.2")
 # with teleop.panda.create_context(frequency=1000) as ctx:
     # while ctx.ok():
         # teleop.process_key(getch())
+
+import roboticstoolbox as rtb
+import swift
 teleop=Teleop("sim")
 while True:
     teleop.process_key(getch())
