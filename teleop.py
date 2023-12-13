@@ -201,7 +201,7 @@ if __name__=="__main__":
         import panda_py
         import panda_py.libfranka
         from panda_py import controllers
-        teleop=Teleop("real", "10.0.0.2")
+        teleop=Teleop("real", "10.0.0.2", True)
         with teleop.panda.create_context(frequency=1000) as ctx:
             while ctx.ok():
                 teleop.process_key(getch())
