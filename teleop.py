@@ -8,6 +8,7 @@ from spatialmath import SE3, UnitQuaternion
 
 from utils.getch import getch
 
+FREQ=100
 
 def translate_input(char):
     '''
@@ -52,7 +53,8 @@ class Teleop():
             self.panda.start_controller(self.ctrl)
             if self.record:
                 # start logging
-                self.panda.enable_logging()
+                # do it for 120 seconds for now
+                self.panda.enable_logging(FREQ*120)
         else:
             # run in simulation maybe?
             self.real=False
@@ -198,15 +200,17 @@ if __name__=="__main__":
     import sys
     if len(sys.argv)==1:
         print("Specify sim or real.")
+        
     elif sys.argv[1]=="real":
         # real
         import panda_py
         import panda_py.libfranka
         from panda_py import controllers
         teleop=Teleop("real", "10.0.0.2", True)
-        with teleop.panda.create_context(frequency=1000) as ctx:
+        with teleop.panda.create_context(frequency=FREQ) as ctx:
             while ctx.ok():
                 teleop.process_key(getch())
+                
     elif sys.argv[1]=="sim":
         # sim
         import roboticstoolbox as rtb
