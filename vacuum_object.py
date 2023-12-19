@@ -33,6 +33,8 @@ if __name__=='__main__':
         try:
             gripper.vacuum(3, timedelta(seconds=1))
         except:
+            # the finally block at the end stops the vacuuming with gripper.stop()
+            # otherwise it keeps going
             raise RuntimeError("Failed to grasp object.")
             
         # Wait 3 seconds and check if the object is still grasped.
