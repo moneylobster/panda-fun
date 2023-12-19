@@ -29,11 +29,11 @@ if __name__=='__main__':
         
         # Vacuum the object
         # The first argument is the vacuum pressure level
-        # The second argument is how long to try vacuuming for
+        # The second argument is how long to try vacuuming for before giving an error
         try:
             gripper.vacuum(3, timedelta(seconds=1))
         except:
-            print("Failed to grasp object.")
+            raise RuntimeError("Failed to grasp object.")
             
         # Wait 3 seconds and check if the object is still grasped.
         time.sleep(3)
@@ -46,7 +46,10 @@ if __name__=='__main__':
             print("Releasing object.")
             # Release the object
             # The time argument specifies when to time-out.
-            gripper.drop_off(timedelta(seconds=1))
+            try:
+                gripper.drop_off(timedelta(seconds=1))
+            except:
+                raise RuntimeError("Failed to drop object off.")
     finally:
         # Stop whatever the gripper is doing when program terminates.
         gripper.stop()
