@@ -14,7 +14,7 @@ if __name__=='__main__':
 
     # Connect to the gripper via the same IP as the robot arm
     # This doesn't prevent you from connecting to the arm
-    gripper=panda_py.libfranka.Gripper(sys.argv[1])
+    gripper=panda_py.libfranka.VacuumGripper(sys.argv[1])
 
     try:
         # Print gripper state
