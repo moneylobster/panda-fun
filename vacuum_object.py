@@ -32,6 +32,7 @@ if __name__=='__main__':
         # The second argument is how long to try vacuuming for before giving an error
         try:
             gripper.vacuum(3, timedelta(seconds=1))
+            print("Grabbed object.")
         except:
             # the finally block at the end stops the vacuuming with gripper.stop()
             # otherwise it keeps going
