@@ -50,7 +50,7 @@ class Teleop():
             self._endeff=SE3(self.panda.get_pose()) #store as SE3
             # use a cartesianimpedance controller
             tra_stiff=200 #default is 200
-            rot_stiff=20 #default is 20
+            rot_stiff=20 #default is 10
             self.ctrl=controllers.CartesianImpedance(
                 impedance=np.array(
                     [[tra_stiff,0,0,0,0,0],
