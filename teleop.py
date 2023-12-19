@@ -49,14 +49,16 @@ class Teleop():
             self.gripper=panda_py.libfranka.VacuumGripper(ip)
             self._endeff=SE3(self.panda.get_pose()) #store as SE3
             # use a cartesianimpedance controller
+            tra_stiff=200 #default is 200
+            rot_stiff=20 #default is 20
             self.ctrl=controllers.CartesianImpedance(
                 impedance=np.array(
-                    [[200,0,0,0,0,0],
-                     [0,200,0,0,0,0],
-                     [0,0,200,0,0,0],
-                     [0,0,0,30,0,0],
-                     [0,0,0,0,30,0],
-                     [0,0,0,0,0,30]]),
+                    [[tra_stiff,0,0,0,0,0],
+                     [0,tra_stiff,0,0,0,0],
+                     [0,0,tra_stiff,0,0,0],
+                     [0,0,0,rot_stiff,0,0],
+                     [0,0,0,0,rot_stiff,0],
+                     [0,0,0,0,0,rot_stiff]]),
                 nullspace_stiffness=0.1,
                 filter_coeff=1.0)
             self.panda.start_controller(self.ctrl)
