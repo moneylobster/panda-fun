@@ -58,6 +58,7 @@ with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
     while ctx.ok():
         ctrl.set_control(q[i], dq[i]) #joint pos.
         i += 1
+panda.stop_controller()
 jointposlog=panda.get_log()
 jointposq=jointposlog['q']
 np.save("jointposq.npy",jointposq)
@@ -82,6 +83,7 @@ with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
     while ctx.ok():
         ctrl.set_control(poss[i], rots[i]) #cartesian imp.
         i += 1
+panda.stop_controller()
 cartimpdeflog=panda.get_log()
 cartimpdefq=cartimpdeflog['q']
 np.save("cartimpdefq.npy",cartimpdefq)
@@ -106,6 +108,7 @@ with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
     while ctx.ok():
         ctrl.set_control(poss[i], rots[i], q[i]) #cartesian imp.
         i += 1
+panda.stop_controller()
 cartimplog=panda.get_log()
 cartimpq=cartimplog['q']
 np.save("cartimpdefq.npy",cartimpq)
