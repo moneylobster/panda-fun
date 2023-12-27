@@ -9,6 +9,8 @@ import panda_py
 from panda_py import controllers
 import spatialmath.base as smb
 
+import matplotlib.pyplot as plt
+
 
 if len(sys.argv)!=3:
   raise RuntimeError("Please specify trans_stiff and rot_stiff")
@@ -107,3 +109,12 @@ with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
 cartimplog=panda.get_log()
 cartimpq=cartimplog['q']
 np.save("cartimpdefq.npy",cartimpq)
+
+plt.plot(jointposq)
+plt.savefig("jointposq.png")
+
+plt.plot(cartimpdefq)
+plt.savefig("cartimpdefq.png")
+
+plt.plot(cartimpq)
+plt.savefig("cartimpq.png")
