@@ -47,7 +47,7 @@ if __name__ == '__main__':
       # find qd
       qd = np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
 
-      print(f"{qd}, {qd[:n]}")      
+      #print(f"{qd}, {qd[:n]}")      
       
       # Apply the joint velocities to the Panda
-      # ctrl.set_control(qd[:n])
+      ctrl.set_control(qd[:n])
