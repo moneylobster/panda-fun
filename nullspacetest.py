@@ -125,8 +125,8 @@ def plot_joints(fig,data,name):
 
 fig=plt.figure()
 
-plot_joints(fig,jointposq)
-plot_joints(fig,cartimpdefq)
-plot_joints(fig,cartimpq)
+plot_joints(fig,jointposq, "jointpos")
+plot_joints(fig,cartimpdefq, "cartimpdef")
+plot_joints(fig,cartimpq, "cartimp")
 fig.legend(loc="best")
 fig.savefig("qvals.png")
