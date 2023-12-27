@@ -17,7 +17,7 @@ def plot_joints(fig,data,name):
         plt.subplot(7,1,i+1)
         plt.plot(val,label=name)
 
-fig=plt.figure()
+fig=plt.figure(figsize=(100,100))
 
 plot_joints(fig,jointposq, "jointpos")
 plot_joints(fig,cartimpdefq, "cartimpdef")
