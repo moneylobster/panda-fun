@@ -11,7 +11,7 @@ import spatialmath.base as smb
 
 
 if len(sys.argv)==1:
-  print("Please specify cartesian, joint or jointpos")
+  raise RuntimeError("Please specify cartesian, joint or jointpos")
 ctrl_mode=sys.argv[1]
 
 panda=panda_py.Panda("10.0.0.2")
