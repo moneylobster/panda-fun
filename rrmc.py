@@ -33,21 +33,13 @@ if __name__ == '__main__':
 
       # The pose of the Panda's end-effector
       Te = panda_rtb.fkine(panda.q)
-
-      # Transform from the end-effector to desired pose
-      eTep = Te.inv() * Tep
-
-      # Spatial error
-      # e = np.sum(np.abs(np.r_[eTep.t, eTep.rpy() * np.pi / 180]))
-
+      
       # Calulate the required end-effector spatial velocity for the robot
       # to approach the goal. Gain is set to 1.0
       v, arrived = rtb.p_servo(Te, Tep, 1.0)
 
       # find qd
       qd = np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
-
-      #print(f"{qd}, {qd[:n]}")      
       
       # Apply the joint velocities to the Panda
       ctrl.set_control(qd[:n])
