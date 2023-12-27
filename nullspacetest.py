@@ -50,11 +50,15 @@ i = 0
 
 ctrl = controllers.JointPosition()
 
+panda.enable_logging(LEN * 1000)
 panda.start_controller(ctrl)
 with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
     while ctx.ok():
         ctrl.set_control(q[i], dq[i]) #joint pos.
         i += 1
+jointposlog=panda.get_log()
+jointposq=jointposlog['q']
+np.save("jointposq.npy",jointposq)
 ##########################################################
 input('Press enter to replay: CARTESIAN IMP., DEFAULT NULLSPACE')
 panda.move_to_joint_position(q[0])
@@ -70,12 +74,15 @@ ctrl = controllers.CartesianImpedance(
          [0,0,0,0,0,rot_stiff]]),
     filter_coeff=1.0)
 
+panda.enable_logging(LEN * 1000)
 panda.start_controller(ctrl)
 with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
     while ctx.ok():
         ctrl.set_control(poss[i], rots[i]) #cartesian imp.
         i += 1
-
+cartimpdeflog=panda.get_log()
+cartimpdefq=cartimpdeflog['q']
+np.save("cartimpdefq.npy",cartimpdefq)
 ##########################################################
 input('Press enter to replay: CARTESIAN IMP., NULLSPACE=q')
 panda.move_to_joint_position(q[0])
@@ -91,9 +98,12 @@ ctrl = controllers.CartesianImpedance(
                      [0,0,0,0,0,rot_stiff]]),
   filter_coeff=1.0)
 
-panda.start_controller(ctrl)
-      
+panda.enable_logging(LEN * 1000)
+panda.start_controller(ctrl)      
 with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
     while ctx.ok():
         ctrl.set_control(poss[i], rots[i], q[i]) #cartesian imp.
         i += 1
+cartimplog=panda.get_log()
+cartimpq=cartimplog['q']
+np.save("cartimpdefq.npy",cartimpq)
