@@ -115,15 +115,18 @@ np.save("cartimpdefq.npy",cartimpq)
 
 ### plotting
 
-def plot_joints(fig,data):
+def plot_joints(fig,data,name):
     "plot all joints onto different subplots"
+    data=np.array(data)
+    data=data.reshape(7,-1)
     for i,val in enumerate(data.T):
-        fig.subplot(711+i)
-        fig.plot(val)
+        plt.subplot(7,1,i)
+        plt.plot(val,name)
 
 fig=plt.figure()
 
 plot_joints(fig,jointposq)
 plot_joints(fig,cartimpdefq)
 plot_joints(fig,cartimpq)
+fig.legend(loc="best")
 fig.savefig("qvals.png")
