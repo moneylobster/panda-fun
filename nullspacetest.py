@@ -18,20 +18,10 @@ panda=panda_py.Panda("10.0.0.2")
 
 panda.move_to_start()
 
-# print('Please teach three poses to the robot.')
-# positions = []
-# panda.teaching_mode(True)
-# for i in range(3):
-#   print(f'Move the robot into pose {i+1} and press enter to continue.')
-#   input()
-#   positions.append(panda.q)
-#   simpanda.fkine(panda.q)
-
-# panda.teaching_mode(False)
-# input('Press enter to move through the three poses.')
-# panda.move_to_joint_position(positions)
-
 LEN = 8
+tra_stiff=200 #default is 200
+rot_stiff=20 #default is 10
+
 input(f'Next, teach a trajectory for {LEN} seconds. Press enter to begin.')
 panda.teaching_mode(True)
 panda.enable_logging(LEN * 1000)
@@ -58,7 +48,15 @@ input('Press enter to replay trajectory')
 panda.move_to_joint_position(q[0])
 i = 0
 
-ctrl = controllers.CartesianImpedance(filter_coeff=1.0)
+ctrl = controllers.CartesianImpedance(
+  impedance=np.array(
+                    [[tra_stiff,0,0,0,0,0],
+                     [0,tra_stiff,0,0,0,0],
+                     [0,0,tra_stiff,0,0,0],
+                     [0,0,0,rot_stiff,0,0],
+                     [0,0,0,0,rot_stiff,0],
+                     [0,0,0,0,0,rot_stiff]]),
+  filter_coeff=1.0)
 
 panda.start_controller(ctrl)
 if (sys.argv[1]=="0"):
