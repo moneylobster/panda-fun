@@ -108,5 +108,5 @@ with panda.create_context(frequency=1000, max_runtime=LEN) as ctx:
 panda.stop_controller()
 cartimplog=panda.get_log()
 cartimpq=cartimplog['q']
-np.save("cartimpdefq.npy",cartimpq)
+np.save("cartimpq.npy",cartimpq)
 
