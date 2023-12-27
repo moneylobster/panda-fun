@@ -38,7 +38,7 @@ if __name__ == '__main__':
       eTep = Te.inv() * Tep
 
       # Spatial error
-      e = np.sum(np.abs(np.r_[eTep.t, eTep.rpy() * np.pi / 180]))
+      # e = np.sum(np.abs(np.r_[eTep.t, eTep.rpy() * np.pi / 180]))
 
       # Calulate the required end-effector spatial velocity for the robot
       # to approach the goal. Gain is set to 1.0
