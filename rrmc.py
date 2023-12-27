@@ -1,7 +1,6 @@
 import sys
 
 import numpy as np
-import qpsolvers as qp
 import roboticstoolbox as rtb
 import spatialmath as sm
 
