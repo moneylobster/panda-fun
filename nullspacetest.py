@@ -113,11 +113,17 @@ cartimplog=panda.get_log()
 cartimpq=cartimplog['q']
 np.save("cartimpdefq.npy",cartimpq)
 
-plt.plot(jointposq)
-plt.savefig("jointposq.png")
+### plotting
 
-plt.plot(cartimpdefq)
-plt.savefig("cartimpdefq.png")
+def plot_joints(fig,data):
+    "plot all joints onto different subplots"
+    for i,val in enumerate(data.T):
+        fig.subplot(711+i)
+        fig.plot(val)
 
-plt.plot(cartimpq)
-plt.savefig("cartimpq.png")
+fig=plt.figure()
+
+plot_joints(fig,jointposq)
+plot_joints(fig,cartimpdefq)
+plot_joints(fig,cartimpq)
+fig.savefig("qvals.png")
