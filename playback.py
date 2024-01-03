@@ -11,7 +11,7 @@ import spatialmath.base as smb
 
 # parse args
 if len(sys.argv)<2:
-  raise RuntimeError("Please supply the name of the .npy file to play. Optionally specify control mode: cartesian, joint or jointpos")
+  raise RuntimeError("Please supply the name of the .npy file to play. Optionally specify control mode: cartesian, joint or jointpos (default)")
 
 if len(sys.argv)>=3:
     ctrl_mode=sys.argv[2]
