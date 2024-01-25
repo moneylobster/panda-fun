@@ -12,7 +12,7 @@ import pyrealsense2 as rs
 
 if len(sys.argv)==1:
   raise RuntimeError("Please specify recording length.")
-LEN=sys.argv[1]
+LEN=int(sys.argv[1])
 
 ################################################################################
 ## CAMERA SETUP
