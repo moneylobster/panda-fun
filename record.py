@@ -13,7 +13,7 @@ import spatialmath.base as smb
 
 if len(sys.argv)==1:
   raise RuntimeError("Please specify recording length.")
-LEN=sys.argv[1]
+LEN=int(sys.argv[1])
 
 # connect to robot
 panda=panda_py.Panda("10.0.0.2")
