@@ -19,7 +19,7 @@ LEN=sys.argv[1]
 panda=panda_py.Panda("10.0.0.2")
 panda.move_to_start()
 
-input(f'Next, teach a trajectory for {LEN} seconds. Press enter to begin.')
+input(f'Teach a trajectory for {LEN} seconds. Press enter to begin.')
 panda.teaching_mode(True)
 panda.enable_logging(LEN * 1000)
 time.sleep(LEN)
