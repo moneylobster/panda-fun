@@ -103,7 +103,8 @@ print(log.keys())
 print(f"log {len(log['q'])}")
 print(f"images {len(imagelog)} {imagelog[0].shape}")
 
-# # save the log
-# filename=f"log_{datetime.now().isoformat()}.npy"
-# np.save(filename,log)
-# print(f"Saved log as {filename}")
+# save the log
+filename=f"log_{datetime.now().isoformat()}.npy"
+np.save(filename,log)
+np.save("image"+filename, imagelog)
+print(f"Saved log as {filename} and images as image{filename}")
