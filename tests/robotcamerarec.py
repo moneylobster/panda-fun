@@ -97,8 +97,8 @@ print("Recording has ended.")
 
 log=panda.get_log()
 print(log.keys())
-print(f"endeffs: {endeffs[0:2]} total size:{endeffs.shape}")
-print(f"pos/rot for first: {poss[0]} {rots[0]}")
+# print(f"endeffs: {endeffs[0:2]} total size:{endeffs.shape}")
+# print(f"pos/rot for first: {poss[0]} {rots[0]}")
 
 print(f"log {log.shape}")
 print(f"images {len(imagelog)} {imagelog[0].shape}")
