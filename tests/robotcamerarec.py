@@ -5,8 +5,6 @@ import sys
 from datetime import datetime
 
 import panda_py
-from panda_py import controllers
-import spatialmath.base as smb
 
 import pyrealsense2 as rs
 
