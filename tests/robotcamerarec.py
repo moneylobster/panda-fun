@@ -14,6 +14,9 @@ if len(sys.argv)==1:
   raise RuntimeError("Please specify recording length.")
 LEN=int(sys.argv[1])
 
+FRAMERATE=30
+RES=(640,480)
+
 ################################################################################
 ## CAMERA SETUP
 
@@ -33,15 +36,11 @@ for s in device.sensors:
         found_rgb = True
         break
 if not found_rgb:
-    print("The demo requires Depth camera with Color sensor")
+    print("Can't detect color sensor")
     exit(0)
 
-config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-
-if device_product_line == 'L500':
-    config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
-else:
-    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+config.enable_stream(rs.stream.depth, RES[0], RES[1], rs.format.z16, FRAMERATE)
+config.enable_stream(rs.stream.color, RES[0], RES[1], rs.format.bgr8, FRAMERATE)
 
 imagelog=[]
     
