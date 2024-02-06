@@ -75,7 +75,7 @@ while time.time()-t_start<=LEN:
     if DEPTH:
       depth_frame = frames.get_depth_frame()
     color_frame = frames.get_color_frame()
-    if not depth_frame or not color_frame:
+    if not color_frame or (DEPTH and not depth_frame):
         continue
 
     # Convert images to numpy arrays
