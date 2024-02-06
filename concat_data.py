@@ -12,6 +12,7 @@ the structure from the pusht example is:
  └── meta
      └── episode_ends (206,) int64
 '''
+#TODO edit file to make it compatible with this
 import zarr
 from glob import glob
 
