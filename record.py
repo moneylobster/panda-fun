@@ -116,7 +116,7 @@ print(f"images {len(imagelog)} {imagelog[0].shape}")
 imagelog=[cv2.resize(img, INTENDED_RES) for img in imagelog[::FRAME_STRIDE]]
 
 # save the log
-filename=f"data/{datetime.now().isoformat()}"
+filename=f"data/{datetime.now().strftime('%d_%m_%Y_%H_%M_%S')}"
 np.save(filename+"_act.npy",log)
 np.save(filename+"_obs.npy", imagelog)
 print(f"Saved log as {filename}_act and images as {filename}_obs")
