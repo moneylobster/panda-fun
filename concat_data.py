@@ -1,5 +1,5 @@
 '''
-concatenates all the data in the data folder to a .zarr file
+Processes and concatenates all the data in the data folder to a .zarr file
 
 the structure from the pusht example is:
 /
@@ -26,8 +26,11 @@ for obs_name in obs_names:
     timeinfo=obs_name[5:-8]
     # check if it exists in act_names also
     if f"data\\{timeinfo}_act.npy" in act_names:
+        #load
         obs=np.load(obs_name)
-        act=np.load(f"data\\{timeinfo}_act.npy")
+        actlog=np.load(f"data\\{timeinfo}_act.npy", allow_pickle=True)
+        #get O_T_EE and flatten
+        act=[frame.flatten() for frame in actlog["O_T_EE"]]
 
         # check if this is the first time adding to the array
         # this is not a great approach but whatever
