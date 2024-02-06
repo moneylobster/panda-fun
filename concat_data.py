@@ -12,7 +12,6 @@ the structure from the pusht example is:
  └── meta
      └── episode_ends (206,) int64
 '''
-#TODO edit file to make it compatible with this
 import zarr
 from glob import glob
 
@@ -24,11 +23,11 @@ act_names=glob("data/*_act.npy")
 
 # incrementally, if you find pairs, add them to the zarr file
 for obs_name in obs_names:
-    levelinfo=obs_name[5:12]
+    timeinfo=obs_name[5:-8]
     # check if it exists in act_names also
-    if f"data\\{levelinfo}_act.npy" in act_names:
+    if f"data\\{timeinfo}_act.npy" in act_names:
         obs=np.load(obs_name)
-        act=np.load(f"data\\{levelinfo}_act.npy")
+        act=np.load(f"data\\{timeinfo}_act.npy")
 
         # check if this is the first time adding to the array
         # this is not a great approach but whatever
@@ -41,10 +40,10 @@ for obs_name in obs_names:
             actdata=zarr.array(act, dtype="float32")
             enddata=zarr.array(np.array([len(obs)]))
     else:
-        print(f"WARNING: {levelinfo} was in obs but not in act!")
+        print(f"WARNING: {timeinfo} was in obs but not in act!")
 
 # format zarr properly
-store=zarr.ZipStore("sokoban.zarr.zip")
+store=zarr.ZipStore("panda.zarr.zip")
 alldata=zarr.group(store=store, overwrite=True)
 alldata.create_group("data")
 alldata.create_group("meta")
