@@ -15,10 +15,14 @@ if len(sys.argv)==1:
   raise RuntimeError("Please specify recording length.")
 LEN=int(sys.argv[1])
 
-FRAMERATE=10
-# RES=(320,240)
-RES=(96,96)
+FRAMERATE=30
+RES=(320,240)
 DEPTH=False
+
+INTENDED_FRAMERATE=10
+INTENDED_RES=(96,96)
+
+FRAME_STRIDE=FRAMERATE//INTENDED_FRAMERATE
 
 ################################################################################
 ## CAMERA SETUP
@@ -47,7 +51,7 @@ if DEPTH:
 config.enable_stream(rs.stream.color, RES[0], RES[1], rs.format.bgr8, FRAMERATE)
 
 imagelog=[]
-    
+
 ################################################################################
 ## ARM SETUP
 
@@ -108,6 +112,9 @@ print(log.keys())
 
 print(f"log {len(log['q'])}")
 print(f"images {len(imagelog)} {imagelog[0].shape}")
+
+# process the images to fit resolution and framerate
+imagelog=[cv2.resize(img, INTENDED_RES) for img in imagelog[::FRAME_STRIDE]]
 
 # save the log
 filename=f"data/{datetime.now().isoformat()}"
