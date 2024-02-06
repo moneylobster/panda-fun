@@ -110,7 +110,6 @@ print(f"log {len(log['q'])}")
 print(f"images {len(imagelog)} {imagelog[0].shape}")
 
 # save the log
-# TODO either format act here or change its name
 filename=f"data/{datetime.now().isoformat()}"
 np.save(filename+"_act.npy",log)
 np.save(filename+"_obs.npy", imagelog)

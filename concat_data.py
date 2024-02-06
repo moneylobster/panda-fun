@@ -31,6 +31,11 @@ for obs_name in obs_names:
         actlog=np.load(f"data\\{timeinfo}_act.npy", allow_pickle=True)
         #get O_T_EE and flatten
         act=[frame.flatten() for frame in actlog["O_T_EE"]]
+        # subsample from 1kHz to 10Hz and trim to match camera recording length
+        # (assuming camera len is shorter than rec)
+        if len(obs)<len(act):
+            raise Exception("len(obs) is smaller than len(act)")
+        act=act[:len(obs):100]
 
         # check if this is the first time adding to the array
         # this is not a great approach but whatever
