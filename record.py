@@ -16,7 +16,8 @@ if len(sys.argv)==1:
 LEN=int(sys.argv[1])
 
 FRAMERATE=10
-RES=(320,240)
+# RES=(320,240)
+RES=(96,96)
 DEPTH=False
 
 ################################################################################
@@ -109,7 +110,7 @@ print(f"log {len(log['q'])}")
 print(f"images {len(imagelog)} {imagelog[0].shape}")
 
 # save the log
-filename=f"log_{datetime.now().isoformat()}.npy"
-np.save(filename,log)
-np.save("image"+filename, imagelog)
+filename=datetime.now().isoformat()
+np.save(filename+"_act.npy",log)
+np.save(filename+"_obs.npy", imagelog)
 print(f"Saved log as {filename} and images as image{filename}")
