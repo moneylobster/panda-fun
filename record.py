@@ -16,7 +16,7 @@ if len(sys.argv)==1:
 LEN=int(sys.argv[1])
 
 FRAMERATE=30
-RES=(320,240)
+RES=(640,480)
 DEPTH=False
 
 INTENDED_FRAMERATE=10
@@ -46,8 +46,7 @@ if not found_rgb:
     print("Can't detect color sensor")
     exit(0)
 
-if DEPTH:
-  config.enable_stream(rs.stream.depth, RES[0], RES[1], rs.format.z16, FRAMERATE)
+config.enable_stream(rs.stream.depth, RES[0], RES[1], rs.format.z16, FRAMERATE)
 config.enable_stream(rs.stream.color, RES[0], RES[1], rs.format.bgr8, FRAMERATE)
 
 imagelog=[]
@@ -72,10 +71,10 @@ t_start=time.time()
 while time.time()-t_start<=LEN:
     # Wait for a coherent pair of frames: depth and color
     frames = pipeline.wait_for_frames()
-    if DEPTH:
-      depth_frame = frames.get_depth_frame()
+
+    depth_frame = frames.get_depth_frame()
     color_frame = frames.get_color_frame()
-    if not color_frame or (DEPTH and not depth_frame):
+    if not color_frame or not depth_frame:
         continue
 
     # Convert images to numpy arrays
