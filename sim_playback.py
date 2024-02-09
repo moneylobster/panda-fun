@@ -7,12 +7,14 @@ import numpy as np
 import roboticstoolbox as rtb
 from swift import Swift
 
-def playback(logname, stride):
+def load_and_playback(logname, stride):
     log=np.load(logname, allow_pickle=True)
     log=log.item()
     # print(log.keys())
     qs=np.array(log["q"])
-    
+    playback(qs, stride)
+
+def playback(qs,stride):
     # create sim env
     env=Swift()
     env.launch(realtime=True)
