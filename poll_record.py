@@ -3,7 +3,6 @@ operate arm and record as binarized np array along with camera
 
 this version records the camera and the robot together
 '''
-# TODO do this
 import numpy as np
 import cv2
 import time
@@ -54,7 +53,6 @@ config.enable_stream(rs.stream.depth, RES[0], RES[1], rs.format.z16, FRAMERATE)
 config.enable_stream(rs.stream.color, RES[0], RES[1], rs.format.bgr8, FRAMERATE)
 
 imagelog=[]
-log={"q":[],"O_T_EE":[]}
 
 ################################################################################
 ## ARM SETUP
@@ -62,6 +60,8 @@ log={"q":[],"O_T_EE":[]}
 # connect to robot
 panda=panda_py.Panda("10.0.0.2")
 panda.move_to_start()
+
+log={"q":[],"O_T_EE":[]}
 
 ################################################################################
 ## START
