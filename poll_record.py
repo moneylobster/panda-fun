@@ -3,6 +3,7 @@ operate arm and record as binarized np array along with camera
 
 this version records the camera and the robot together
 '''
+# TODO fix panda logging part to be dict
 import numpy as np
 import cv2
 import time

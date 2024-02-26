@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 import numpy as np
 from spatialmath import SE3, UnitQuaternion
 
-from utils.getch import getch
+from skill_utils.getch import getch
 
 FREQ=100
 
