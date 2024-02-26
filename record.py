@@ -123,7 +123,7 @@ print(f"log {len(log['q'])}")
 print(f"images {len(imagelog)} {imagelog[0][1].shape}")
 
 # process the images to fit resolution
-imagelog=[cv2.resize(img, INTENDED_RES) for img in imagelog]
+imagelog=[[img[0], cv2.resize(img[1], INTENDED_RES)] for img in imagelog]
 # downsample recording
 dsamp=downsample(imagelog, PERIOD)
 dsamp=[i[1] for i in dsamp]
