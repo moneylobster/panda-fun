@@ -101,12 +101,12 @@ while time.time()-t_start<=LEN:
       images = np.hstack((resized_color_image, depth_colormap))
     else:
       images = np.hstack((color_image, depth_colormap))
-
-    if not DEPTH:
-      images=color_image
     
     # save img
-    imagelog.append([time.time()-t_start, images])
+    if DEPTH:
+      imagelog.append([time.time()-t_start, images])
+    else:
+      imagelog.append([time.time()-t_start, color_image])
 
 panda.teaching_mode(False)
 # Stop streaming
