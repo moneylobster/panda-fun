@@ -32,12 +32,6 @@ print("Truncating...")
 truncto=floor(min(len(imgsinv)*1000*T, len(qs1khz))/(T*1000))
 imgs=imgsinv[:int(truncto),:,:,::-1]
 qs=qs1khz[:int(truncto*1000*T):int(1000*T)]
-# if len(imgs)*100>len(qs1khz):
-#     print(f"imglen {len(imgs)*100} is larger than actlen {len(qs1khz)}")
-    
-# else:
-#     qs=qs1khz[:len(imgs)*1000/T:1000/T]
-
 print(f"LEN ACT {len(qs)} LEN OBS {len(imgs)}")
 
 # create sim env
