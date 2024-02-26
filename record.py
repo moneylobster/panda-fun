@@ -120,7 +120,7 @@ log=panda.get_log()
 print(log.keys())
 
 print(f"log {len(log['q'])}")
-print(f"images {len(imagelog)} {imagelog[0].shape}")
+print(f"images {len(imagelog)} {imagelog[0][1].shape}")
 
 # process the images to fit resolution
 imagelog=[cv2.resize(img, INTENDED_RES) for img in imagelog]
