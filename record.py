@@ -106,7 +106,7 @@ while time.time()-t_start<=LEN:
     if DEPTH:
       imagelog.append([time.time()-t_start, images])
     else:
-      imagelog.append([time.time()-t_start, color_image])
+      imagelog.append([time.time()-t_start, np.copy(color_image)])
 
 panda.teaching_mode(False)
 # Stop streaming
