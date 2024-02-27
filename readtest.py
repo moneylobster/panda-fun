@@ -2,24 +2,25 @@
 just some tests reading and looking at recordings
 '''
 from glob import glob
-from math import floor
 
 import matplotlib.pyplot as plt
 import numpy as np
 import roboticstoolbox as rtb
 from skimage import io
+import cv2
 from swift import Swift
+
+from skill_utils.truncate import truncate
 
 SIM=True
 T=0.1
 
-firstact=glob("data/*_act.npy")[0]
+firstact=glob("data/*_act.npy")[1]
 firstobs=firstact[:-7]+"obs.npy"
 
 print(f"reading {firstobs}")
 
 imgsinv=np.load(firstobs)
-# imgs=imgsinv[:,:,:,::-1]
 
 log=np.load(firstact, allow_pickle=True)
 log=log.item()
@@ -29,9 +30,11 @@ qs1khz=log["q"]
 
 print(f"LEN ACT {len(qs1khz)} LEN OBS {len(imgsinv)}")
 print("Truncating...")
-truncto=floor(min(len(imgsinv)*1000*T, len(qs1khz))/(T*1000))
-imgs=imgsinv[:int(truncto),:,:,::-1]
-qs=qs1khz[:int(truncto*1000*T):int(1000*T)]
+imgs=imgsinv[:,:,:,::-1]
+imgs,qs=truncate(qs1khz, imgs, T)
+# truncto=floor(min(len(imgsinv)*1000*T, len(qs1khz))/(T*1000))
+# imgs=imgsinv[:int(truncto),:,:,::-1]
+# qs=qs1khz[:int(truncto*1000*T):int(1000*T)]
 print(f"LEN ACT {len(qs)} LEN OBS {len(imgs)}")
 
 # create sim env
@@ -48,6 +51,8 @@ if SIM:
         env.step(T)
         io.imshow(img)
         plt.pause(0.05)
+        # cv2.imshow("Img",img)
+        # cv2.waitKey(1)
 else:
     for i, img in enumerate(imgs):
         io.imshow(img)
