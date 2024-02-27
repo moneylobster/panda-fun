@@ -14,6 +14,9 @@ the structure from the pusht example is:
 '''
 import zarr
 from glob import glob
+from skill_utils.truncate import truncate
+
+T=0.1 # period in seconds
 
 # episode_ends should give the index of the first of the next episode.
 
@@ -33,9 +36,7 @@ for obs_name in obs_names:
         act=[frame.flatten() for frame in actlog["O_T_EE"]]
         # subsample from 1kHz to 10Hz and trim to match camera recording length
         # (assuming camera len is shorter than rec)
-        if len(obs)*100>len(act):
-            raise Exception("len(obs)*100 is larger than len(act)")
-        act=act[:len(obs)*100:100]
+        obs, act = truncate(obs, act, T)
 
         # check if this is the first time adding to the array
         # this is not a great approach but whatever

@@ -31,10 +31,7 @@ qs1khz=log["q"]
 print(f"LEN ACT {len(qs1khz)} LEN OBS {len(imgsinv)}")
 print("Truncating...")
 imgs=imgsinv[:,:,:,::-1]
-imgs,qs=truncate(qs1khz, imgs, T)
-# truncto=floor(min(len(imgsinv)*1000*T, len(qs1khz))/(T*1000))
-# imgs=imgsinv[:int(truncto),:,:,::-1]
-# qs=qs1khz[:int(truncto*1000*T):int(1000*T)]
+imgs,qs=truncate(imgs, qs1khz, T)
 print(f"LEN ACT {len(qs)} LEN OBS {len(imgs)}")
 
 # create sim env
