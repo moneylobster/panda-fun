@@ -31,7 +31,7 @@ for obs_name in obs_names:
     if f"data\\{timeinfo}_act.npy" in act_names:
         #load
         obs=np.load(obs_name)
-        actlog=np.load(f"data\\{timeinfo}_act.npy", allow_pickle=True)
+        actlog=np.load(f"data\\{timeinfo}_act.npy", allow_pickle=True).item()
         #get O_T_EE and flatten
         act=[frame.flatten() for frame in actlog["O_T_EE"]]
         # subsample from 1kHz to 10Hz and trim to match camera recording length
