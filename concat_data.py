@@ -14,6 +14,7 @@ the structure from the pusht example is:
 '''
 import zarr
 from glob import glob
+import numpy as np
 from skill_utils.truncate import truncate
 
 T=0.1 # period in seconds
