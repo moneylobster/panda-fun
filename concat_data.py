@@ -58,7 +58,7 @@ alldata=zarr.group(store=store, overwrite=True)
 alldata.create_group("data")
 alldata.create_group("meta")
 
-alldata.data.create_dataset("state", data=obsdata)
+alldata.data.create_dataset("img", data=obsdata)
 alldata.data.create_dataset("action", data=actdata)
 alldata.meta.create_dataset("episode_ends", data=enddata)
 
