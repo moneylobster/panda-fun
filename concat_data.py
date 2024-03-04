@@ -44,7 +44,7 @@ for obs_name in obs_names:
         if "obsdata" in globals() and "actdata" in globals():
             obsdata.append(obs)
             actdata.append(act)
-            enddata.append(np.array([len(obs)]))
+            enddata.append(np.array([len(obs)+enddata[-1]]))
         else:
             obsdata=zarr.array(obs, dtype="float32")
             actdata=zarr.array(act, dtype="float32")
