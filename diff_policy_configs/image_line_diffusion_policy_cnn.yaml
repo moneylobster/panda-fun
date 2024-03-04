@@ -114,18 +114,6 @@ task:
     zarr_path: data/line_image/panda.zarr.zip
   env_runner:
     _target_: diffusion_policy.env_runner.line_image_runner.LineImageRunner
-    legacy_test: true
-    max_steps: 300
-    n_action_steps: 4
-    n_envs: null
-    n_obs_steps: 2
-    n_test: 50
-    n_test_vis: 4
-    n_train: 6
-    n_train_vis: 2
-    past_action: false
-    test_start_seed: 100000
-    train_start_seed: 0
   image_shape:
   - 3
   - 96
