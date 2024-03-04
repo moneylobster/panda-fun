@@ -114,7 +114,6 @@ task:
     zarr_path: data/line_image/panda.zarr.zip
   env_runner:
     _target_: diffusion_policy.env_runner.line_image_runner.LineImageRunner
-    fps: 10
     legacy_test: true
     max_steps: 300
     n_action_steps: 4
