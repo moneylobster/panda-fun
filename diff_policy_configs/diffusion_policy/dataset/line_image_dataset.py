@@ -23,6 +23,8 @@ class LineImageDataset(BaseImageDataset):
         
         super().__init__()
         self.replay_buffer = ReplayBuffer.copy_from_path(
+            # TODO: maybe re-add 'state' here? if so, all the rest of
+            # the configs and concat_data.py need to be modified.
             zarr_path, keys=['img', 'action'])
         val_mask = get_val_mask(
             n_episodes=self.replay_buffer.n_episodes, 
