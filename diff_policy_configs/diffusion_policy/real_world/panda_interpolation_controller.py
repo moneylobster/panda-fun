@@ -161,8 +161,8 @@ class PandaInterpolationController(mp.Process):
     
     # ========= launch method ===========
     def start(self, wait=True):
-        # self.panda.move_to_start()
         print("/// START called")
+        super().start()
         if wait:
             self.start_wait()
         if self.verbose:
