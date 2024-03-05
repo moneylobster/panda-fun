@@ -123,11 +123,9 @@ class PandaInterpolationController(mp.Process):
         panda=panda_py.Panda(robot_ip)
         example = dict()
         pstate=panda.get_state()
-        print(pstate)
         for key in receive_keys:
             example[key[0]] = np.array(getattr(pstate, key[1]))
         example['robot_receive_timestamp'] = time.time()
-        print(example)
         ring_buffer = SharedMemoryRingBuffer.create_from_examples(
             shm_manager=shm_manager,
             examples=example,
@@ -140,6 +138,15 @@ class PandaInterpolationController(mp.Process):
         self.input_queue = input_queue
         self.ring_buffer = ring_buffer
         self.receive_keys = receive_keys
+
+        # update robot state
+        state = dict()
+        pstate=panda.get_state()
+        for key in self.receive_keys:
+            state[key[0]] = np.array(getattr(pstate, key[1]))
+        state['robot_receive_timestamp'] = time.time()
+        print(state)
+        self.ring_buffer.put(state)
 
         # self.panda=panda_py.Panda("10.0.0.2")
 
@@ -317,6 +324,7 @@ class PandaInterpolationController(mp.Process):
                     for key in self.receive_keys:
                         state[key[0]] = np.array(getattr(pstate, key[1]))
                     state['robot_receive_timestamp'] = time.time()
+                    print(state)
                     self.ring_buffer.put(state)
 
                     # fetch command from queue
