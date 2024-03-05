@@ -177,7 +177,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                     lambda x: torch.from_numpy(x).unsqueeze(0).to(device))
                 result = policy.predict_action(obs_dict)
                 action = result['action'][0].detach().to('cpu').numpy()
-                assert action.shape[-1] == 2
+                # assert action.shape[-1] == 2
                 del result
 
             print('Ready!')
@@ -287,7 +287,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         t_cycle_end = t_start + (iter_idx + steps_per_inference) * dt
 
                         # get obs
-                        print('get_obs')
+                        print('obs')
                         obs = env.get_obs()
                         obs_timestamps = obs['timestamp']
                         print(f'Obs latency {time.time() - obs_timestamps[-1]}')
