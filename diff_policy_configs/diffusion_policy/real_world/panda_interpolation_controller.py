@@ -278,13 +278,13 @@ class PandaInterpolationController(mp.Process):
             dt = 1. / self.frequency
             # curr_pose = rtde_r.getActualTCPPose()
             curr_pose=SE3(panda.get_pose())
-            curr_pose_7d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).vec_xyzs))
+            curr_pose_6d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).eul))
             # use monotonic time to make sure the control loop never go backward
             curr_t = time.monotonic()
             last_waypoint_time = curr_t
             pose_interp = PoseTrajectoryInterpolator(
                 times=[curr_t],
-                poses=[curr_pose_7d]
+                poses=[curr_pose_6d]
             )
 
             # use a cartesianimpedance controller
@@ -321,8 +321,9 @@ class PandaInterpolationController(mp.Process):
                     acc = 0.5
                     # poseSE3=SE3(pose_command)
                     # ctrl.set_control(poseSE3.t, UnitQuaternion(poseSE3).vec_xyzs)
-                    print(f"New control: {pose_command[:3]},{pose_command[3:]}")
-                    ctrl.set_control(pose_command[:3],pose_command[3:])
+                    angsquat=UnitQuaternion.Eul(pose_command[3:]).vec_xyzs
+                    print(f"New control: {pose_command[:3]},{angsquat}")
+                    ctrl.set_control(pose_command[:3],angsquat)
                     # assert rtde_c.servoL(pose_command, 
                     #     vel, acc, # dummy, not used by ur5
                     #     dt, 
