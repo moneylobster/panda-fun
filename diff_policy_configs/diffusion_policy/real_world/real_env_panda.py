@@ -163,7 +163,7 @@ class RealEnv:
             gain=300,
             max_pos_speed=max_pos_speed*cube_diag,
             max_rot_speed=max_rot_speed*cube_diag,
-            launch_timeout=3,
+            launch_timeout=10,
             tcp_offset_pose=[0,0,tcp_offset,0,0,0],
             payload_mass=None,
             payload_cog=None,
