@@ -140,7 +140,11 @@ class PandaInterpolationController(mp.Process):
         self.receive_keys = receive_keys
 
         # self.panda=panda_py.Panda("10.0.0.2")
-        
+
+    def is_alive():
+        # idk just keep returning True for now,
+        # this comes from the rtdepositioncontroller superclass
+        return True
     
     # ========= launch method ===========
     def start(self, wait=True):
