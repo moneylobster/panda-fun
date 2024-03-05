@@ -256,7 +256,7 @@ class PandaInterpolationController(mp.Process):
 
         try:
             if self.verbose:
-                print(f"[RTDEPositionalController] Connect to robot: {robot_ip}")
+                print(f"[PandaPositionalController] Connect to robot: {robot_ip}")
 
             # set parameters
             if self.tcp_offset_pose is not None:
