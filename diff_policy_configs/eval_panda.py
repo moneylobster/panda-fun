@@ -141,7 +141,23 @@ def main(input, output, robot_ip, match_dataset, match_episode,
     print("action_offset:", action_offset)
 
     with SharedMemoryManager() as shm_manager:
-        with RealEnv(
+        # with RealEnv(
+        #         output_dir=output, 
+        #         robot_ip=robot_ip, 
+        #         frequency=frequency,
+        #         n_obs_steps=n_obs_steps,
+        #         obs_image_resolution=obs_res,
+        #         obs_float32=True,
+        #         init_joints=init_joints,
+        #         enable_multi_cam_vis=False,
+        #         record_raw_video=False,
+        #         # number of threads per camera view for video recording (H.264)
+        #         thread_per_video=3,
+        #         # video recording quality, lower is better (but slower).
+        #         video_crf=21,
+        #         shm_manager=shm_manager) as env:
+        
+        env=RealEnv(
                 output_dir=output, 
                 robot_ip=robot_ip, 
                 frequency=frequency,
@@ -155,265 +171,264 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 thread_per_video=3,
                 # video recording quality, lower is better (but slower).
                 video_crf=21,
-                shm_manager=shm_manager) as env:
-            print(env)
-            
-            # cv2.setNumThreads(1)
-            
-            # Should be the same as demo
-            # realsense exposure
-            env.realsense.set_exposure(exposure=120, gain=0)
-            # realsense white balance
-            env.realsense.set_white_balance(white_balance=5900)
+                shm_manager=shm_manager).start()
 
-            print("Waiting for realsense")
-            time.sleep(1.0)
+        # cv2.setNumThreads(1)
 
-            print("Warming up policy inference")
-            obs = env.get_obs()
-            with torch.no_grad():
+        # Should be the same as demo
+        # realsense exposure
+        env.realsense.set_exposure(exposure=120, gain=0)
+        # realsense white balance
+        env.realsense.set_white_balance(white_balance=5900)
+
+        print("Waiting for realsense")
+        time.sleep(1.0)
+
+        print("Warming up policy inference")
+        obs = env.get_obs()
+        with torch.no_grad():
+            policy.reset()
+            obs_dict_np = get_real_obs_dict(
+                env_obs=obs, shape_meta=cfg.task.shape_meta)
+            obs_dict = dict_apply(obs_dict_np, 
+                lambda x: torch.from_numpy(x).unsqueeze(0).to(device))
+            result = policy.predict_action(obs_dict)
+            action = result['action'][0].detach().to('cpu').numpy()
+            # assert action.shape[-1] == 2
+            del result
+
+        print('Ready!')
+        while True:
+            # # ========= human control loop ==========
+            # print("Human in control!")
+            state = env.get_robot_state()
+            target_pose = state['TargetTCPPose']
+            t_start = time.monotonic()
+            iter_idx = 0
+            # while True:
+            #     # calculate timing
+            #     t_cycle_end = t_start + (iter_idx + 1) * dt
+            #     t_sample = t_cycle_end - command_latency
+            #     t_command_target = t_cycle_end + dt
+
+            #     # pump obs
+            #     obs = env.get_obs()
+
+            #     # visualize
+            #     episode_id = env.replay_buffer.n_episodes
+            #     vis_img = obs[f'camera_{vis_camera_idx}'][-1]
+            #     match_episode_id = episode_id
+            #     if match_episode is not None:
+            #         match_episode_id = match_episode
+            #     if match_episode_id in episode_first_frame_map:
+            #         match_img = episode_first_frame_map[match_episode_id]
+            #         ih, iw, _ = match_img.shape
+            #         oh, ow, _ = vis_img.shape
+            #         tf = get_image_transform(
+            #             input_res=(iw, ih), 
+            #             output_res=(ow, oh), 
+            #             bgr_to_rgb=False)
+            #         match_img = tf(match_img).astype(np.float32) / 255
+            #         vis_img = np.minimum(vis_img, match_img)
+
+            #     text = f'Episode: {episode_id}'
+            #     cv2.putText(
+            #         vis_img,
+            #         text,
+            #         (10,20),
+            #         fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+            #         fontScale=0.5,
+            #         thickness=1,
+            #         color=(255,255,255)
+            #     )
+            #     cv2.imshow('default', vis_img[...,::-1])
+            #     key_stroke = cv2.pollKey()
+            #     if key_stroke == ord('q'):
+            #         # Exit program
+            #         env.end_episode()
+            #         exit(0)
+            #     elif key_stroke == ord('c'):
+            #         # Exit human control loop
+            #         # hand control over to the policy
+            #         break
+
+            #     precise_wait(t_sample)
+            #     # # get teleop command
+            #     # sm_state = sm.get_motion_state_transformed()
+            #     # # print(sm_state)
+            #     # dpos = sm_state[:3] * (env.max_pos_speed / frequency)
+            #     # drot_xyz = sm_state[3:] * (env.max_rot_speed / frequency)
+
+            #     # if not sm.is_button_pressed(0):
+            #     #     # translation mode
+            #     #     drot_xyz[:] = 0
+            #     # else:
+            #     #     dpos[:] = 0
+            #     # if not sm.is_button_pressed(1):
+            #     #     # 2D translation mode
+            #     #     dpos[2] = 0    
+
+            #     # drot = st.Rotation.from_euler('xyz', drot_xyz)
+            #     # target_pose[:3] += dpos
+            #     # target_pose[3:] = (drot * st.Rotation.from_rotvec(
+            #         # target_pose[3:])).as_rotvec()
+            #     # # clip target pose
+            #     # target_pose[:2] = np.clip(target_pose[:2], [0.25, -0.45], [0.77, 0.40])
+
+            #     # execute teleop command
+            #     env.exec_actions(
+            #         actions=[target_pose], 
+            #         timestamps=[t_command_target-time.monotonic()+time.time()])
+            #     precise_wait(t_cycle_end)
+            #     iter_idx += 1
+
+
+            # ========== policy control loop ==============
+            try:
+                # start episode
                 policy.reset()
-                obs_dict_np = get_real_obs_dict(
-                    env_obs=obs, shape_meta=cfg.task.shape_meta)
-                obs_dict = dict_apply(obs_dict_np, 
-                    lambda x: torch.from_numpy(x).unsqueeze(0).to(device))
-                result = policy.predict_action(obs_dict)
-                action = result['action'][0].detach().to('cpu').numpy()
-                # assert action.shape[-1] == 2
-                del result
-
-            print('Ready!')
-            while True:
-                # # ========= human control loop ==========
-                # print("Human in control!")
-                state = env.get_robot_state()
-                target_pose = state['TargetTCPPose']
-                t_start = time.monotonic()
+                start_delay = 1.0
+                eval_t_start = time.time() + start_delay
+                t_start = time.monotonic() + start_delay
+                env.start_episode(eval_t_start)
+                # wait for 1/30 sec to get the closest frame actually
+                # reduces overall latency
+                frame_latency = 1/30
+                precise_wait(eval_t_start - frame_latency, time_func=time.time)
+                print("Started!")
                 iter_idx = 0
-                # while True:
-                #     # calculate timing
-                #     t_cycle_end = t_start + (iter_idx + 1) * dt
-                #     t_sample = t_cycle_end - command_latency
-                #     t_command_target = t_cycle_end + dt
+                term_area_start_timestamp = float('inf')
+                perv_target_pose = None
+                while True:
+                    # calculate timing
+                    t_cycle_end = t_start + (iter_idx + steps_per_inference) * dt
 
-                #     # pump obs
-                #     obs = env.get_obs()
+                    # get obs
+                    print('obs')
+                    obs = env.get_obs()
+                    obs_timestamps = obs['timestamp']
+                    print(f'Obs latency {time.time() - obs_timestamps[-1]}')
 
-                #     # visualize
-                #     episode_id = env.replay_buffer.n_episodes
-                #     vis_img = obs[f'camera_{vis_camera_idx}'][-1]
-                #     match_episode_id = episode_id
-                #     if match_episode is not None:
-                #         match_episode_id = match_episode
-                #     if match_episode_id in episode_first_frame_map:
-                #         match_img = episode_first_frame_map[match_episode_id]
-                #         ih, iw, _ = match_img.shape
-                #         oh, ow, _ = vis_img.shape
-                #         tf = get_image_transform(
-                #             input_res=(iw, ih), 
-                #             output_res=(ow, oh), 
-                #             bgr_to_rgb=False)
-                #         match_img = tf(match_img).astype(np.float32) / 255
-                #         vis_img = np.minimum(vis_img, match_img)
+                    # run inference
+                    with torch.no_grad():
+                        s = time.time()
+                        obs_dict_np = get_real_obs_dict(
+                            env_obs=obs, shape_meta=cfg.task.shape_meta)
+                        obs_dict = dict_apply(obs_dict_np, 
+                            lambda x: torch.from_numpy(x).unsqueeze(0).to(device))
+                        result = policy.predict_action(obs_dict)
+                        # this action starts from the first obs step
+                        action = result['action'][0].detach().to('cpu').numpy()
+                        print('Inference latency:', time.time() - s)
 
-                #     text = f'Episode: {episode_id}'
-                #     cv2.putText(
-                #         vis_img,
-                #         text,
-                #         (10,20),
-                #         fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                #         fontScale=0.5,
-                #         thickness=1,
-                #         color=(255,255,255)
-                #     )
-                #     cv2.imshow('default', vis_img[...,::-1])
-                #     key_stroke = cv2.pollKey()
-                #     if key_stroke == ord('q'):
-                #         # Exit program
-                #         env.end_episode()
-                #         exit(0)
-                #     elif key_stroke == ord('c'):
-                #         # Exit human control loop
-                #         # hand control over to the policy
-                #         break
+                    # convert policy action to env actions
+                    if delta_action:
+                        assert len(action) == 1
+                        if perv_target_pose is None:
+                            perv_target_pose = obs['robot_eef_pose'][-1]
+                        this_target_pose = perv_target_pose.copy()
+                        this_target_pose[0:16] += action[-1]
+                        perv_target_pose = this_target_pose
+                        this_target_poses = np.expand_dims(this_target_pose, axis=0)
+                    else:
+                        this_target_poses = np.zeros((len(action), len(target_pose)), dtype=np.float64)
+                        this_target_poses[:] = target_pose
+                        this_target_poses[:,0:16] = action
 
-                #     precise_wait(t_sample)
-                #     # # get teleop command
-                #     # sm_state = sm.get_motion_state_transformed()
-                #     # # print(sm_state)
-                #     # dpos = sm_state[:3] * (env.max_pos_speed / frequency)
-                #     # drot_xyz = sm_state[3:] * (env.max_rot_speed / frequency)
-  
-                #     # if not sm.is_button_pressed(0):
-                #     #     # translation mode
-                #     #     drot_xyz[:] = 0
-                #     # else:
-                #     #     dpos[:] = 0
-                #     # if not sm.is_button_pressed(1):
-                #     #     # 2D translation mode
-                #     #     dpos[2] = 0    
+                    # deal with timing
+                    # the same step actions are always the target for
+                    action_timestamps = (np.arange(len(action), dtype=np.float64) + action_offset
+                        ) * dt + obs_timestamps[-1]
+                    action_exec_latency = 0.01
+                    curr_time = time.time()
+                    is_new = action_timestamps > (curr_time + action_exec_latency)
+                    if np.sum(is_new) == 0:
+                        # exceeded time budget, still do something
+                        this_target_poses = this_target_poses[[-1]]
+                        # schedule on next available step
+                        next_step_idx = int(np.ceil((curr_time - eval_t_start) / dt))
+                        action_timestamp = eval_t_start + (next_step_idx) * dt
+                        print('Over budget', action_timestamp - curr_time)
+                        action_timestamps = np.array([action_timestamp])
+                    else:
+                        this_target_poses = this_target_poses[is_new]
+                        action_timestamps = action_timestamps[is_new]
 
-                #     # drot = st.Rotation.from_euler('xyz', drot_xyz)
-                #     # target_pose[:3] += dpos
-                #     # target_pose[3:] = (drot * st.Rotation.from_rotvec(
-                #         # target_pose[3:])).as_rotvec()
-                #     # # clip target pose
-                #     # target_pose[:2] = np.clip(target_pose[:2], [0.25, -0.45], [0.77, 0.40])
+                    # clip actions
+                    this_target_poses[:,:2] = np.clip(
+                        this_target_poses[:,:2], [0.25, -0.45], [0.77, 0.40])
 
-                #     # execute teleop command
-                #     env.exec_actions(
-                #         actions=[target_pose], 
-                #         timestamps=[t_command_target-time.monotonic()+time.time()])
-                #     precise_wait(t_cycle_end)
-                #     iter_idx += 1
-                
-                
-                # ========== policy control loop ==============
-                try:
-                    # start episode
-                    policy.reset()
-                    start_delay = 1.0
-                    eval_t_start = time.time() + start_delay
-                    t_start = time.monotonic() + start_delay
-                    env.start_episode(eval_t_start)
-                    # wait for 1/30 sec to get the closest frame actually
-                    # reduces overall latency
-                    frame_latency = 1/30
-                    precise_wait(eval_t_start - frame_latency, time_func=time.time)
-                    print("Started!")
-                    iter_idx = 0
-                    term_area_start_timestamp = float('inf')
-                    perv_target_pose = None
-                    while True:
-                        # calculate timing
-                        t_cycle_end = t_start + (iter_idx + steps_per_inference) * dt
+                    # execute actions
+                    env.exec_actions(
+                        actions=this_target_poses,
+                        timestamps=action_timestamps
+                    )
+                    print(f"Submitted {len(this_target_poses)} steps of actions.")
 
-                        # get obs
-                        print('obs')
-                        obs = env.get_obs()
-                        obs_timestamps = obs['timestamp']
-                        print(f'Obs latency {time.time() - obs_timestamps[-1]}')
-
-                        # run inference
-                        with torch.no_grad():
-                            s = time.time()
-                            obs_dict_np = get_real_obs_dict(
-                                env_obs=obs, shape_meta=cfg.task.shape_meta)
-                            obs_dict = dict_apply(obs_dict_np, 
-                                lambda x: torch.from_numpy(x).unsqueeze(0).to(device))
-                            result = policy.predict_action(obs_dict)
-                            # this action starts from the first obs step
-                            action = result['action'][0].detach().to('cpu').numpy()
-                            print('Inference latency:', time.time() - s)
-                        
-                        # convert policy action to env actions
-                        if delta_action:
-                            assert len(action) == 1
-                            if perv_target_pose is None:
-                                perv_target_pose = obs['robot_eef_pose'][-1]
-                            this_target_pose = perv_target_pose.copy()
-                            this_target_pose[0:16] += action[-1]
-                            perv_target_pose = this_target_pose
-                            this_target_poses = np.expand_dims(this_target_pose, axis=0)
-                        else:
-                            this_target_poses = np.zeros((len(action), len(target_pose)), dtype=np.float64)
-                            this_target_poses[:] = target_pose
-                            this_target_poses[:,0:16] = action
-
-                        # deal with timing
-                        # the same step actions are always the target for
-                        action_timestamps = (np.arange(len(action), dtype=np.float64) + action_offset
-                            ) * dt + obs_timestamps[-1]
-                        action_exec_latency = 0.01
-                        curr_time = time.time()
-                        is_new = action_timestamps > (curr_time + action_exec_latency)
-                        if np.sum(is_new) == 0:
-                            # exceeded time budget, still do something
-                            this_target_poses = this_target_poses[[-1]]
-                            # schedule on next available step
-                            next_step_idx = int(np.ceil((curr_time - eval_t_start) / dt))
-                            action_timestamp = eval_t_start + (next_step_idx) * dt
-                            print('Over budget', action_timestamp - curr_time)
-                            action_timestamps = np.array([action_timestamp])
-                        else:
-                            this_target_poses = this_target_poses[is_new]
-                            action_timestamps = action_timestamps[is_new]
-
-                        # clip actions
-                        this_target_poses[:,:2] = np.clip(
-                            this_target_poses[:,:2], [0.25, -0.45], [0.77, 0.40])
-
-                        # execute actions
-                        env.exec_actions(
-                            actions=this_target_poses,
-                            timestamps=action_timestamps
-                        )
-                        print(f"Submitted {len(this_target_poses)} steps of actions.")
-
-                        # # visualize
-                        # episode_id = env.replay_buffer.n_episodes
-                        # # vis_img = obs[f'camera_{vis_camera_idx}'][-1]
-                        # vis_img = obs['image'][-1]
-                        # text = 'Episode: {}, Time: {:.1f}'.format(
-                        #     episode_id, time.monotonic() - t_start
-                        # )
-                        # cv2.putText(
-                        #     vis_img,
-                        #     text,
-                        #     (10,20),
-                        #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        #     fontScale=0.5,
-                        #     thickness=1,
-                        #     color=(255,255,255)
-                        # )
-                        # cv2.imshow('default', vis_img[...,::-1])
+                    # # visualize
+                    # episode_id = env.replay_buffer.n_episodes
+                    # # vis_img = obs[f'camera_{vis_camera_idx}'][-1]
+                    # vis_img = obs['image'][-1]
+                    # text = 'Episode: {}, Time: {:.1f}'.format(
+                    #     episode_id, time.monotonic() - t_start
+                    # )
+                    # cv2.putText(
+                    #     vis_img,
+                    #     text,
+                    #     (10,20),
+                    #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    #     fontScale=0.5,
+                    #     thickness=1,
+                    #     color=(255,255,255)
+                    # )
+                    # cv2.imshow('default', vis_img[...,::-1])
 
 
-                        key_stroke = cv2.pollKey()
-                        if key_stroke == ord('s'):
-                            # Stop episode
-                            # Hand control back to human
-                            env.end_episode()
-                            print('Stopped.')
-                            break
+                    key_stroke = cv2.pollKey()
+                    if key_stroke == ord('s'):
+                        # Stop episode
+                        # Hand control back to human
+                        env.end_episode()
+                        print('Stopped.')
+                        break
 
-                        # auto termination
-                        terminate = False
-                        if time.monotonic() - t_start > max_duration:
-                            terminate = True
-                            print('Terminated by the timeout!')
+                    # auto termination
+                    terminate = False
+                    if time.monotonic() - t_start > max_duration:
+                        terminate = True
+                        print('Terminated by the timeout!')
 
-                        term_pose = np.array([ 3.40948500e-01,  2.17721816e-01,  4.59076878e-02,  2.22014183e+00, -2.22184883e+00, -4.07186655e-04])
-                        curr_pose = obs['robot_eef_pose'][-1]
-                        # dist = np.linalg.norm((curr_pose - term_pose)[:2], axis=-1)
-                        # if dist < 0.03:
-                        #     # in termination area
-                        #     curr_timestamp = obs['timestamp'][-1]
-                        #     if term_area_start_timestamp > curr_timestamp:
-                        #         term_area_start_timestamp = curr_timestamp
-                        #     else:
-                        #         term_area_time = curr_timestamp - term_area_start_timestamp
-                        #         if term_area_time > 0.5:
-                        #             terminate = True
-                        #             print('Terminated by the policy!')
-                        # else:
-                        #     # out of the area
-                        #     term_area_start_timestamp = float('inf')
+                    term_pose = np.array([ 3.40948500e-01,  2.17721816e-01,  4.59076878e-02,  2.22014183e+00, -2.22184883e+00, -4.07186655e-04])
+                    curr_pose = obs['robot_eef_pose'][-1]
+                    # dist = np.linalg.norm((curr_pose - term_pose)[:2], axis=-1)
+                    # if dist < 0.03:
+                    #     # in termination area
+                    #     curr_timestamp = obs['timestamp'][-1]
+                    #     if term_area_start_timestamp > curr_timestamp:
+                    #         term_area_start_timestamp = curr_timestamp
+                    #     else:
+                    #         term_area_time = curr_timestamp - term_area_start_timestamp
+                    #         if term_area_time > 0.5:
+                    #             terminate = True
+                    #             print('Terminated by the policy!')
+                    # else:
+                    #     # out of the area
+                    #     term_area_start_timestamp = float('inf')
 
-                        if terminate:
-                            env.end_episode()
-                            break
+                    if terminate:
+                        env.end_episode()
+                        break
 
-                        # wait for execution
-                        precise_wait(t_cycle_end - frame_latency)
-                        iter_idx += steps_per_inference
+                    # wait for execution
+                    precise_wait(t_cycle_end - frame_latency)
+                    iter_idx += steps_per_inference
 
-                except KeyboardInterrupt:
-                    print("Interrupted!")
-                    # stop robot.
-                    env.end_episode()
-                
-                print("Stopped.")
+            except KeyboardInterrupt:
+                print("Interrupted!")
+                # stop robot.
+                env.end_episode()
+
+            print("Stopped.")
 
 
 
