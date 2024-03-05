@@ -214,7 +214,7 @@ class PandaInterpolationController(mp.Process):
     def schedule_waypoint(self, pose, target_time):
         assert target_time > time.time()
         pose = np.array(pose)
-        assert pose.shape == (6,)
+        assert pose.shape == (4,4,)
 
         message = {
             'cmd': Command.SCHEDULE_WAYPOINT.value,
