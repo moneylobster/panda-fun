@@ -149,19 +149,19 @@ class PandaInterpolationController(mp.Process):
         print(state)
         self.ring_buffer.put(state)
 
-        self._closed=False #we're never closed
+        # self._closed=False #we're never closed
 
         # self.panda=panda_py.Panda("10.0.0.2")
 
-    def is_alive(self):
-        # idk just keep returning True for now,
-        # this comes from the rtdepositioncontroller superclass
-        return True
+    # def is_alive(self):
+    #     # idk just keep returning True for now,
+    #     # this comes from the rtdepositioncontroller superclass
+    #     return True
     
     # ========= launch method ===========
     def start(self, wait=True):
-        # self.panda.move_to_start()
-        pass
+        self.panda.move_to_start()
+        # pass
         if wait:
             self.start_wait()
         if self.verbose:
@@ -184,8 +184,8 @@ class PandaInterpolationController(mp.Process):
     
     @property
     def is_ready(self):
-        return True #idk whatever
-        # return self.ready_event.is_set()
+        # return True #idk whatever
+        return self.ready_event.is_set()
 
     # ========= context manager ===========
     def __enter__(self):
