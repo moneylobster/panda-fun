@@ -278,7 +278,7 @@ class PandaInterpolationController(mp.Process):
             dt = 1. / self.frequency
             # curr_pose = rtde_r.getActualTCPPose()
             curr_pose=SE3(panda.get_pose())
-            curr_pose_7d=curr_pose.t+UnitQuaternion(curr_pose).vec_xyzs
+            curr_pose_7d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).vec_xyzs))
             # use monotonic time to make sure the control loop never go backward
             curr_t = time.monotonic()
             last_waypoint_time = curr_t
@@ -373,7 +373,7 @@ class PandaInterpolationController(mp.Process):
                             )
                             last_waypoint_time = t_insert
                             if self.verbose:
-                                print("[RTDEPositionalController] New pose target:{} duration:{}s".format(
+                                print("[PandaPositionalController] New pose target:{} duration:{}s".format(
                                     target_pose, duration))
                         elif cmd == Command.SCHEDULE_WAYPOINT.value:
                             target_pose = command['target_pose']
@@ -402,7 +402,7 @@ class PandaInterpolationController(mp.Process):
                     iter_idx += 1
 
                     if self.verbose:
-                        print(f"[RTDEPositionalController] Actual frequency {1/(time.perf_counter() - t_start)}")
+                        print(f"[PandaPositionalController] Actual frequency {1/(time.perf_counter() - t_start)}")
 
         finally:
             # manditory cleanup
