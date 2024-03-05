@@ -61,7 +61,6 @@ class PandaInterpolationController(mp.Process):
             requires running scripts/rtprio_setup.sh before hand.
 
         """
-        print("/// Initializing interp controller")
         # verify
         assert 0 < frequency <= 500
         assert 0.03 <= lookahead_time <= 0.2
@@ -142,14 +141,13 @@ class PandaInterpolationController(mp.Process):
         self.receive_keys = receive_keys
 
         # update robot state
-        state = dict()
-        pstate=panda.get_state()
-        for key in self.receive_keys:
-            state[key[0]] = np.array(getattr(pstate, key[1]))
-        state['robot_receive_timestamp'] = time.time()
-        print(state)
-        self.ring_buffer.put(state)
-        self.ready_event.set()
+        # state = dict()
+        # pstate=panda.get_state()
+        # for key in self.receive_keys:
+        #     state[key[0]] = np.array(getattr(pstate, key[1]))
+        # state['robot_receive_timestamp'] = time.time()
+        # self.ring_buffer.put(state)
+        # self.ready_event.set()
 
         # self._closed=False #we're never closed
 
@@ -161,7 +159,6 @@ class PandaInterpolationController(mp.Process):
     
     # ========= launch method ===========
     def start(self, wait=True):
-        print("/// START called")
         super().start()
         if wait:
             self.start_wait()
@@ -186,12 +183,10 @@ class PandaInterpolationController(mp.Process):
     
     @property
     def is_ready(self):
-        # return True #idk whatever
         return self.ready_event.is_set()
 
     # ========= context manager ===========
     def __enter__(self):
-        print("/// entering context manager")
         self.start()
         return self
     
@@ -203,7 +198,6 @@ class PandaInterpolationController(mp.Process):
         """
         duration: desired time to reach pose
         """
-        print("/// ServoL called")
         assert self.is_alive()
         assert(duration >= (1/self.frequency))
         pose = np.array(pose)
@@ -217,7 +211,6 @@ class PandaInterpolationController(mp.Process):
         self.input_queue.put(message)
     
     def schedule_waypoint(self, pose, target_time):
-        print("/// Schedule Waypoint called")
         assert target_time > time.time()
         pose = np.array(pose)
         pose = np.reshape(pose, (4,4))
@@ -242,7 +235,6 @@ class PandaInterpolationController(mp.Process):
     
     # ========= main loop in process ============
     def run(self):
-        print("/// RUN CALLED")
         # enable soft real-time
         if self.soft_real_time:
             os.sched_setscheduler(
@@ -336,7 +328,6 @@ class PandaInterpolationController(mp.Process):
                     for key in self.receive_keys:
                         state[key[0]] = np.array(getattr(pstate, key[1]))
                     state['robot_receive_timestamp'] = time.time()
-                    print(state)
                     self.ring_buffer.put(state)
 
                     # fetch command from queue
