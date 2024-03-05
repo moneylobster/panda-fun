@@ -156,7 +156,9 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 # video recording quality, lower is better (but slower).
                 video_crf=21,
                 shm_manager=shm_manager) as env:
-            cv2.setNumThreads(1)
+            print(env)
+            
+            # cv2.setNumThreads(1)
             
             # Should be the same as demo
             # realsense exposure
