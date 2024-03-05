@@ -111,12 +111,12 @@ class PandaInterpolationController(mp.Process):
         # build ring buffer
         if receive_keys is None:
             receive_keys = [
-                ['ActualTCPPose',"O_T_EE"]
-                ['ActualQ',"q"]
-                ['ActualQd',"dq"]
+                ['ActualTCPPose',"O_T_EE"],
+                ['ActualQ',"q"],
+                ['ActualQd',"dq"],
                 
-                ['TargetTCPPose',"O_T_EE_d"]
-                ['TargetQ',"q_d"]
+                ['TargetTCPPose',"O_T_EE_d"],
+                ['TargetQ',"q_d"],
                 ['TargetQd',"dq_d"]
             ]
         # rtde_r = RTDEReceiveInterface(hostname=robot_ip)
