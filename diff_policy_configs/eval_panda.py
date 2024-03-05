@@ -58,10 +58,11 @@ OmegaConf.register_new_resolver("eval", eval, replace=True)
 @click.option('--steps_per_inference', '-si', default=6, type=int, help="Action horizon for inference.")
 @click.option('--max_duration', '-md', default=60, help='Max duration for each epoch in seconds.')
 @click.option('--frequency', '-f', default=10, type=float, help="Control frequency in Hz.")
+@click.option('--command_latency', '-cl', default=0.01, type=float, help="Latency between receiving SapceMouse command to executing on Robot in Sec.")
 def main(input, output, robot_ip, match_dataset, match_episode,
-    vis_camera_idx, init_joints, 
-    steps_per_inference, max_duration,
-    frequency, command_latency):
+         vis_camera_idx, init_joints, 
+         steps_per_inference, max_duration,
+         frequency, command_latency):
     # load match_dataset
     match_camera_idx = 0
     episode_first_frame_map = dict()
