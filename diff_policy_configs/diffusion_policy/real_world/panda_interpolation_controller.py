@@ -111,22 +111,20 @@ class PandaInterpolationController(mp.Process):
         # build ring buffer
         if receive_keys is None:
             receive_keys = [
-                'ActualTCPPose',
-                'ActualTCPSpeed',
-                'ActualQ',
-                'ActualQd',
-
-                'TargetTCPPose',
-                'TargetTCPSpeed',
-                'TargetQ',
-                'TargetQd'
+                ['ActualTCPPose',"O_T_EE"]
+                ['ActualQ',"q"]
+                ['ActualQd',"dq"]
+                
+                ['TargetTCPPose',"O_T_EE_d"]
+                ['TargetQ',"q_d"]
+                ['TargetQd',"dq_d"]
             ]
         # rtde_r = RTDEReceiveInterface(hostname=robot_ip)
         panda=panda_py.Panda(robot_ip)
-        # example = dict()
-        # for key in receive_keys:
-        #     example[key] = np.array(getattr(rtde_r, 'get'+key)())
-        example=dict(panda.get_state())
+        example = dict()
+        pstate=panda.get_state()
+        for key in receive_keys:
+            example[key[0]] = pstate[key[1]]
         example['robot_receive_timestamp'] = time.time()
         ring_buffer = SharedMemoryRingBuffer.create_from_examples(
             shm_manager=shm_manager,
@@ -307,10 +305,10 @@ class PandaInterpolationController(mp.Process):
                     #     self.gain)
 
                     # update robot state
-                    # state = dict()
-                    # for key in self.receive_keys:
-                    #     state[key] = np.array(getattr(rtde_r, 'get'+key)())
-                    state=dict(panda.get_state())
+                    state = dict()
+                    pstate=panda.get_state()
+                    for key in self.receive_keys:
+                        state[key[0]] = pstate[key[1]]
                     state['robot_receive_timestamp'] = time.time()
                     self.ring_buffer.put(state)
 
