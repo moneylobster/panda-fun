@@ -123,9 +123,11 @@ class PandaInterpolationController(mp.Process):
         panda=panda_py.Panda(robot_ip)
         example = dict()
         pstate=panda.get_state()
+        print(pstate)
         for key in receive_keys:
             example[key[0]] = np.array(getattr(pstate, key[1]))
         example['robot_receive_timestamp'] = time.time()
+        print(example)
         ring_buffer = SharedMemoryRingBuffer.create_from_examples(
             shm_manager=shm_manager,
             examples=example,
