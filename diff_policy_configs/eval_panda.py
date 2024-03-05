@@ -184,10 +184,10 @@ def main(input, output, robot_ip, match_dataset, match_episode,
             while True:
                 # # ========= human control loop ==========
                 # print("Human in control!")
-                # state = env.get_robot_state()
-                # target_pose = state['TargetTCPPose']
-                # t_start = time.monotonic()
-                # iter_idx = 0
+                state = env.get_robot_state()
+                target_pose = state['TargetTCPPose']
+                t_start = time.monotonic()
+                iter_idx = 0
                 # while True:
                 #     # calculate timing
                 #     t_cycle_end = t_start + (iter_idx + 1) * dt
