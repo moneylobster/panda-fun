@@ -383,20 +383,20 @@ def main(input, output, robot_ip, match_dataset, match_episode,
 
                         term_pose = np.array([ 3.40948500e-01,  2.17721816e-01,  4.59076878e-02,  2.22014183e+00, -2.22184883e+00, -4.07186655e-04])
                         curr_pose = obs['robot_eef_pose'][-1]
-                        dist = np.linalg.norm((curr_pose - term_pose)[:2], axis=-1)
-                        if dist < 0.03:
-                            # in termination area
-                            curr_timestamp = obs['timestamp'][-1]
-                            if term_area_start_timestamp > curr_timestamp:
-                                term_area_start_timestamp = curr_timestamp
-                            else:
-                                term_area_time = curr_timestamp - term_area_start_timestamp
-                                if term_area_time > 0.5:
-                                    terminate = True
-                                    print('Terminated by the policy!')
-                        else:
-                            # out of the area
-                            term_area_start_timestamp = float('inf')
+                        # dist = np.linalg.norm((curr_pose - term_pose)[:2], axis=-1)
+                        # if dist < 0.03:
+                        #     # in termination area
+                        #     curr_timestamp = obs['timestamp'][-1]
+                        #     if term_area_start_timestamp > curr_timestamp:
+                        #         term_area_start_timestamp = curr_timestamp
+                        #     else:
+                        #         term_area_time = curr_timestamp - term_area_start_timestamp
+                        #         if term_area_time > 0.5:
+                        #             terminate = True
+                        #             print('Terminated by the policy!')
+                        # else:
+                        #     # out of the area
+                        #     term_area_start_timestamp = float('inf')
 
                         if terminate:
                             env.end_episode()
