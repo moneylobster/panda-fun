@@ -160,8 +160,7 @@ class PandaInterpolationController(mp.Process):
     
     # ========= launch method ===========
     def start(self, wait=True):
-        self.panda.move_to_start()
-        # pass
+        # self.panda.move_to_start()
         if wait:
             self.start_wait()
         if self.verbose:
