@@ -314,6 +314,7 @@ class PandaInterpolationController(mp.Process):
                     acc = 0.5
                     # poseSE3=SE3(pose_command)
                     # ctrl.set_control(poseSE3.t, UnitQuaternion(poseSE3).vec_xyzs)
+                    print(f"New control: {pose_command[:3]},{pose_command[3:]}")
                     ctrl.set_control(pose_command[:3],pose_command[3:])
                     # assert rtde_c.servoL(pose_command, 
                     #     vel, acc, # dummy, not used by ur5
