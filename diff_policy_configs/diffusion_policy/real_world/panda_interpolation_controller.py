@@ -124,7 +124,7 @@ class PandaInterpolationController(mp.Process):
         example = dict()
         pstate=panda.get_state()
         for key in receive_keys:
-            example[key[0]] = pstate[key[1]]
+            example[key[0]] = np.array(getattr(pstate, key[1]))
         example['robot_receive_timestamp'] = time.time()
         ring_buffer = SharedMemoryRingBuffer.create_from_examples(
             shm_manager=shm_manager,
@@ -308,7 +308,7 @@ class PandaInterpolationController(mp.Process):
                     state = dict()
                     pstate=panda.get_state()
                     for key in self.receive_keys:
-                        state[key[0]] = pstate[key[1]]
+                        state[key[0]] = np.array(getattr(pstate, key[1]))
                     state['robot_receive_timestamp'] = time.time()
                     self.ring_buffer.put(state)
 
