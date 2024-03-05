@@ -264,7 +264,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 #         timestamps=[t_command_target-time.monotonic()+time.time()])
                 #     precise_wait(t_cycle_end)
                 #     iter_idx += 1
-                break
+                
                 
                 # ========== policy control loop ==============
                 try:
