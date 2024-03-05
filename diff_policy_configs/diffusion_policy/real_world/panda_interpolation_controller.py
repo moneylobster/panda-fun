@@ -148,6 +148,8 @@ class PandaInterpolationController(mp.Process):
         print(state)
         self.ring_buffer.put(state)
 
+        self._closed=False #we're never closed
+
         # self.panda=panda_py.Panda("10.0.0.2")
 
     def is_alive(self):
