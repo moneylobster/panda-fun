@@ -233,6 +233,7 @@ class RealEnv:
 
     # ========= context manager ===========
     def __enter__(self):
+        print("entering actually!!!")
         self.start()
         return self
     
