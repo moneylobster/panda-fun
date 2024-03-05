@@ -44,7 +44,7 @@ class PandaInterpolationController(mp.Process):
             joints_init=None,
             joints_init_speed=1.05,
             soft_real_time=False,
-            verbose=False,
+            verbose=True,
             receive_keys=None,
             get_max_k=128,
             ):
@@ -61,6 +61,7 @@ class PandaInterpolationController(mp.Process):
             requires running scripts/rtprio_setup.sh before hand.
 
         """
+        print("/// Initializing interp controller")
         # verify
         assert 0 < frequency <= 500
         assert 0.03 <= lookahead_time <= 0.2
@@ -161,6 +162,7 @@ class PandaInterpolationController(mp.Process):
     # ========= launch method ===========
     def start(self, wait=True):
         # self.panda.move_to_start()
+        print("/// START called")
         if wait:
             self.start_wait()
         if self.verbose:
@@ -188,6 +190,7 @@ class PandaInterpolationController(mp.Process):
 
     # ========= context manager ===========
     def __enter__(self):
+        print("/// entering context manager")
         self.start()
         return self
     
@@ -199,6 +202,7 @@ class PandaInterpolationController(mp.Process):
         """
         duration: desired time to reach pose
         """
+        print("/// ServoL called")
         assert self.is_alive()
         assert(duration >= (1/self.frequency))
         pose = np.array(pose)
@@ -212,6 +216,7 @@ class PandaInterpolationController(mp.Process):
         self.input_queue.put(message)
     
     def schedule_waypoint(self, pose, target_time):
+        print("/// Schedule Waypoint called")
         assert target_time > time.time()
         pose = np.array(pose)
         pose = np.reshape(pose, (4,4))
@@ -226,16 +231,19 @@ class PandaInterpolationController(mp.Process):
 
     # ========= receive APIs =============
     def get_state(self, k=None, out=None):
+        print("/// get state called")
         if k is None:
             return self.ring_buffer.get(out=out)
         else:
             return self.ring_buffer.get_last_k(k=k,out=out)
     
     def get_all_state(self):
+        print("/// get all state called")
         return self.ring_buffer.get_all()
     
     # ========= main loop in process ============
     def run(self):
+        print("/// RUN CALLED")
         # enable soft real-time
         if self.soft_real_time:
             os.sched_setscheduler(
