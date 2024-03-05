@@ -122,9 +122,11 @@ class PandaInterpolationController(mp.Process):
                 'TargetQd'
             ]
         # rtde_r = RTDEReceiveInterface(hostname=robot_ip)
-        example = dict()
-        for key in receive_keys:
-            example[key] = np.array(getattr(rtde_r, 'get'+key)())
+        panda=panda_py.Panda(robot_ip)
+        # example = dict()
+        # for key in receive_keys:
+        #     example[key] = np.array(getattr(rtde_r, 'get'+key)())
+        example=panda.get_state()
         example['robot_receive_timestamp'] = time.time()
         ring_buffer = SharedMemoryRingBuffer.create_from_examples(
             shm_manager=shm_manager,
