@@ -149,8 +149,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 obs_image_resolution=obs_res,
                 obs_float32=True,
                 init_joints=init_joints,
-                enable_multi_cam_vis=True,
-                record_raw_video=True,
+                enable_multi_cam_vis=False,
+                record_raw_video=False,
                 # number of threads per camera view for video recording (H.264)
                 thread_per_video=3,
                 # video recording quality, lower is better (but slower).
