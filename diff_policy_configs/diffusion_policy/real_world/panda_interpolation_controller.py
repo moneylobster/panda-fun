@@ -149,6 +149,7 @@ class PandaInterpolationController(mp.Process):
         state['robot_receive_timestamp'] = time.time()
         print(state)
         self.ring_buffer.put(state)
+        self.ready_event.set()
 
         # self._closed=False #we're never closed
 
@@ -167,6 +168,7 @@ class PandaInterpolationController(mp.Process):
             self.start_wait()
         if self.verbose:
             print(f"[PandaPositionalController] Controller process spawned at {self.pid}")
+        
 
     def stop(self, wait=True):
         message = {
