@@ -155,9 +155,9 @@ class PandaInterpolationController(mp.Process):
 
         # self.panda=panda_py.Panda("10.0.0.2")
 
-    def is_alive(self):
-        # idk just keep returning True for now
-        return True
+    # def is_alive(self):
+    #     # idk just keep returning True for now
+    #     return True
     
     # ========= launch method ===========
     def start(self, wait=True):
@@ -232,14 +232,12 @@ class PandaInterpolationController(mp.Process):
 
     # ========= receive APIs =============
     def get_state(self, k=None, out=None):
-        print("/// get state called")
         if k is None:
             return self.ring_buffer.get(out=out)
         else:
             return self.ring_buffer.get_last_k(k=k,out=out)
     
     def get_all_state(self):
-        print("/// get all state called")
         return self.ring_buffer.get_all()
     
     # ========= main loop in process ============
