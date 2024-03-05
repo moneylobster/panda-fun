@@ -80,6 +80,7 @@ class PandaInterpolationController(mp.Process):
             joints_init = np.array(joints_init)
             assert joints_init.shape == (6,)
 
+        super().__init__(name="PandaPositionalController")
         self.robot_ip = robot_ip
         self.frequency = frequency
         self.lookahead_time = lookahead_time
