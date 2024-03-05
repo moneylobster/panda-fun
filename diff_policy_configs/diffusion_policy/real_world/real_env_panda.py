@@ -271,7 +271,8 @@ class RealEnv:
                     this_idx = is_before_idxs[-1]
                 this_idxs.append(this_idx)
             # remap key
-            camera_obs[f'camera_{camera_idx}'] = value['color'][this_idxs]
+            # camera_obs[f'camera_{camera_idx}'] = value['color'][this_idxs]
+            camera_obs['image'] = value['color'][this_idxs]
 
         # align robot obs
         robot_timestamps = last_robot_data['robot_receive_timestamp']
