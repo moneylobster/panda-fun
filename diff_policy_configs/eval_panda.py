@@ -171,7 +171,9 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 thread_per_video=3,
                 # video recording quality, lower is better (but slower).
                 video_crf=21,
-                shm_manager=shm_manager).start()
+                shm_manager=shm_manager)
+
+        print(env.start())
 
         # cv2.setNumThreads(1)
 
