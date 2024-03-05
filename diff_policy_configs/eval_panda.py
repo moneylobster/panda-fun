@@ -348,23 +348,23 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         )
                         print(f"Submitted {len(this_target_poses)} steps of actions.")
 
-                        # visualize
-                        episode_id = env.replay_buffer.n_episodes
-                        # vis_img = obs[f'camera_{vis_camera_idx}'][-1]
-                        vis_img = obs['image'][-1]
-                        text = 'Episode: {}, Time: {:.1f}'.format(
-                            episode_id, time.monotonic() - t_start
-                        )
-                        cv2.putText(
-                            vis_img,
-                            text,
-                            (10,20),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=0.5,
-                            thickness=1,
-                            color=(255,255,255)
-                        )
-                        cv2.imshow('default', vis_img[...,::-1])
+                        # # visualize
+                        # episode_id = env.replay_buffer.n_episodes
+                        # # vis_img = obs[f'camera_{vis_camera_idx}'][-1]
+                        # vis_img = obs['image'][-1]
+                        # text = 'Episode: {}, Time: {:.1f}'.format(
+                        #     episode_id, time.monotonic() - t_start
+                        # )
+                        # cv2.putText(
+                        #     vis_img,
+                        #     text,
+                        #     (10,20),
+                        #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                        #     fontScale=0.5,
+                        #     thickness=1,
+                        #     color=(255,255,255)
+                        # )
+                        # cv2.imshow('default', vis_img[...,::-1])
 
 
                         key_stroke = cv2.pollKey()
