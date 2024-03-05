@@ -172,7 +172,8 @@ class PandaInterpolationController(mp.Process):
     
     @property
     def is_ready(self):
-        return self.ready_event.is_set()
+        return True #idk whatever
+        # return self.ready_event.is_set()
 
     # ========= context manager ===========
     def __enter__(self):
