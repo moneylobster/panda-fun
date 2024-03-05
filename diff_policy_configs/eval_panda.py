@@ -350,7 +350,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
 
                         # visualize
                         episode_id = env.replay_buffer.n_episodes
-                        vis_img = obs[f'camera_{vis_camera_idx}'][-1]
+                        # vis_img = obs[f'camera_{vis_camera_idx}'][-1]
+                        vis_img = obs['image'][-1]
                         text = 'Episode: {}, Time: {:.1f}'.format(
                             episode_id, time.monotonic() - t_start
                         )
