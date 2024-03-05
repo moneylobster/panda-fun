@@ -173,6 +173,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 video_crf=21,
                 shm_manager=shm_manager)
 
+        print(dir(env))
+        print(env.target)
         print(env.start())
 
         # cv2.setNumThreads(1)
