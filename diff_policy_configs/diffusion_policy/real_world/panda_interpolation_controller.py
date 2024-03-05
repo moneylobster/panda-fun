@@ -278,7 +278,7 @@ class PandaInterpolationController(mp.Process):
             dt = 1. / self.frequency
             # curr_pose = rtde_r.getActualTCPPose()
             curr_pose=SE3(panda.get_pose())
-            curr_pose_6d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).eul))
+            curr_pose_6d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).eul()))
             # use monotonic time to make sure the control loop never go backward
             curr_t = time.monotonic()
             last_waypoint_time = curr_t
