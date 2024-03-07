@@ -7,8 +7,11 @@ shape_meta: &shape_meta
     image:
       shape: *image_shape
       type: rgb
+    agent_pos:
+      shape: [9]
+      type: low_dim
   action:
-    shape: [16]
+    shape: [9]
 
 env_runner:
   _target_: diffusion_policy.env_runner.line_image_runner.LineImageRunner
