@@ -15,6 +15,7 @@ from diffusion_policy.shared_memory.shared_memory_queue import (
     SharedMemoryQueue, Empty)
 from diffusion_policy.shared_memory.shared_memory_ring_buffer import SharedMemoryRingBuffer
 from diffusion_policy.common.pose_trajectory_interpolator import PoseTrajectoryInterpolator
+from skill_utils.format_pose import from_format
 
 class Command(enum.Enum):
     STOP = 0
@@ -200,7 +201,7 @@ class PandaInterpolationController(mp.Process):
         """
         assert self.is_alive()
         assert(duration >= (1/self.frequency))
-        pose = np.array(pose)
+        pose = from_format(np.array(pose))
         assert pose.shape == (4,4,)
 
         message = {
@@ -212,7 +213,7 @@ class PandaInterpolationController(mp.Process):
     
     def schedule_waypoint(self, pose, target_time):
         assert target_time > time.time()
-        pose = np.array(pose)
+        pose = from_format(np.array(pose))
         pose = np.reshape(pose, (4,4))
         assert pose.shape == (4,4,)
 
