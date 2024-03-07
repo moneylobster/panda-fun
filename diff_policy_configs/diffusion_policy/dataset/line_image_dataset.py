@@ -23,9 +23,7 @@ class LineImageDataset(BaseImageDataset):
         
         super().__init__()
         self.replay_buffer = ReplayBuffer.copy_from_path(
-            # TODO: maybe re-add 'state' here? if so, all the rest of
-            # the configs and concat_data.py need to be modified.
-            zarr_path, keys=['img', 'action'])
+            zarr_path, keys=['img', 'state', 'action'])
         val_mask = get_val_mask(
             n_episodes=self.replay_buffer.n_episodes, 
             val_ratio=val_ratio,
@@ -62,6 +60,7 @@ class LineImageDataset(BaseImageDataset):
     def get_normalizer(self, mode='limits', **kwargs):
         data = {
             'action': self.replay_buffer['action'],
+            'agent_pos': self.replay_buffer['state'][...,:9]
         }
         normalizer = LinearNormalizer()
         normalizer.fit(data=data, last_n_dims=1, mode=mode, **kwargs)
@@ -72,13 +71,15 @@ class LineImageDataset(BaseImageDataset):
         return len(self.sampler)
 
     def _sample_to_data(self, sample):
+        agent_pos = sample['state'][:,:9].astype(np.float32)
         image = np.moveaxis(sample['img'],-1,1)/255
 
         data = {
             'obs': {
                 'image': image, # T, 3, 96, 96
+                'agent_pos': agent_pos, # T, 9
             },
-            'action': sample['action'].astype(np.float32) # T, 6
+            'action': sample['action'].astype(np.float32) # T, 9
         }
         return data
     
