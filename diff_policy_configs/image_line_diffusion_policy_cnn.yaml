@@ -33,7 +33,7 @@ logging:
   resume: true
   tags:
   - train_diffusion_unet_hybrid
-  - pusht_image
+  - line_image
   - default
 multi_run:
   run_dir: data/outputs/2023.01.16/20.20.06_train_diffusion_unet_hybrid_line_image
@@ -84,8 +84,12 @@ policy:
   shape_meta:
     action:
       shape:
-      - 16
+      - 9
     obs:
+      agent_pos:
+        shape:
+        - 9
+        type: low_dim
       image:
         shape:
         - 3
@@ -95,7 +99,12 @@ policy:
 shape_meta:
   action:
     shape:
-    - 16
+    - 9
+  obs:
+    agent_pos:
+      shape:
+      - 9
+      type: low_dim
     image:
       shape:
       - 3
@@ -122,8 +131,12 @@ task:
   shape_meta:
     action:
       shape:
-      - 2
+      - 9
     obs:
+      agent_pos:
+        shape:
+        - 9
+        type: low_dim
       image:
         shape:
         - 3
