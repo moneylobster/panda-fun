@@ -35,7 +35,7 @@ for obs_name in obs_names:
         obs=np.load(obs_name)
         actlog=np.load(f"data/{timeinfo}_act.npy", allow_pickle=True).item()
         #get O_T_EE and convert into 9d format
-        act=[to_format(frame) for frame in actlog["O_T_EE"]]
+        act=[to_format(np.reshape(frame,(4,4))) for frame in actlog["O_T_EE"]]
         # subsample from 1kHz to 10Hz and trim to match camera recording length
         # (assuming camera len is shorter than rec)
         obs, act = truncate(obs, act, T)
