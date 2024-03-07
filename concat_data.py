@@ -53,6 +53,11 @@ for obs_name in obs_names:
     else:
         print(f"WARNING: {timeinfo} was in obs but not in act!")
 
+# also create a "state" dataset that's just the actions delayed by a timestep
+states=np.zeros_like(actdata)
+states[1:]=actdata[:-1]
+statedata=zarr.array(states)
+
 # format zarr properly
 store=zarr.ZipStore("panda.zarr.zip")
 alldata=zarr.group(store=store, overwrite=True)
@@ -61,6 +66,7 @@ alldata.create_group("meta")
 
 alldata.data.create_dataset("img", data=obsdata)
 alldata.data.create_dataset("action", data=actdata)
+alldata.data.create_dataset("state", data=statedata)
 alldata.meta.create_dataset("episode_ends", data=enddata)
 
 store.close()
