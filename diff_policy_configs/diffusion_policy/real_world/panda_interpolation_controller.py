@@ -214,12 +214,13 @@ class PandaInterpolationController(mp.Process):
     def schedule_waypoint(self, pose, target_time):
         assert target_time > time.time()
         pose = from_format(np.array(pose))
-        pose = np.reshape(pose, (4,4))
-        assert pose.shape == (4,4,)
+        pose = SE3(np.reshape(pose, (4,4)))
+        pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
+        assert pose.data.shape == (4,4,)
 
         message = {
             'cmd': Command.SCHEDULE_WAYPOINT.value,
-            'target_pose': pose,
+            'target_pose': pose_6d,
             'target_time': target_time
         }
         self.input_queue.put(message)
