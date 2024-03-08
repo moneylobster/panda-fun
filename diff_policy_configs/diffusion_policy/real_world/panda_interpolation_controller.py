@@ -100,7 +100,7 @@ class PandaInterpolationController(mp.Process):
         # build input queue
         example = {
             'cmd': Command.SERVOL.value,
-            'target_pose': np.zeros((4,4,), dtype=np.float64),
+            'target_pose': np.zeros((6,), dtype=np.float64),
             'duration': 0.0,
             'target_time': 0.0
         }
@@ -202,11 +202,13 @@ class PandaInterpolationController(mp.Process):
         assert self.is_alive()
         assert(duration >= (1/self.frequency))
         pose = from_format(np.array(pose))
-        assert pose.shape == (4,4,)
+        pose = SE3(np.reshape(pose, (4,4)))
+        pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
+        assert pose_6d.shape == (6,)
 
         message = {
             'cmd': Command.SERVOL.value,
-            'target_pose': pose,
+            'target_pose': pose_6d,
             'duration': duration
         }
         self.input_queue.put(message)
@@ -216,6 +218,7 @@ class PandaInterpolationController(mp.Process):
         pose = from_format(np.array(pose))
         pose = SE3(np.reshape(pose, (4,4)))
         pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
+        assert pose_6d.shape == (6,)
 
         message = {
             'cmd': Command.SCHEDULE_WAYPOINT.value,
