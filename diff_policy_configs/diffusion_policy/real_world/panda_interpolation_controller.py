@@ -15,7 +15,7 @@ from diffusion_policy.shared_memory.shared_memory_queue import (
     SharedMemoryQueue, Empty)
 from diffusion_policy.shared_memory.shared_memory_ring_buffer import SharedMemoryRingBuffer
 from diffusion_policy.common.pose_trajectory_interpolator import PoseTrajectoryInterpolator
-from skill_utils.format_pose import from_format
+from skill_utils.format_pose import to_format, from_format
 
 class Command(enum.Enum):
     STOP = 0
@@ -270,14 +270,15 @@ class PandaInterpolationController(mp.Process):
             # main loop
             dt = 1. / self.frequency
             # curr_pose = rtde_r.getActualTCPPose()
-            curr_pose=SE3(panda.get_pose())
-            curr_pose_6d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).eul()))
+            # curr_pose=SE3(panda.get_pose())
+            # curr_pose_6d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).eul()))
+            curr_pose=to_format(panda.get_pose())
             # use monotonic time to make sure the control loop never go backward
             curr_t = time.monotonic()
             last_waypoint_time = curr_t
             pose_interp = PoseTrajectoryInterpolator(
                 times=[curr_t],
-                poses=[curr_pose_6d]
+                poses=[curr_pose]
             )
 
             # use a cartesianimpedance controller
