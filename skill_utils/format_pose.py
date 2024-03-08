@@ -10,6 +10,9 @@ def to_format(pose):
     (x,y,z) transform + first two columns of SO(3)
     as per the paper Zhou, Barnes & Lu et al. (2020-06-08) On the Continuity of Rotation Representations in Neural Networks, .
     '''
+    if pose.shape!=(4,4):
+        pose=np.reshape(pose,(4,4))
+    assert pose.shape==(4,4)
     return np.hstack((pose[:3,3], pose[:3,0], pose[:3,1]))
     
 
