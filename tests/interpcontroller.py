@@ -1,8 +1,21 @@
+import numpy as np
+
+from multiprocessing.managers import SharedMemoryManager
 from diffusion_policy.real_world.panda_interpolation_controller import PandaInterpolationController
+
+from skill_utils.format_pose import to_format, from_format
+
+max_pos_speed=0.25
+max_rot_speed=0.6
+cube_diag = np.linalg.norm([1,1,1])
+max_obs_buffer_size=30
+
+shm_manager=SharedMemoryManager()
+shm_manager.start()
 
 robot = PandaInterpolationController(
     shm_manager=shm_manager,
-    robot_ip=robot_ip,
+    robot_ip="10.0.0.2",
     frequency=125, # UR5 CB3 RTDE
     lookahead_time=0.1,
     gain=300,
@@ -22,4 +35,7 @@ robot = PandaInterpolationController(
 
 robot.start(wait=True)
 
-print(robot.get_all_state())
+state=robot.get_all_state()
+print(state)
+
+print(to_format(state["ActualTCPPose"]))
