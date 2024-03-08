@@ -318,7 +318,7 @@ class PandaInterpolationController(mp.Process):
                     # poseSE3=SE3(pose_command)
                     # ctrl.set_control(poseSE3.t, UnitQuaternion(poseSE3).vec_xyzs)
                     angsquat=UnitQuaternion.Eul(pose_command[3:]).vec_xyzs
-                    print(f"New control: {pose_command[:3]},{angsquat}")
+                    # print(f"New control: {pose_command[:3]},{angsquat}")
                     ctrl.set_control(pose_command[:3],angsquat)
                     # assert rtde_c.servoL(pose_command, 
                     #     vel, acc, # dummy, not used by ur5
@@ -377,6 +377,7 @@ class PandaInterpolationController(mp.Process):
                             # translate global time to monotonic time
                             target_time = time.monotonic() - time.time() + target_time
                             curr_time = t_now + dt
+                            print(f"new target: {target_pose}")
                             pose_interp = pose_interp.schedule_waypoint(
                                 pose=target_pose,
                                 time=target_time,
