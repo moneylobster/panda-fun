@@ -216,7 +216,6 @@ class PandaInterpolationController(mp.Process):
         pose = from_format(np.array(pose))
         pose = SE3(np.reshape(pose, (4,4)))
         pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
-        assert pose.data.shape == (4,4,)
 
         message = {
             'cmd': Command.SCHEDULE_WAYPOINT.value,
