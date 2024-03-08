@@ -377,7 +377,7 @@ class PandaInterpolationController(mp.Process):
                             # translate global time to monotonic time
                             target_time = time.monotonic() - time.time() + target_time
                             curr_time = t_now + dt
-                            print(f"new target: {target_pose}")
+                            print(f"new interp target: {target_pose}")
                             pose_interp = pose_interp.schedule_waypoint(
                                 pose=target_pose,
                                 time=target_time,
