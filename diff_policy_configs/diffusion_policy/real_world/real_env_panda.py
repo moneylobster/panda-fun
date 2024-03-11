@@ -295,7 +295,7 @@ class RealEnv:
         for k, v in robot_obs_raw.items():
             robot_obs[k] = v[this_idxs]
         # add agent_pos to be the 9D format version of ActualTCPPose
-        robot_obs["agent_pos"]=[to_format(eefpose) for eefpose in robot_obs["robot_eef_pose"]]
+        robot_obs["agent_pos"]=np.array([to_format(eefpose) for eefpose in robot_obs["robot_eef_pose"]])
 
         # accumulate obs
         if self.obs_accumulator is not None:
