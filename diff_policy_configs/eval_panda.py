@@ -147,7 +147,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 frequency=frequency,
                 n_obs_steps=n_obs_steps,
                 obs_image_resolution=obs_res,
-                obs_float32=True,
+                obs_float32=False,
                 init_joints=init_joints,
                 enable_multi_cam_vis=False,
                 record_raw_video=False,
@@ -170,7 +170,6 @@ def main(input, output, robot_ip, match_dataset, match_episode,
 
             print("Warming up policy inference")
             obs = env.get_obs()
-            print(obs)
             with torch.no_grad():
                 policy.reset()
                 obs_dict_np = get_real_obs_dict(
