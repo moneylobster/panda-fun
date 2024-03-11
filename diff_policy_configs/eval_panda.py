@@ -288,7 +288,6 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         t_cycle_end = t_start + (iter_idx + steps_per_inference) * dt
 
                         # get obs
-                        print('obs')
                         obs = env.get_obs()
                         obs_timestamps = obs['timestamp']
                         print(f'Obs latency {time.time() - obs_timestamps[-1]}')
@@ -411,6 +410,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                     print("Interrupted!")
                     # stop robot.
                     env.end_episode()
+                    # also stop entire thing
+                    break
 
                 print("Stopped.")
 
