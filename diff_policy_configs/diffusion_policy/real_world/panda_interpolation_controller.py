@@ -336,7 +336,6 @@ class PandaInterpolationController(mp.Process):
                     for key in self.receive_keys:
                         state[key[0]] = np.array(getattr(pstate, key[1]))
                     state['robot_receive_timestamp'] = time.time()
-                    print(f"State readout was: {state}")
                     self.ring_buffer.put(state)
 
                     # fetch command from queue
