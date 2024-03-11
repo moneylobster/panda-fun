@@ -17,6 +17,19 @@ from diffusion_policy.shared_memory.shared_memory_ring_buffer import SharedMemor
 from diffusion_policy.common.pose_trajectory_interpolator import PoseTrajectoryInterpolator
 from skill_utils.format_pose import to_format, from_format
 
+def format_to_6d(pose):
+    """
+    turn a 9D vector in (xyz)+(2 columns of SO3) format into
+    the format that the posetrajectoryinterpolator takes:
+    (xyz)+(rotvec)
+    """
+    pose = from_format(np.array(pose))
+    pose = np.reshape(pose, (4,4))
+    # pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
+    pose_6d=np.hstack((pose[:,3],st.Rotation.from_matrix(pose[:3,:3]).as_rotvec()))
+    return pose_6d
+    
+
 class Command(enum.Enum):
     STOP = 0
     SERVOL = 1
@@ -200,31 +213,24 @@ class PandaInterpolationController(mp.Process):
         """
         assert self.is_alive()
         assert(duration >= (1/self.frequency))
-        pose = from_format(np.array(pose))
-        pose = SE3(np.reshape(pose, (4,4)))
-        pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
-        assert pose_6d.shape == (6,)
+        pose=format_to_6d(pose)
+        assert pose.shape == (6,)
 
         message = {
             'cmd': Command.SERVOL.value,
-            'target_pose': pose_6d,
+            'target_pose': pose,
             'duration': duration
         }
         self.input_queue.put(message)
     
     def schedule_waypoint(self, pose, target_time):
         assert target_time > time.time()
-        print(f"SWP: received {pose}")
-        pose = from_format(np.array(pose))
-        print(f"SWP: formatted {pose}")
-        pose = SE3(np.reshape(pose, (4,4)))
-        pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
-        assert pose_6d.shape == (6,)
-        print(f"SWP: scheduling {pose_6d}")
+        pose=format_to_6d(pose)
+        assert pose.shape == (6,)
 
         message = {
             'cmd': Command.SCHEDULE_WAYPOINT.value,
-            'target_pose': pose_6d,
+            'target_pose': pose,
             'target_time': target_time
         }
         self.input_queue.put(message)
@@ -275,14 +281,15 @@ class PandaInterpolationController(mp.Process):
             # main loop
             dt = 1. / self.frequency
             # curr_pose = rtde_r.getActualTCPPose()
-            curr_pose=SE3(panda.get_pose())
-            curr_pose_6d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).eul()))
+            # curr_pose=SE3(panda.get_pose())
+            # curr_pose_6d=np.hstack((curr_pose.t,UnitQuaternion(curr_pose).eul()))
+            curr_pose=format_to_6d(to_format(panda.get_pose()))
             # use monotonic time to make sure the control loop never go backward
             curr_t = time.monotonic()
             last_waypoint_time = curr_t
             pose_interp = PoseTrajectoryInterpolator(
                 times=[curr_t],
-                poses=[curr_pose_6d]
+                poses=[curr_pose]
             )
 
             # use a cartesianimpedance controller
