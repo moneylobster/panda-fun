@@ -170,7 +170,7 @@ class RealEnv:
             joints_init=None,
             joints_init_speed=1.05,
             soft_real_time=False,
-            verbose=True,
+            verbose=False,
             receive_keys=None,
             get_max_k=max_obs_buffer_size
             )
