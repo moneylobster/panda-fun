@@ -170,6 +170,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
 
             print("Warming up policy inference")
             obs = env.get_obs()
+            print(obs)
             with torch.no_grad():
                 policy.reset()
                 obs_dict_np = get_real_obs_dict(
