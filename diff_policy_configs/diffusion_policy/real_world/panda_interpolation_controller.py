@@ -29,7 +29,6 @@ class PandaInterpolationController(mp.Process):
     this controller need its separate process (due to python GIL)
     """
 
-
     def __init__(self,
             shm_manager: SharedMemoryManager, 
             robot_ip, 
@@ -215,10 +214,13 @@ class PandaInterpolationController(mp.Process):
     
     def schedule_waypoint(self, pose, target_time):
         assert target_time > time.time()
+        print(f"SWP: received {pose}")
         pose = from_format(np.array(pose))
+        print(f"SWP: formatted {pose}")
         pose = SE3(np.reshape(pose, (4,4)))
         pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
         assert pose_6d.shape == (6,)
+        print(f"SWP: scheduling {pose}")
 
         message = {
             'cmd': Command.SCHEDULE_WAYPOINT.value,
