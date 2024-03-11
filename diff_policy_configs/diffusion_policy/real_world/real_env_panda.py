@@ -294,7 +294,7 @@ class RealEnv:
         for k, v in robot_obs_raw.items():
             robot_obs[k] = v[this_idxs]
         # add agent_pos to be the same as ActualTCPPose
-        robot_obs["agent_pos"]=robot_obs["ActualTCPPose"]
+        robot_obs["agent_pos"]=robot_obs["robot_eef_pose"]
 
         # accumulate obs
         if self.obs_accumulator is not None:
