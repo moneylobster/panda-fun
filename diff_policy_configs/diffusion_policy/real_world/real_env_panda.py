@@ -17,6 +17,7 @@ from diffusion_policy.real_world.multi_camera_visualizer import MultiCameraVisua
 from diffusion_policy.common.replay_buffer import ReplayBuffer
 from diffusion_policy.common.cv2_util import (
     get_image_transform, optimal_row_cols)
+from skill_utils.format_pose import to_format
 
 DEFAULT_OBS_KEY_MAP = {
     # robot
@@ -293,8 +294,9 @@ class RealEnv:
         robot_obs = dict()
         for k, v in robot_obs_raw.items():
             robot_obs[k] = v[this_idxs]
-        # add agent_pos to be the same as ActualTCPPose
-        robot_obs["agent_pos"]=robot_obs["robot_eef_pose"]
+        # add agent_pos to be the 9D format version of ActualTCPPose
+        print(f"obs was: {robot_obs['robot_eef_pose']}")
+        robot_obs["agent_pos"]=to_format(robot_obs["robot_eef_pose"])
 
         # accumulate obs
         if self.obs_accumulator is not None:
