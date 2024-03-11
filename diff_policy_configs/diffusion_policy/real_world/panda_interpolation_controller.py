@@ -26,7 +26,7 @@ def format_to_6d(pose):
     pose = from_format(np.array(pose))
     pose = np.reshape(pose, (4,4))
     # pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
-    pose_6d=np.hstack((pose[:,3],st.Rotation.from_matrix(pose[:3,:3]).as_rotvec()))
+    pose_6d=np.hstack((pose[:3,3],st.Rotation.from_matrix(pose[:3,:3]).as_rotvec()))
     print(f"Converted {pose} into {pose_6d}")
     return pose_6d
     
