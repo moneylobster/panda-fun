@@ -328,7 +328,8 @@ class PandaInterpolationController(mp.Process):
                     acc = 0.5
                     # poseSE3=SE3(pose_command)
                     # ctrl.set_control(poseSE3.t, UnitQuaternion(poseSE3).vec_xyzs)
-                    angsquat=UnitQuaternion.Eul(pose_command[3:]).vec_xyzs
+                    # angsquat=UnitQuaternion.Eul(pose_command[3:]).vec_xyzs
+                    angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
                     # print(f"New control: {pose_command[:3]},{angsquat}")
                     ctrl.set_control(pose_command[:3],angsquat)
                     # assert rtde_c.servoL(pose_command, 
