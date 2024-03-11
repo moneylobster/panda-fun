@@ -8,7 +8,6 @@ import scipy.spatial.transform as st
 import numpy as np
 import panda_py
 from panda_py import controllers
-from spatialmath import SE3, UnitQuaternion
 # from rtde_control import RTDEControlInterface
 # from rtde_receive import RTDEReceiveInterface
 from diffusion_policy.shared_memory.shared_memory_queue import (
@@ -25,9 +24,7 @@ def format_to_6d(pose):
     """
     pose = from_format(np.array(pose))
     pose = np.reshape(pose, (4,4))
-    # pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
     pose_6d=np.hstack((pose[:3,3],st.Rotation.from_matrix(pose[:3,:3]).as_rotvec()))
-    print(f"Converted {pose} into {pose_6d}")
     return pose_6d
     
 
@@ -323,14 +320,9 @@ class PandaInterpolationController(mp.Process):
                     # if diff > 0:
                     #     print('extrapolate', diff)
                     pose_command = pose_interp(t_now)
-                    print(f"INTERP: pose cmd {pose_command} for t {t_now}")
                     vel = 0.5
                     acc = 0.5
-                    # poseSE3=SE3(pose_command)
-                    # ctrl.set_control(poseSE3.t, UnitQuaternion(poseSE3).vec_xyzs)
-                    # angsquat=UnitQuaternion.Eul(pose_command[3:]).vec_xyzs
                     angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
-                    # print(f"New control: {pose_command[:3]},{angsquat}")
                     ctrl.set_control(pose_command[:3],angsquat)
                     # assert rtde_c.servoL(pose_command, 
                     #     vel, acc, # dummy, not used by ur5
@@ -389,7 +381,6 @@ class PandaInterpolationController(mp.Process):
                             # translate global time to monotonic time
                             target_time = time.monotonic() - time.time() + target_time
                             curr_time = t_now + dt
-                            print(f"new interp target: {target_pose}")
                             pose_interp = pose_interp.schedule_waypoint(
                                 pose=target_pose,
                                 time=target_time,
