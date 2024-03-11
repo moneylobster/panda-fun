@@ -220,7 +220,7 @@ class PandaInterpolationController(mp.Process):
         pose = SE3(np.reshape(pose, (4,4)))
         pose_6d=np.hstack((pose.t,UnitQuaternion(pose).eul()))
         assert pose_6d.shape == (6,)
-        print(f"SWP: scheduling {pose}")
+        print(f"SWP: scheduling {pose_6d}")
 
         message = {
             'cmd': Command.SCHEDULE_WAYPOINT.value,
@@ -315,6 +315,7 @@ class PandaInterpolationController(mp.Process):
                     # if diff > 0:
                     #     print('extrapolate', diff)
                     pose_command = pose_interp(t_now)
+                    print(f"INTERP: pose cmd {pose_command} for t {t_now}")
                     vel = 0.5
                     acc = 0.5
                     # poseSE3=SE3(pose_command)
