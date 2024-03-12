@@ -7,6 +7,7 @@ import numpy as np
 import cv2
 import time
 import sys
+import json
 from datetime import datetime
 from skill_utils.downsample import downsample
 
@@ -21,6 +22,7 @@ LEN=int(sys.argv[1])
 FRAMERATE=30
 RES=(640,480)
 DEPTH=False
+CAM_CONFIG="435_high_accuracy_mode.json"
 
 INTENDED_FRAMERATE=10
 INTENDED_RES=(320,240)
@@ -54,6 +56,12 @@ if not found_rgb:
 
 config.enable_stream(rs.stream.depth, RES[0], RES[1], rs.format.z16, FRAMERATE)
 config.enable_stream(rs.stream.color, RES[0], RES[1], rs.format.bgr8, FRAMERATE)
+
+# setup advanced config
+json_text = json.dumps(CAM_CONFIG)
+device = pipeline_profile.get_device()
+advanced_mode = rs.rs400_advanced_mode(device)
+advanced_mode.load_json(json_text)
 
 imagelog=[]
 
