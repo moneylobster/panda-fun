@@ -53,10 +53,6 @@ device = pipeline_profile.get_device()
 advanced_mode = rs.rs400_advanced_mode(device)
 advanced_mode.load_json(json_text)
 
-# Start cam stream
-pipeline.start(config)
-time.sleep(1)
-
 ################################################################################
 ## SERVER SETUP
 
@@ -64,6 +60,9 @@ app=Flask(__name__)
 
 @app.route("/")
 def getimg():
+    # Start cam stream
+    pipeline.start(config)
+    time.sleep(0.3)
     frames = pipeline.wait_for_frames()
 
     depth_frame = frames.get_depth_frame()
@@ -89,5 +88,6 @@ def getimg():
       images = np.hstack((color_image, depth_colormap))
 
     cv2.imwrite("image0.png", images)
+    pipeline.stop()
     
     return "<img src=image0.png>"
