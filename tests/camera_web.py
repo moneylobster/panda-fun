@@ -47,7 +47,8 @@ config.enable_stream(rs.stream.depth, RES[0], RES[1], rs.format.z16, FRAMERATE)
 config.enable_stream(rs.stream.color, RES[0], RES[1], rs.format.bgr8, FRAMERATE)
 
 # setup advanced config
-json_text = json.dumps(CAM_CONFIG)
+with open(CAM_CONFIG) as f:
+    json_text=json.load(f)
 device = pipeline_profile.get_device()
 advanced_mode = rs.rs400_advanced_mode(device)
 advanced_mode.load_json(json_text)
