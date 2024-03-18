@@ -62,7 +62,7 @@ app=Flask(__name__)
 def getimg():
     # Start cam stream
     pipeline.start(config)
-    time.sleep(0.3)
+    time.sleep(1)
     frames = pipeline.wait_for_frames()
 
     depth_frame = frames.get_depth_frame()
