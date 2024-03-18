@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 from multiprocessing.managers import SharedMemoryManager
 from diffusion_policy.real_world.panda_interpolation_controller import PandaInterpolationController
@@ -37,5 +38,10 @@ robot.start(wait=True)
 
 state=robot.get_all_state()
 print(state)
-
-print(to_format(state["ActualTCPPose"]))
+print(np.reshape(state["ActualTCPPose"],(4,4)).T)
+a=to_format(np.reshape(state["ActualTCPPose"],(4,4)).T)
+print(a)
+b=a[:]
+b[1]+=0.01
+print(b)
+robot.schedule_waypoint(b, time.time()+5)
