@@ -47,11 +47,11 @@ config.enable_stream(rs.stream.depth, RES[0], RES[1], rs.format.z16, FRAMERATE)
 config.enable_stream(rs.stream.color, RES[0], RES[1], rs.format.bgr8, FRAMERATE)
 
 # setup advanced config
-with open(CAM_CONFIG) as f:
-    json_text=f.read()
-device = pipeline_profile.get_device()
-advanced_mode = rs.rs400_advanced_mode(device)
-advanced_mode.load_json(json_text)
+# with open(CAM_CONFIG) as f:
+#     json_text=f.read()
+# device = pipeline_profile.get_device()
+# advanced_mode = rs.rs400_advanced_mode(device)
+# advanced_mode.load_json(json_text)
 
 ################################################################################
 ## SERVER SETUP
@@ -87,7 +87,10 @@ def getimg():
     else:
       images = np.hstack((color_image, depth_colormap))
 
-    cv2.imwrite("image0.png", images)
+    cv2.imwrite("static/image0.png", images)
     pipeline.stop()
     
-    return "<img src=image0.png>"
+    return "<img src=static/image0.png>"
+
+if __name__=="__main__":
+    app.run(host="0.0.0.0")
