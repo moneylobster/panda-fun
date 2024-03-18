@@ -164,6 +164,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
             # env.realsense.set_exposure(exposure=120, gain=0)
             # realsense white balance
             # env.realsense.set_white_balance(white_balance=5900)
+            ## TODO: CHECK IF REALSENSE WB & EXPOSURE IN AUTO
 
             print("Waiting for realsense")
             time.sleep(1.0)
