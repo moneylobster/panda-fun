@@ -1,5 +1,6 @@
 import numpy as np
 import time
+from spatialmath import SE3
 
 from multiprocessing.managers import SharedMemoryManager
 from diffusion_policy.real_world.panda_interpolation_controller import PandaInterpolationController
@@ -29,7 +30,7 @@ robot = PandaInterpolationController(
     joints_init=None,
     joints_init_speed=1.05,
     soft_real_time=False,
-    verbose=True,
+    verbose=False,
     receive_keys=None,
     get_max_k=max_obs_buffer_size
     )
@@ -41,7 +42,7 @@ print(state)
 print(np.reshape(state["ActualTCPPose"],(4,4)).T)
 a=to_format(np.reshape(state["ActualTCPPose"],(4,4)).T)
 print(a)
-b=a[:]
-b[1]+=0.01
+b=to_format(from_format(a)*SE3.Ry(0.3))
+#b[1]+=0.1
 print(b)
 robot.schedule_waypoint(b, time.time()+5)
