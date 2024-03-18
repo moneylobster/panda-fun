@@ -9,6 +9,7 @@ import roboticstoolbox as rtb
 from skimage import io
 import cv2
 from swift import Swift
+import sys
 
 from skill_utils.truncate import truncate
 
