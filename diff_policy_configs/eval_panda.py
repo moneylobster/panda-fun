@@ -87,6 +87,10 @@ def main(input, output, robot_ip, match_dataset, match_episode,
     workspace: BaseWorkspace
     workspace.load_payload(payload, exclude_keys=None, include_keys=None)
 
+    # TODO: remove these debug stuff later
+    OBSARR=[]
+    ACTARR=[]
+
     # hacks for method-specific setup.
     action_offset = 0
     delta_action = False
@@ -304,6 +308,11 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                             action = result['action'][0].detach().to('cpu').numpy()
                             print('Inference latency:', time.time() - s)
 
+                        # TODO: remove these debug stuff later
+                        print(f"The output was:\n{action}")
+                        OBSARR.append(obs)
+                        ACTARR.append(action)
+
                         # convert policy action to env actions
                         if delta_action:
                             assert len(action) == 1
@@ -410,6 +419,11 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                     print("Interrupted!")
                     # stop robot.
                     env.end_episode()
+
+                    # TODO: remove these debug stuff
+                    np.save("obs.npy",OBSARR)
+                    np.save("act.npy",ACTARR)
+                    
                     # also stop entire thing
                     break
 
