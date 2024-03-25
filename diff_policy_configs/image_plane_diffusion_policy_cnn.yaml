@@ -28,16 +28,16 @@ logging:
   group: null
   id: null
   mode: online
-  name: 2023.01.16-20.20.06_train_diffusion_unet_hybrid_line_image
+  name: 2023.01.16-20.20.06_train_diffusion_unet_hybrid_plane_image
   project: diffusion_policy_debug
   resume: true
   tags:
   - train_diffusion_unet_hybrid
-  - line_image
+  - plane_image
   - default
 multi_run:
-  run_dir: data/outputs/2023.01.16/20.20.06_train_diffusion_unet_hybrid_line_image
-  wandb_name_base: 2023.01.16-20.20.06_train_diffusion_unet_hybrid_line_image
+  run_dir: data/outputs/2023.01.16/20.20.06_train_diffusion_unet_hybrid_plane_image
+  wandb_name_base: 2023.01.16-20.20.06_train_diffusion_unet_hybrid_plane_image
 n_action_steps: 4
 n_latency_steps: 0
 n_obs_steps: 2
@@ -113,21 +113,21 @@ shape_meta:
       type: rgb
 task:
   dataset:
-    _target_: diffusion_policy.dataset.line_image_dataset.LineImageDataset
+    _target_: diffusion_policy.dataset.plane_image_dataset.PlaneImageDataset
     horizon: 4
     max_train_episodes: 90
     pad_after: 7
     pad_before: 1
     seed: 42
     val_ratio: 0.02
-    zarr_path: data/line_image/panda.zarr.zip
+    zarr_path: data/plane_image/panda.zarr.zip
   env_runner:
-    _target_: diffusion_policy.env_runner.line_image_runner.LineImageRunner
+    _target_: diffusion_policy.env_runner.plane_image_runner.PlaneImageRunner
   image_shape:
   - 3
   - 240
   - 320
-  name: line_image
+  name: plane_image
   shape_meta:
     action:
       shape:
@@ -143,7 +143,7 @@ task:
         - 240
         - 320
         type: rgb
-task_name: line_image
+task_name: plane_image
 training:
   checkpoint_every: 50
   debug: false
