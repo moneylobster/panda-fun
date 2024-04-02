@@ -90,7 +90,8 @@ class RealEnv:
 
         def transform(data):
             print(f"TRANSFORMING. PREV SIZE: {data['color'].shape}")
-            data['color'] = np.moveaxis(color_transform(data['color']),-1,1)
+            # data['color'] = np.moveaxis(color_transform(data['color']),-1,1)
+            data['color']=color_transform(data['color'])
             print(f"NEW SIZE: {data['color'].shape}")
             return data
         
