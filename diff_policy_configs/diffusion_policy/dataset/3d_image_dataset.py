@@ -62,7 +62,7 @@ class ThreedImageDataset(BaseImageDataset):
             'action': self.replay_buffer['action'],
             'agent_pos': self.replay_buffer['state'][...,:3]
         }
-        normalizer = LinesarNormalizer()
+        normalizer = LinearNormalizer()
         normalizer.fit(data=data, last_n_dims=1, mode=mode, **kwargs)
         normalizer['image'] = get_image_range_normalizer()
         return normalizer
