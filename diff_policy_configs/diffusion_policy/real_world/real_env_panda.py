@@ -85,7 +85,8 @@ class RealEnv:
             bgr_to_rgb=True)
         color_transform = color_tf
         if obs_float32:
-            color_transform = lambda x: color_tf(x).astype(np.float32) / 255
+            color_transform = lambda x: color_tf(np.moveaxis(x,-1,2)).astype(np.float32) / 255
+            # TODO: fix this back once the dataset part is fixed
 
         def transform(data):
             data['color'] = color_transform(data['color'])
