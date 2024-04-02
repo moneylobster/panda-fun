@@ -72,12 +72,11 @@ class LineImageDataset(BaseImageDataset):
 
     def _sample_to_data(self, sample):
         agent_pos = sample['state'][:,:9].astype(np.float32)
-        image = np.moveaxis(sample['img'],-1,1)/255 # TODO: this should probably be -1,0 for me, since I don't have multi-sample images. Maybe that's another problem? CHECK.
-        # image=sample['img']/255
+        image = np.moveaxis(sample['img'],-1,1)/255
 
         data = {
             'obs': {
-                'image': image, # T, 3, 96, 96
+                'image': image, # T, 3, 240, 320
                 'agent_pos': agent_pos, # T, 9
             },
             'action': sample['action'].astype(np.float32) # T, 9
