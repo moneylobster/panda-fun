@@ -113,7 +113,7 @@ shape_meta:
       type: rgb
 task:
   dataset:
-    _target_: diffusion_policy.dataset.3d_image_dataset.3dImageDataset
+    _target_: diffusion_policy.dataset.3d_image_dataset.ThreedImageDataset
     horizon: 4
     max_train_episodes: 90
     pad_after: 7
