@@ -43,7 +43,7 @@ for obs_name in obs_names:
         # check if this is the first time adding to the array
         # this is not a great approach but whatever
         if "obsdata" in globals() and "actdata" in globals():
-            obsdata.append(obs)
+            obsdata.append(np.expand_dims(obs,0))
             actdata.append(act)
             enddata.append(np.array([len(obs)+enddata[-1]]))
         else:
