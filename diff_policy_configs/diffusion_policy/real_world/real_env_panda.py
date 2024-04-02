@@ -86,13 +86,9 @@ class RealEnv:
         color_transform = color_tf
         if obs_float32:
             color_transform = lambda x: color_tf(x).astype(np.float32) / 255
-            # TODO: fix this back once the dataset part is fixed
 
         def transform(data):
-            print(f"TRANSFORMING. PREV SIZE: {data['color'].shape}")
-            # data['color'] = np.moveaxis(color_transform(data['color']),-1,1)
             data['color']=color_transform(data['color'])
-            print(f"NEW SIZE: {data['color'].shape}")
             return data
         
         rw, rh, col, row = optimal_row_cols(
