@@ -72,7 +72,8 @@ class LineImageDataset(BaseImageDataset):
 
     def _sample_to_data(self, sample):
         agent_pos = sample['state'][:,:9].astype(np.float32)
-        image = np.moveaxis(sample['img'],-1,1)/255
+        # image = np.moveaxis(sample['img'],-1,1)/255
+        image=sample['img']
 
         data = {
             'obs': {
