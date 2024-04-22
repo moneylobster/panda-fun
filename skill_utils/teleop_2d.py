@@ -2,19 +2,8 @@
 2d versions of classes in teleop.py
 '''
 from threading import Thread, Event
-from skill_utils.teleop import Teleop, KeyboardHandler
+from skill_utils.teleop import KeyboardHandler
 from skill_utils.format_pose import to_format, from_format
-
-class Teleop2d(Teleop):
-    def __init__(self, mode="real", ip="10.0.0.2", record=False):
-        super().__init__(mode, ip, record)
-        self.homeq=None # TODO set this
-
-    # unbind the up and down functionality to prevent z-level movement
-    def up(self):
-        pass
-    def down(self):
-        pass
 
 class KeyboardPoseController(KeyboardHandler):
     def __init__(self):
