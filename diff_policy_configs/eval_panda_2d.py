@@ -233,16 +233,18 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                     cv2.imshow('default', vis_img[...,::-1])
                     if kb.endevent.is_set():
                         # Exit program
+                        kb.endevent.clear()
                         env.end_episode()
                         exit(0)
                     elif kb.policyevent.is_set():
                         # Exit human control loop
                         # hand control over to the policy
+                        kb.policyevent.clear()
                         break
 
                     precise_wait(t_sample)
                     # get teleop command
-                    target_pose = kb.formatted_pose()
+                    target_pose = kb.formatted_pose
 
                     # execute teleop command
                     env.exec_actions(

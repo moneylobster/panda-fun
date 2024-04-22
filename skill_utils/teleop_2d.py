@@ -28,6 +28,9 @@ class KeyboardPoseController(KeyboardHandler):
                              0.78539816])
         self.endevent=Event()
         self.policyevent=Event()
+        self.startevent=Event()
+        self.stopevent=Event()
+        self.delevent=Event()
         super().__init__()
 
     @property
@@ -61,3 +64,15 @@ class KeyboardPoseController(KeyboardHandler):
     def c(self):
         # hand control to policy
         self.policyevent.set()
+
+    def g(self):
+        # start recording
+        self.startevent.set()
+
+    def h(self):
+        # stop recording
+        self.stopevent.set()
+
+    def j(self):
+        # delete most recent episode
+        self.delevent.set()
