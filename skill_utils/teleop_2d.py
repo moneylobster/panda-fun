@@ -55,6 +55,9 @@ class KeyboardPoseController(KeyboardHandler):
         self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
 
     def q(self):
+        # quit program
         self.endevent.set()
-        
-    
+
+    def c(self):
+        # hand control to policy
+        self.policyevent.set()
