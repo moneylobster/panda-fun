@@ -30,7 +30,7 @@ from skill_utils.teleop_2d import KeyboardPoseController
 
 @click.command()
 @click.option('--output', '-o', required=True, help="Directory to save demonstration dataset.")
-@click.option('--robot_ip', '-ri', required=True, help="UR5's IP address e.g. 192.168.0.204")
+@click.option('--robot_ip', '-ri', default="10.0.0.2", help="Panda's IP address e.g. 10.0.0.2")
 @click.option('--vis_camera_idx', default=0, type=int, help="Which RealSense camera to visualize.")
 @click.option('--init_joints', '-j', is_flag=True, default=False, help="Whether to initialize robot joint configuration in the beginning.")
 @click.option('--frequency', '-f', default=10, type=float, help="Control frequency in Hz.")
