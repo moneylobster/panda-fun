@@ -25,9 +25,6 @@ import scipy.spatial.transform as st
 from diffusion_policy.real_world.real_env import RealEnv
 # from diffusion_policy.real_world.spacemouse_shared_memory import Spacemouse
 from diffusion_policy.common.precise_sleep import precise_wait
-from diffusion_policy.real_world.keystroke_counter import (
-    KeystrokeCounter, Key, KeyCode
-)
 
 from skill_utils.teleop_2d import KeyboardPoseController
 
@@ -37,12 +34,11 @@ from skill_utils.teleop_2d import KeyboardPoseController
 @click.option('--vis_camera_idx', default=0, type=int, help="Which RealSense camera to visualize.")
 @click.option('--init_joints', '-j', is_flag=True, default=False, help="Whether to initialize robot joint configuration in the beginning.")
 @click.option('--frequency', '-f', default=10, type=float, help="Control frequency in Hz.")
-@click.option('--command_latency', '-cl', default=0.01, type=float, help="Latency between receiving SapceMouse command to executing on Robot in Sec.")
+@click.option('--command_latency', '-cl', default=0.01, type=float, help="Latency between receiving SpaceMouse command to executing on Robot in Sec.")
 def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_latency):
     dt = 1/frequency
     with SharedMemoryManager() as shm_manager:
-        with KeystrokeCounter() as key_counter, \
-            KeyboardPoseController() as kb, \
+        with KeyboardPoseController() as kb, \
             RealEnv(
                 output_dir=output, 
                 robot_ip=robot_ip, 
@@ -91,14 +87,12 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                     # Start recording
                     kb.startevent.clear()
                     env.start_episode(t_start + (iter_idx + 2) * dt - time.monotonic() + time.time())
-                    key_counter.clear()
                     is_recording = True
                     print('Recording!')
                 elif kb.stopevent.is_set():
                     # Stop recording
                     kb.stopevent.clear()
                     env.end_episode()
-                    key_counter.clear()
                     is_recording = False
                     print('Stopped.')
                 elif kb.delevent.is_set():
@@ -106,29 +100,25 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                     kb.delevent.clear()
                     if click.confirm('Are you sure to drop an episode?'):
                         env.drop_episode()
-                        key_counter.clear()
                         is_recording = False
-                    # delete
-                stage = key_counter[Key.space]
 
                 # visualize
-                vis_img = obs[f'camera_{vis_camera_idx}'][-1,:,:,::-1].copy()
-                episode_id = env.replay_buffer.n_episodes
-                text = f'Episode: {episode_id}, Stage: {stage}'
-                if is_recording:
-                    text += ', Recording!'
-                cv2.putText(
-                    vis_img,
-                    text,
-                    (10,30),
-                    fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=1,
-                    thickness=2,
-                    color=(255,255,255)
-                )
+                # vis_img = obs[f'camera_{vis_camera_idx}'][-1,:,:,::-1].copy()
+                # episode_id = env.replay_buffer.n_episodes
+                # text = f'Episode: {episode_id}, Stage: {stage}'
+                # if is_recording:
+                #     text += ', Recording!'
+                # cv2.putText(
+                #     vis_img,
+                #     text,
+                #     (10,30),
+                #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                #     fontScale=1,
+                #     thickness=2,
+                #     color=(255,255,255)
+                # )
 
-                cv2.imshow('default', vis_img)
-                cv2.pollKey()
+                # cv2.imshow('default', vis_img)
 
                 precise_wait(t_sample)
                 # get teleop command
