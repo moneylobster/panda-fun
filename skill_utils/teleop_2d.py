@@ -2,6 +2,8 @@
 2d versions of classes in teleop.py
 '''
 from threading import Thread, Event
+import numpy as np
+
 from skill_utils.teleop import KeyboardHandler
 from skill_utils.format_pose import to_format, from_format
 
