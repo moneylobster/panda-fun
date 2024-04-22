@@ -188,8 +188,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
 
             print('Ready!')
             while True:
-                # # ========= human control loop ==========
-                # print("Human in control!")
+                # ========= human control loop ==========
+                print("Human in control!")
                 state = env.get_robot_state()
                 target_pose = state['TargetTCPPose']
                 t_start = time.monotonic()
@@ -231,12 +231,11 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         color=(255,255,255)
                     )
                     cv2.imshow('default', vis_img[...,::-1])
-                    key_stroke = cv2.pollKey()
-                    if key_stroke == ord('q'):
+                    if kb.endevent.is_set():
                         # Exit program
                         env.end_episode()
                         exit(0)
-                    elif key_stroke == ord('c'):
+                    elif kb.policyevent.is_set():
                         # Exit human control loop
                         # hand control over to the policy
                         break

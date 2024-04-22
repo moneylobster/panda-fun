@@ -1,3 +1,7 @@
+'''
+2d versions of classes in teleop.py
+'''
+from threading import Thread, Event
 from skill_utils.teleop import Teleop, KeyboardHandler
 from skill_utils.format_pose import to_format, from_format
 
@@ -14,10 +18,17 @@ class Teleop2d(Teleop):
 
 class KeyboardPoseController(KeyboardHandler):
     def __init__(self):
-        raise NotImplementedError
         self.moveeps=0.01
-        self.startingpose=None #TODO!!!!
-        super().__init__(self.moveeps, self.startingpose)
+        self.pose=np.array([ 0.        ,
+                             -0.78539816,
+                             0.        ,
+                             -2.35619449,
+                             0.        ,
+                             1.57079633,
+                             0.78539816])
+        self.endevent=Event()
+        self.policyevent=Event()
+        super().__init__()
 
     @property
     def formatted_pose(self):
@@ -26,3 +37,24 @@ class KeyboardPoseController(KeyboardHandler):
     @formatted_pose.setter
     def formatted_pose(self, val):
         self.pose=from_format(val)
+
+    def w(self):
+        # forward
+        self.pose=SE3.Trans(self.moveeps,0,0) * self.pose
+
+    def s(self):
+        # backward
+        self.pose=SE3.Trans(-self.moveeps,0,0) * self.pose
+
+    def a(self):
+        # right
+        self.pose=SE3.Trans(0,-self.moveeps,0) * self.pose
+
+    def d(self):
+        # left
+        self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
+
+    def q(self):
+        self.endevent.set()
+        
+    
