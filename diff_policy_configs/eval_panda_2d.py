@@ -51,7 +51,7 @@ OmegaConf.register_new_resolver("eval", eval, replace=True)
 @click.command()
 @click.option('--input', '-i', required=True, help='Path to checkpoint')
 @click.option('--output', '-o', required=True, help='Directory to save recording')
-@click.option('--robot_ip', '-ri', default="10.0.0.2", help="Panda's IP address e.g. 192.168.0.204")
+@click.option('--robot_ip', '-ri', default="10.0.0.2", help="Panda's IP address e.g. 10.0.0.2")
 @click.option('--match_dataset', '-m', default=None, help='Dataset used to overlay and adjust initial condition')
 @click.option('--match_episode', '-me', default=None, type=int, help='Match specific episode from the match dataset')
 @click.option('--vis_camera_idx', default=0, type=int, help="Which RealSense camera to visualize.")
@@ -59,7 +59,7 @@ OmegaConf.register_new_resolver("eval", eval, replace=True)
 @click.option('--steps_per_inference', '-si', default=6, type=int, help="Action horizon for inference.")
 @click.option('--max_duration', '-md', default=60, help='Max duration for each epoch in seconds.')
 @click.option('--frequency', '-f', default=10, type=float, help="Control frequency in Hz.")
-@click.option('--command_latency', '-cl', default=0.01, type=float, help="Latency between receiving SapceMouse command to executing on Robot in Sec.")
+@click.option('--command_latency', '-cl', default=0.01, type=float, help="Latency between receiving SpaceMouse command to executing on Robot in Sec.")
 def main(input, output, robot_ip, match_dataset, match_episode,
          vis_camera_idx, init_joints, 
          steps_per_inference, max_duration,
@@ -203,34 +203,35 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                     # pump obs
                     obs = env.get_obs()
 
-                    # visualize
-                    episode_id = env.replay_buffer.n_episodes
-                    vis_img = obs[f'camera_{vis_camera_idx}'][-1]
-                    match_episode_id = episode_id
-                    if match_episode is not None:
-                        match_episode_id = match_episode
-                    if match_episode_id in episode_first_frame_map:
-                        match_img = episode_first_frame_map[match_episode_id]
-                        ih, iw, _ = match_img.shape
-                        oh, ow, _ = vis_img.shape
-                        tf = get_image_transform(
-                            input_res=(iw, ih), 
-                            output_res=(ow, oh), 
-                            bgr_to_rgb=False)
-                        match_img = tf(match_img).astype(np.float32) / 255
-                        vis_img = np.minimum(vis_img, match_img)
+                    # # visualize
+                    # episode_id = env.replay_buffer.n_episodes
+                    # vis_img = obs[f'camera_{vis_camera_idx}'][-1]
+                    # match_episode_id = episode_id
+                    # if match_episode is not None:
+                    #     match_episode_id = match_episode
+                    # if match_episode_id in episode_first_frame_map:
+                    #     match_img = episode_first_frame_map[match_episode_id]
+                    #     ih, iw, _ = match_img.shape
+                    #     oh, ow, _ = vis_img.shape
+                    #     tf = get_image_transform(
+                    #         input_res=(iw, ih), 
+                    #         output_res=(ow, oh), 
+                    #         bgr_to_rgb=False)
+                    #     match_img = tf(match_img).astype(np.float32) / 255
+                    #     vis_img = np.minimum(vis_img, match_img)
 
-                    text = f'Episode: {episode_id}'
-                    cv2.putText(
-                        vis_img,
-                        text,
-                        (10,20),
-                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        fontScale=0.5,
-                        thickness=1,
-                        color=(255,255,255)
-                    )
-                    cv2.imshow('default', vis_img[...,::-1])
+                    # text = f'Episode: {episode_id}'
+                    # cv2.putText(
+                    #     vis_img,
+                    #     text,
+                    #     (10,20),
+                    #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    #     fontScale=0.5,
+                    #     thickness=1,
+                    #     color=(255,255,255)
+                    # )
+                    # cv2.imshow('default', vis_img[...,::-1])
+                    
                     if kb.endevent.is_set():
                         # Exit program
                         kb.endevent.clear()
@@ -359,10 +360,10 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         # cv2.imshow('default', vis_img[...,::-1])
 
 
-                        key_stroke = cv2.pollKey()
-                        if key_stroke == ord('s'):
+                        if kb.policyevent.is_set():
                             # Stop episode
                             # Hand control back to human
+                            kb.policyevent.clear()
                             env.end_episode()
                             print('Stopped.')
                             break
