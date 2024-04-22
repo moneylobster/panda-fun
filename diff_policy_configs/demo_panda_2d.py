@@ -22,7 +22,7 @@ import click
 import cv2
 import numpy as np
 import scipy.spatial.transform as st
-from diffusion_policy.real_world.real_env import RealEnv
+from diffusion_policy.real_world.real_env_panda_2d import RealEnv
 # from diffusion_policy.real_world.spacemouse_shared_memory import Spacemouse
 from diffusion_policy.common.precise_sleep import precise_wait
 
