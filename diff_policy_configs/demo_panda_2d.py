@@ -46,7 +46,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                 obs_image_resolution=(1280,720),
                 frequency=frequency,
                 init_joints=init_joints,
-                enable_multi_cam_vis=True,
+                enable_multi_cam_vis=False,
                 record_raw_video=True,
                 # number of threads per camera view for video recording (H.264)
                 thread_per_video=3,
@@ -60,6 +60,9 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
             env.realsense.set_exposure(exposure=120, gain=0)
             # realsense white balance
             env.realsense.set_white_balance(white_balance=5900)
+
+            # set pose for kbcontroller
+            print(env.get_obs()) # TODO fix this part
 
             time.sleep(1.0)
             print('Ready!')
