@@ -146,7 +146,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
     print("action_offset:", action_offset)
 
     with SharedMemoryManager() as shm_manager:
-        with KeyboardPoseController as kb and RealEnv(
+        with KeyboardPoseController() as kb and RealEnv(
                 output_dir=output, 
                 robot_ip=robot_ip, 
                 frequency=frequency,
