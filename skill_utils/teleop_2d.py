@@ -11,13 +11,14 @@ from skill_utils.format_pose import to_format, from_format
 class KeyboardPoseController(KeyboardHandler):
     def __init__(self):
         self.moveeps=0.01
-        self.pose=np.array([ 0.        ,
-                             -0.78539816,
-                             0.        ,
-                             -2.35619449,
-                             0.        ,
-                             1.57079633,
-                             0.78539816])
+        self.startingjoints=np.array([ 0.        ,
+                                       -0.78539816,
+                                       0.        ,
+                                       -2.35619449,
+                                       0.        ,
+                                       1.57079633,
+                                       0.78539816])
+        self.pose=None
         self.endevent=Event()
         self.policyevent=Event()
         self.startevent=Event()
@@ -34,6 +35,7 @@ class KeyboardPoseController(KeyboardHandler):
         self.pose=from_format(val)
 
     def w(self):
+        print(self.pose) #debug print
         # forward
         self.pose=SE3.Trans(self.moveeps,0,0) * self.pose
 
