@@ -60,11 +60,12 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
             env.realsense.set_exposure(exposure=120, gain=0)
             # realsense white balance
             env.realsense.set_white_balance(white_balance=5900)
-
-            # set pose for kbcontroller
-            print(env.get_obs()) # TODO fix this part
-
             time.sleep(1.0)
+
+            currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4))
+            print(f"Setting pose to {currentpose}")
+            kb.pose=currentpose
+            
             print('Ready!')
             state = env.get_robot_state()
             target_pose = state['TargetTCPPose']
