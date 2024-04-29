@@ -18,7 +18,7 @@ from diffusion_policy.common.replay_buffer import ReplayBuffer
 from diffusion_policy.common.cv2_util import (
     get_image_transform, optimal_row_cols)
 
-from skill_utils import to_format
+from skill_utils.format_pose import to_format
 
 # TODO finish this.
 
