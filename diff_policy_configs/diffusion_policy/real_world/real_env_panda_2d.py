@@ -208,7 +208,7 @@ class RealEnv:
     
     def start(self, wait=False):
         self.realsense.start(wait=False)
-        self.robot.start(wait=True)
+        self.robot.start(wait=False)
         if self.multi_cam_vis is not None:
             self.multi_cam_vis.start(wait=False)
         if wait:
