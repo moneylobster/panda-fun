@@ -307,8 +307,6 @@ class PandaInterpolationController(mp.Process):
             # start controller
             panda.start_controller(ctrl)
 
-            self.ready_event.set()
-            
             iter_idx = 0
             with panda.create_context(frequency=self.frequency) as ctx:
                 while ctx.ok():
