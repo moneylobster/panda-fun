@@ -38,6 +38,7 @@ from skill_utils.teleop_2d import KeyboardPoseController
 def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_latency):
     dt = 1/frequency
     with SharedMemoryManager() as shm_manager:
+        shm_manager.start()
         with KeyboardPoseController() as kb, \
             RealEnv(
                 output_dir=output, 
