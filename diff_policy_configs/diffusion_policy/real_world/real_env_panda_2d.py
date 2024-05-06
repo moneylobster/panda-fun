@@ -206,7 +206,7 @@ class RealEnv:
     def is_ready(self):
         return self.realsense.is_ready and self.robot.is_ready
     
-    def start(self, wait=False):
+    def start(self, wait=True):
         self.realsense.start(wait=False)
         self.robot.start(wait=False)
         if self.multi_cam_vis is not None:
