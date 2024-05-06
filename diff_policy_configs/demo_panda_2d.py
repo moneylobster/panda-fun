@@ -43,11 +43,11 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                 output_dir=output, 
                 robot_ip=robot_ip, 
                 # recording resolution
-                obs_image_resolution=(1280,720),
+                obs_image_resolution=(640, 480),
                 frequency=frequency,
                 init_joints=init_joints,
                 enable_multi_cam_vis=False,
-                record_raw_video=True,
+                record_raw_video=False,
                 # number of threads per camera view for video recording (H.264)
                 thread_per_video=3,
                 # video recording quality, lower is better (but slower).
