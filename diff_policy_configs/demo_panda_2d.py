@@ -37,9 +37,7 @@ from skill_utils.teleop_2d import KeyboardPoseController
 @click.option('--command_latency', '-cl', default=0.01, type=float, help="Latency between receiving SpaceMouse command to executing on Robot in Sec.")
 def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_latency):
     dt = 1/frequency
-    with SharedMemoryManager() as shm_manager:
-        with KeyboardPoseController() as kb, \
-            # RealEnv(
+                # RealEnv(
             #     output_dir=output, 
             #     robot_ip=robot_ip, 
             #     # recording resolution
@@ -54,6 +52,9 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
             #     video_crf=21,
             #     shm_manager=shm_manager
             # ) as env:
+
+    with SharedMemoryManager() as shm_manager:
+        with KeyboardPoseController() as kb, \
             RealEnv(
                 output_dir=output,
                 robot_ip=robot_ip,
