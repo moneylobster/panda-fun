@@ -38,23 +38,26 @@ from skill_utils.teleop_2d import KeyboardPoseController
 def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_latency):
     dt = 1/frequency
     with SharedMemoryManager() as shm_manager:
-        shm_manager.start()
         with KeyboardPoseController() as kb, \
+            # RealEnv(
+            #     output_dir=output, 
+            #     robot_ip=robot_ip, 
+            #     # recording resolution
+            #     obs_image_resolution=(640, 480),
+            #     frequency=frequency,
+            #     init_joints=init_joints,
+            #     enable_multi_cam_vis=False,
+            #     record_raw_video=False,
+            #     # number of threads per camera view for video recording (H.264)
+            #     thread_per_video=3,
+            #     # video recording quality, lower is better (but slower).
+            #     video_crf=21,
+            #     shm_manager=shm_manager
+            # ) as env:
             RealEnv(
-                output_dir=output, 
-                robot_ip=robot_ip, 
-                # recording resolution
-                obs_image_resolution=(640, 480),
-                frequency=frequency,
-                init_joints=init_joints,
-                enable_multi_cam_vis=False,
-                record_raw_video=False,
-                # number of threads per camera view for video recording (H.264)
-                thread_per_video=3,
-                # video recording quality, lower is better (but slower).
-                video_crf=21,
-                shm_manager=shm_manager
-            ) as env:
+                output_dir=output,
+                robot_ip=robot_ip,
+                enable_multi_cam_vis=False) as env:
             cv2.setNumThreads(1)
 
             # realsense exposure
