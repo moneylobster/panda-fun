@@ -1,5 +1,10 @@
-from pynput.mouse import Button, Controller
+from pyvirtualdisplay import Display
 import time
+
+display=Display(visible=0, size=(1000,1000))
+display.start()
+
+from pynput.mouse import Button, Controller
 
 mouse=Controller()
 
