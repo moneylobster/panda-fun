@@ -7,12 +7,19 @@ from spatialmath import SE3, UnitQuaternion
 import struct
 from skill_utils.format_pose import to_format, from_format
 
+def clip(val,uplim):
+    if abs(val)>uplim:
+        return (val/val)*uplim
+    else:
+        return val
+
 class MouseTeleop(Thread):
     def __init__(self, pose):
         super().__init__()
         self.stop_event=Event()
         self.pose=pose
         self.moveeps=0.0005
+        self.uplim=10
 
     @property
     def formatted_pose(self):
@@ -35,6 +42,8 @@ class MouseTeleop(Thread):
     def run(self):
         with open("/dev/input/mice", mode="rb") as f:
             while not self.stop_event.is_set():
-                buttonraw, x, y = struct.unpack("Bbb", f.read(3))
+                buttonraw, yraw, xraw = struct.unpack("Bbb", f.read(3))
+                y=clip(yraw,self.uplim)
+                x=clip(xraw,self.uplim)
                 self.pose=SE3.Trans(x*self.moveeps,y*self.moveeps,0) * self.pose
                 
