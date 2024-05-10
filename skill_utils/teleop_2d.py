@@ -24,13 +24,12 @@ class KeyboardPoseController(KeyboardCommandHandler):
         self.pose=from_format(val)
 
     def w(self):
-        print(self.pose) #debug print
         # forward
-        self.pose=SE3.Trans(self.moveeps,0,0) * self.pose
+        self.pose=SE3.Trans(-self.moveeps,0,0) * self.pose
 
     def s(self):
         # backward
-        self.pose=SE3.Trans(-self.moveeps,0,0) * self.pose
+        self.pose=SE3.Trans(self.moveeps,0,0) * self.pose
 
     def a(self):
         # right
