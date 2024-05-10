@@ -42,7 +42,7 @@ class MouseTeleop(Thread):
     def run(self):
         with open("/dev/input/mice", mode="rb") as f:
             while not self.stop_event.is_set():
-                buttonraw, yraw, xraw = struct.unpack("Bbb", f.read(3))
+                buttonraw, xraw, yraw = struct.unpack("Bbb", f.read(3))
                 y=-clip(yraw,self.uplim) # invert sign as well to match left-right
                 x=clip(xraw,self.uplim)
                 # the axes seem to be mixed up as
