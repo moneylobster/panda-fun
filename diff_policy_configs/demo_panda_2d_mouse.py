@@ -29,6 +29,7 @@ from diffusion_policy.real_world.keystroke_counter import (
 )
 
 from skill_utils.mouse_teleop import MouseTeleop
+from skill_utils.teleop import KeyboardCommandHandler
 
 @click.command()
 @click.option('--output', '-o', required=True, help="Directory to save demonstration dataset.")
@@ -67,7 +68,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
             currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4)).T
             print(f"Setting pose to {currentpose}")
             
-            with MouseTeleop(currentpose) as mouse:
+            with MouseTeleop(currentpose) as mouse, KeyboardCommandHandler as kb:
                 print('Ready!')
                 state = env.get_robot_state()
                 target_pose = state['TargetTCPPose']
@@ -85,31 +86,29 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                     obs = env.get_obs()
 
                     # handle key presses
-                    press_events = key_counter.get_press_events()
-                    for key_stroke in press_events:
-                        if key_stroke == KeyCode(char='q'):
-                            # Exit program
-                            stop = True
-                        elif key_stroke == KeyCode(char='c'):
-                            # Start recording
-                            env.start_episode(t_start + (iter_idx + 2) * dt - time.monotonic() + time.time())
-                            key_counter.clear()
-                            is_recording = True
-                            print('Recording!')
-                        elif key_stroke == KeyCode(char='s'):
-                            # Stop recording
-                            env.end_episode()
-                            key_counter.clear()
+                    if kb.endevent.is_set():
+                        # Exit program
+                        kb.endevent.clear()
+                        stop = True
+                    elif kb.startevent.is_set():
+                        # Start recording
+                        kb.startevent.clear()
+                        env.start_episode(t_start + (iter_idx + 2) * dt - time.monotonic() + time.time())
+                        is_recording = True
+                        print('Recording!')
+                    elif kb.stopevent.is_set():
+                        # Stop recording
+                        kb.stopevent.clear()
+                        env.end_episode()
+                        is_recording = False
+                        print('Stopped.')
+                    elif kb.delevent.is_set():
+                        # Delete the most recent recorded episode
+                        kb.delevent.clear()
+                        if click.confirm('Are you sure to drop an episode?'):
+                            env.drop_episode()
                             is_recording = False
-                            print('Stopped.')
-                        elif key_stroke == Key.backspace:
-                            # Delete the most recent recorded episode
-                            if click.confirm('Are you sure to drop an episode?'):
-                                env.drop_episode()
-                                key_counter.clear()
-                                is_recording = False
-                            # delete
-                    stage = key_counter[Key.space]
+                    stage=kb.stagecounter
                     
                     # visualize
                     # vis_img = obs[f'camera_{vis_camera_idx}'][-1,:,:,::-1].copy()
