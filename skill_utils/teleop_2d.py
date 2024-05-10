@@ -9,7 +9,7 @@ from skill_utils.teleop import KeyboardHandler
 from skill_utils.format_pose import to_format, from_format
 
 class KeyboardPoseController(KeyboardHandler):
-    def __init__(self):
+    def __init__(self, pose):
         self.moveeps=0.01
         self.startingjoints=np.array([ 0.        ,
                                        -0.78539816,
@@ -18,7 +18,7 @@ class KeyboardPoseController(KeyboardHandler):
                                        0.        ,
                                        1.57079633,
                                        0.78539816])
-        self.pose=None
+        self.pose=pose
         self.endevent=Event()
         self.policyevent=Event()
         self.startevent=Event()

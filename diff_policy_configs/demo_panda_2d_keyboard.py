@@ -54,8 +54,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
             # ) as env:
 
     with SharedMemoryManager() as shm_manager:
-        with KeyboardPoseController() as kb, \
-            RealEnv(
+        with RealEnv(
                 output_dir=output,
                 robot_ip=robot_ip,
                 enable_multi_cam_vis=False) as env:
@@ -69,77 +68,77 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
 
             currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4))
             print(f"Setting pose to {currentpose}")
-            kb.pose=currentpose
             
-            print('Ready!')
-            state = env.get_robot_state()
-            target_pose = state['TargetTCPPose']
-            t_start = time.monotonic()
-            iter_idx = 0
-            stop = False
-            is_recording = False
-            while not stop:
-                # calculate timing
-                t_cycle_end = t_start + (iter_idx + 1) * dt
-                t_sample = t_cycle_end - command_latency
-                t_command_target = t_cycle_end + dt
+            with KeyboardPoseController(currentpose) as kb:
+                print('Ready!')
+                state = env.get_robot_state()
+                target_pose = state['TargetTCPPose']
+                t_start = time.monotonic()
+                iter_idx = 0
+                stop = False
+                is_recording = False
+                while not stop:
+                    # calculate timing
+                    t_cycle_end = t_start + (iter_idx + 1) * dt
+                    t_sample = t_cycle_end - command_latency
+                    t_command_target = t_cycle_end + dt
 
-                # pump obs
-                obs = env.get_obs()
+                    # pump obs
+                    obs = env.get_obs()
 
-                # handle key presses
-                if kb.endevent.is_set():
-                    # Exit program
-                    kb.endevent.clear()
-                    stop = True
-                elif kb.startevent.is_set():
-                    # Start recording
-                    kb.startevent.clear()
-                    env.start_episode(t_start + (iter_idx + 2) * dt - time.monotonic() + time.time())
-                    is_recording = True
-                    print('Recording!')
-                elif kb.stopevent.is_set():
-                    # Stop recording
-                    kb.stopevent.clear()
-                    env.end_episode()
-                    is_recording = False
-                    print('Stopped.')
-                elif kb.delevent.is_set():
-                    # Delete the most recent recorded episode
-                    kb.delevent.clear()
-                    if click.confirm('Are you sure to drop an episode?'):
-                        env.drop_episode()
+                    # handle key presses
+                    if kb.endevent.is_set():
+                        # Exit program
+                        kb.endevent.clear()
+                        stop = True
+                    elif kb.startevent.is_set():
+                        # Start recording
+                        kb.startevent.clear()
+                        env.start_episode(t_start + (iter_idx + 2) * dt - time.monotonic() + time.time())
+                        is_recording = True
+                        print('Recording!')
+                    elif kb.stopevent.is_set():
+                        # Stop recording
+                        kb.stopevent.clear()
+                        env.end_episode()
                         is_recording = False
+                        print('Stopped.')
+                    elif kb.delevent.is_set():
+                        # Delete the most recent recorded episode
+                        kb.delevent.clear()
+                        if click.confirm('Are you sure to drop an episode?'):
+                            env.drop_episode()
+                            is_recording = False
 
-                # visualize
-                # vis_img = obs[f'camera_{vis_camera_idx}'][-1,:,:,::-1].copy()
-                # episode_id = env.replay_buffer.n_episodes
-                # text = f'Episode: {episode_id}, Stage: {stage}'
-                # if is_recording:
-                #     text += ', Recording!'
-                # cv2.putText(
-                #     vis_img,
-                #     text,
-                #     (10,30),
-                #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                #     fontScale=1,
-                #     thickness=2,
-                #     color=(255,255,255)
-                # )
+                    # visualize
+                    # vis_img = obs[f'camera_{vis_camera_idx}'][-1,:,:,::-1].copy()
+                    # episode_id = env.replay_buffer.n_episodes
+                    # text = f'Episode: {episode_id}, Stage: {stage}'
+                    # if is_recording:
+                    #     text += ', Recording!'
+                    # cv2.putText(
+                    #     vis_img,
+                    #     text,
+                    #     (10,30),
+                    #     fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                    #     fontScale=1,
+                    #     thickness=2,
+                    #     color=(255,255,255)
+                    # )
 
-                # cv2.imshow('default', vis_img)
+                    # cv2.imshow('default', vis_img)
 
-                precise_wait(t_sample)
-                # get teleop command
-                target_pose = kb.formatted_pose
-                
-                # execute teleop command
-                env.exec_actions(
-                    actions=[target_pose], 
-                    timestamps=[t_command_target-time.monotonic()+time.time()],
-                    stages=[stage])
-                precise_wait(t_cycle_end)
-                iter_idx += 1
+                    precise_wait(t_sample)
+                    # get teleop command
+                    target_pose = kb.formatted_pose
+
+                    # execute teleop command
+                    env.exec_actions(
+                        actions=[target_pose], 
+                        timestamps=[t_command_target-time.monotonic()+time.time()],
+                        stages=[stage])
+                    precise_wait(t_cycle_end)
+                    iter_idx += 1
 
 # %%
 if __name__ == '__main__':
