@@ -43,7 +43,10 @@ class MouseTeleop(Thread):
         with open("/dev/input/mice", mode="rb") as f:
             while not self.stop_event.is_set():
                 buttonraw, yraw, xraw = struct.unpack("Bbb", f.read(3))
-                y=clip(yraw,self.uplim)
-                x=-clip(xraw,self.uplim) # invert sign as well to match left-right
-                self.pose=SE3.Trans(x*self.moveeps,y*self.moveeps,0) * self.pose
+                y=-clip(yraw,self.uplim) # invert sign as well to match left-right
+                x=clip(xraw,self.uplim)
+                # the axes seem to be mixed up as
+                # well, so we give the mouse x and y inputs to the
+                # robot y and x inputs
+                self.pose=SE3.Trans(y*self.moveeps,x*self.moveeps,0) * self.pose
                 
