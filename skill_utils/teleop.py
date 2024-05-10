@@ -133,6 +133,7 @@ class KeyboardCommandHandler(KeyboardHandler):
     def q(self):
         # quit program
         self.endevent.set()
+        print("Quitting!")
 
     def c(self):
         # hand control to policy
