@@ -68,7 +68,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
             currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4)).T
             print(f"Setting pose to {currentpose}")
             
-            with MouseTeleop(currentpose) as mouse, KeyboardCommandHandler as kb:
+            with MouseTeleop(currentpose) as mouse, KeyboardCommandHandler() as kb:
                 print('Ready!')
                 state = env.get_robot_state()
                 target_pose = state['TargetTCPPose']
