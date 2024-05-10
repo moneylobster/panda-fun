@@ -118,7 +118,40 @@ class PoseControl(KeyboardHandler):
         # down
         self.pose=SE3.Trans(0,0,-self.moveeps) * self.pose
 
-   
+class KeyboardCommandHandler(KeyboardHandler):
+    def __init__(self):
+        self.moveeps=0.01
+        self.endevent=Event()
+        self.policyevent=Event()
+        self.startevent=Event()
+        self.stopevent=Event()
+        self.delevent=Event()
+        self.stagecounter=0
+        
+        super().__init__()
+        
+    def q(self):
+        # quit program
+        self.endevent.set()
+
+    def c(self):
+        # hand control to policy
+        self.policyevent.set()
+
+    def g(self):
+        # start recording
+        self.startevent.set()
+
+    def h(self):
+        # stop recording
+        self.stopevent.set()
+
+    def j(self):
+        # delete most recent episode
+        self.delevent.set()
+
+    def i(self):
+        self.stagecounter+=1
 
 
 class Teleop():
