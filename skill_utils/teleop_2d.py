@@ -8,16 +8,10 @@ from spatialmath import SE3, UnitQuaternion
 from skill_utils.teleop import KeyboardHandler
 from skill_utils.format_pose import to_format, from_format
 
-class KeyboardPoseController(KeyboardHandler):
+class KeyboardPoseController(KeyboardCommandHandler):
     def __init__(self, pose):
         self.moveeps=0.01
         self.pose=pose
-        self.endevent=Event()
-        self.policyevent=Event()
-        self.startevent=Event()
-        self.stopevent=Event()
-        self.delevent=Event()
-        self.stagecounter=0
         
         super().__init__()
 
@@ -45,26 +39,3 @@ class KeyboardPoseController(KeyboardHandler):
     def d(self):
         # left
         self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
-
-    def q(self):
-        # quit program
-        self.endevent.set()
-
-    def c(self):
-        # hand control to policy
-        self.policyevent.set()
-
-    def g(self):
-        # start recording
-        self.startevent.set()
-
-    def h(self):
-        # stop recording
-        self.stopevent.set()
-
-    def j(self):
-        # delete most recent episode
-        self.delevent.set()
-
-    def i(self):
-        self.stagecounter+=1

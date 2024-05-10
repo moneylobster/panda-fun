@@ -120,7 +120,6 @@ class PoseControl(KeyboardHandler):
 
 class KeyboardCommandHandler(KeyboardHandler):
     def __init__(self):
-        self.moveeps=0.01
         self.endevent=Event()
         self.policyevent=Event()
         self.startevent=Event()
