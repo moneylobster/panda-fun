@@ -64,7 +64,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
             env.realsense.set_white_balance(white_balance=5900)
             time.sleep(1.0)
 
-            currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4))
+            currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4)).T
             print(f"Setting pose to {currentpose}")
             
             with MouseTeleop(currentpose) as mouse:
