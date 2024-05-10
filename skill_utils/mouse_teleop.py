@@ -32,7 +32,6 @@ class MouseTeleop(Thread):
 
     def stop(self):
         self.stop_event.set()
-        super().stop()
         
     def __enter__(self):
         self.start()
