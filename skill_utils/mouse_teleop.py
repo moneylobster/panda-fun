@@ -19,7 +19,7 @@ class MouseTeleop(Thread):
         self.stop_event=Event()
         self.pose=pose
         self.moveeps=0.0005
-        self.uplim=20
+        self.uplim=15
 
     @property
     def formatted_pose(self):
