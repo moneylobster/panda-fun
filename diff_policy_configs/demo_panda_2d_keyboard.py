@@ -132,6 +132,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                     precise_wait(t_sample)
                     # get teleop command
                     target_pose = kb.formatted_pose
+                    print(f"Target pose: {target_pose}")
 
                     # execute teleop command
                     env.exec_actions(
