@@ -44,6 +44,6 @@ class MouseTeleop(Thread):
             while not self.stop_event.is_set():
                 buttonraw, yraw, xraw = struct.unpack("Bbb", f.read(3))
                 y=clip(yraw,self.uplim)
-                x=clip(xraw,self.uplim)
+                x=-clip(xraw,self.uplim) # invert sign as well to match left-right
                 self.pose=SE3.Trans(x*self.moveeps,y*self.moveeps,0) * self.pose
                 
