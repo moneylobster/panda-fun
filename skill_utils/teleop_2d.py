@@ -24,6 +24,8 @@ class KeyboardPoseController(KeyboardHandler):
         self.startevent=Event()
         self.stopevent=Event()
         self.delevent=Event()
+        self.stagecounter=0
+        
         super().__init__()
 
     @property
@@ -70,3 +72,6 @@ class KeyboardPoseController(KeyboardHandler):
     def j(self):
         # delete most recent episode
         self.delevent.set()
+
+    def i(self):
+        self.stagecounter+=1

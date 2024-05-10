@@ -109,6 +109,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                         if click.confirm('Are you sure to drop an episode?'):
                             env.drop_episode()
                             is_recording = False
+                    stage=kb.stagecounter
 
                     # visualize
                     # vis_img = obs[f'camera_{vis_camera_idx}'][-1,:,:,::-1].copy()
