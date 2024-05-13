@@ -311,7 +311,7 @@ class PandaInterpolationController(mp.Process):
                 vel = 0.5
                 acc = 0.5
                 angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
-                panda.move_to_position(pose_command[:3],angsquat)
+                panda.move_to_pose(pose_command[:3],angsquat)
                 # assert rtde_c.servoL(pose_command, 
                 #     vel, acc, # dummy, not used by ur5
                 #     dt, 
