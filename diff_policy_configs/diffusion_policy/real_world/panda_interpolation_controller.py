@@ -291,8 +291,8 @@ class PandaInterpolationController(mp.Process):
             )
 
             # use a cartesianimpedance controller
-            tra_stiff=200 #default is 200
-            rot_stiff=20 #default is 10
+            tra_stiff=210 #default is 200
+            rot_stiff=50 #default is 10
             ctrl=controllers.CartesianImpedance(
                 impedance=np.array(
                     [[tra_stiff,0,0,0,0,0],
