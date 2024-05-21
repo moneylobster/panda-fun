@@ -16,7 +16,7 @@ newrot=newpose.data[0][:3,:3]
 
 ### ALTERNATE APPROACH:
 
-newq=panda_py.ik(newpose.t,st.Rotation.from_matrix(newrot).as_quat()), q_init=panda.q)
+newq=panda_py.ik(newpose.t,st.Rotation.from_matrix(newrot).as_quat(), q_init=panda.q)
 print(f"old q:{panda.q} new q:{newq}")
 
 panda.move_to_joint_position(newq)
