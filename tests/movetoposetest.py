@@ -7,7 +7,7 @@ current_pose=panda.get_pose()
 
 print(f"Current pose is {current_pose}")
 
-newpose=SE3(current_pose)+SE3(0.1,0,0)
+newpose=SE3(current_pose)@SE3(0.1,0,0)
 
 print(newpose.data)
 newrot=newpose.data[0][:3,:3]
