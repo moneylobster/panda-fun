@@ -19,7 +19,8 @@ class JoystickTeleop(Thread):
         self.stop_event=Event()
         self.pose=pose
         self.moveeps=0.0005
-        self.scale=1e-2
+        self.scale=1e-3
+        self.uplim=7
 
     @property
     def formatted_pose(self):
@@ -47,10 +48,10 @@ class JoystickTeleop(Thread):
                 if ev_num == 0b0000_0001:
                     # axis="y"
                     #but we invert axes here
-                    cmds[0]=self.scale*ev_val*self.moveeps
+                    cmds[0]=clip(self.scale*ev_val, self.uplim)*self.moveeps
                 elif ev_num == 0b0000_0010:
                     # axis="x"
-                    cmds[1]=self.scale*ev_val*self.moveeps
+                    cmds[1]=clip(self.scale*ev_val, self.uplim)*self.moveeps
                 self.pose=SE3.Trans(*cmds) * self.pose
                 cmds=[0,0,0]
                 
