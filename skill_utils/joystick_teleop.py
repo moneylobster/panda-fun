@@ -20,8 +20,8 @@ class JoystickTeleop(Thread):
         self.stop_event=Event()
         self.pose=pose
         self.moveeps=0.0005
-        self.scale=1e-3
-        self.uplim=7
+        self.scale=1e-5
+        self.uplim=36
 
     @property
     def formatted_pose(self):
@@ -46,7 +46,7 @@ class JoystickTeleop(Thread):
             while not self.stop_event.is_set():
                 cmds=[clip(self.scale*val, self.uplim)*self.moveeps for val in js.cmds]
                 self.pose=SE3.Trans(*cmds) * self.pose
-                time.sleep(0.01)
+                time.sleep(0.001)
                 
 class JoystickHandler(Thread):
     def __init__(self):
