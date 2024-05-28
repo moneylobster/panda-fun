@@ -42,10 +42,11 @@ class JoystickTeleop(Thread):
         self.stop()
 
     def run(self):
-        cmds=[0,0,0]
         with JoystickHandler() as js:
             while not self.stop_event.is_set():
-                self.pose=SE3.Trans(*js.cmds) * self.pose
+                print(js.cmds)
+                cmds=[clip(self.scale*val, self.uplim)*self.moveeps for val in js.cmds]
+                self.pose=SE3.Trans(*cmds) * self.pose
                 time.sleep(0.01)
                 
 class JoystickHandler(Thread):
@@ -66,7 +67,7 @@ class JoystickHandler(Thread):
             if ev_num == 0b0000_0001:
                 # axis="y"
                 #but we invert axes here
-                self.cmds[0]=clip(self.scale*ev_val, self.uplim)*self.moveeps
+                self.cmds[0]=ev_val
             elif ev_num == 0b0000_0010:
                 # axis="x"
-                self.cmds[1]=clip(self.scale*ev_val, self.uplim)*self.moveeps
+                self.cmds[1]=ev_val
