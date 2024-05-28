@@ -6,6 +6,7 @@ import numpy as np
 from spatialmath import SE3, UnitQuaternion
 import struct
 from skill_utils.format_pose import to_format, from_format
+import time
 
 def clip(val,uplim):
     if abs(val)>uplim:
@@ -42,15 +43,30 @@ class JoystickTeleop(Thread):
 
     def run(self):
         cmds=[0,0,0]
-        with open("/dev/input/js0", mode="rb") as f:
+        with JoystickHandler() as js:
             while not self.stop_event.is_set():
-                ev_time, ev_val, ev_type, ev_num= struct.unpack('IhBB', f.read(8))
-                if ev_num == 0b0000_0001:
-                    # axis="y"
-                    #but we invert axes here
-                    cmds[0]=clip(self.scale*ev_val, self.uplim)*self.moveeps
-                elif ev_num == 0b0000_0010:
-                    # axis="x"
-                    cmds[1]=clip(self.scale*ev_val, self.uplim)*self.moveeps
-                self.pose=SE3.Trans(*cmds) * self.pose
+                self.pose=SE3.Trans(*js.cmds) * self.pose
+                time.sleep(0.01)
                 
+class JoystickHandler(Thread):
+    def __init__(self):
+        super().__init__()
+        self.cmds=[0,0,0]
+  
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
+
+    def run(self):
+        with open("/dev/input/js0", mode="rb") as f:
+            ev_time, ev_val, ev_type, ev_num= struct.unpack('IhBB', f.read(8))
+            if ev_num == 0b0000_0001:
+                # axis="y"
+                #but we invert axes here
+                self.cmds[0]=clip(self.scale*ev_val, self.uplim)*self.moveeps
+            elif ev_num == 0b0000_0010:
+                # axis="x"
+                self.cmds[1]=clip(self.scale*ev_val, self.uplim)*self.moveeps
