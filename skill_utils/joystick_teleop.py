@@ -49,5 +49,6 @@ class JoystickTeleop(Thread):
                 elif ev_num == 0b0000_0010:
                     # axis="x"
                     cmds[0]=(1/32000)*ev_val*self.moveeps
-                self.pose=SE3.Trans(*cmds) * self.pose
+                self.pose=SE3.Trans(*cmds) @ self.pose
+                cmds=[0,0,0]
                 
