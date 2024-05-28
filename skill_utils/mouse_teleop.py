@@ -48,5 +48,5 @@ class MouseTeleop(Thread):
                 # the axes seem to be mixed up as
                 # well, so we give the mouse x and y inputs to the
                 # robot y and x inputs
-                self.pose=SE3.Trans(y*self.moveeps,x*self.moveeps,0) @ self.pose
+                self.pose=SE3.Trans(y*self.moveeps,x*self.moveeps,0) * self.pose
                 
