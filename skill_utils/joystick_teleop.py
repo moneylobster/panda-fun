@@ -53,5 +53,4 @@ class JoystickTeleop(Thread):
                     # axis="x"
                     cmds[1]=clip(self.scale*ev_val, self.uplim)*self.moveeps
                 self.pose=SE3.Trans(*cmds) * self.pose
-                cmds=[0,0,0]
                 
