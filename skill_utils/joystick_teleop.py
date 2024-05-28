@@ -44,7 +44,6 @@ class JoystickTeleop(Thread):
     def run(self):
         with JoystickHandler() as js:
             while not self.stop_event.is_set():
-                print(js.cmds)
                 cmds=[clip(self.scale*val, self.uplim)*self.moveeps for val in js.cmds]
                 self.pose=SE3.Trans(*cmds) * self.pose
                 time.sleep(0.01)
@@ -52,8 +51,12 @@ class JoystickTeleop(Thread):
 class JoystickHandler(Thread):
     def __init__(self):
         super().__init__()
+        self.stop_event=Event()
         self.cmds=[0,0,0]
-  
+
+    def stop(self):
+        self.stop_event.set()
+        
     def __enter__(self):
         self.start()
         return self
@@ -63,11 +66,12 @@ class JoystickHandler(Thread):
 
     def run(self):
         with open("/dev/input/js0", mode="rb") as f:
-            ev_time, ev_val, ev_type, ev_num= struct.unpack('IhBB', f.read(8))
-            if ev_num == 0b0000_0001:
-                # axis="y"
-                #but we invert axes here
-                self.cmds[0]=ev_val
-            elif ev_num == 0b0000_0010:
-                # axis="x"
-                self.cmds[1]=ev_val
+            while not self.stop_event.is_set():
+                ev_time, ev_val, ev_type, ev_num= struct.unpack('IhBB', f.read(8))
+                if ev_num == 0b0000_0001:
+                    # axis="y"
+                    #but we invert axes here
+                    self.cmds[0]=ev_val
+                elif ev_num == 0b0000_0010:
+                    # axis="x"
+                    self.cmds[1]=ev_val
