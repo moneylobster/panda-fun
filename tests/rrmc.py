@@ -36,7 +36,7 @@ if __name__ == '__main__':
       
       # Calulate the required end-effector spatial velocity for the robot
       # to approach the goal. Gain is set to 1.0
-      v, arrived = rtb.p_servo(Te, Tep, 1.0)
+      v, arrived = rtb.p_servo(Te, Tep, 1.0, 0.01)
 
       # find qd
       qd = np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
