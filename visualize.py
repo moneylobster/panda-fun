@@ -21,14 +21,14 @@ if len(sys.argv)==1:
     act_filename=glob("data/*_act.npy")[0]
 else:
     act_filename=sys.argv[1]
-
+    
 obs_filename=act_filename[:-7]+"obs.npy"
 
 print(f"reading {obs_filename}")
 
 imgsinv=np.load(obs_filename)
-
 log=np.load(act_filename, allow_pickle=True)
+
 log=log.item()
 # log.keys():
 # dict_keys(['K_F_ext_hat_K', 'O_F_ext_hat_K', 'O_T_EE', 'control_command_success_rate', 'dq', 'elbow', 'q', 'tau_J', 'tau_ext_hat_filtered', 'time'])
