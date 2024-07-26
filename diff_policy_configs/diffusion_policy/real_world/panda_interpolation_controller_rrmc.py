@@ -322,9 +322,19 @@ class PandaInterpolationController(mp.Process):
                     angsmat=st.Rotation.from_rotvec(pose_command[3:]).as_matrix()
                     T_goal=SE3.Rt(angsmat, t=pose_command[:3])
                     curr_pose=panda.get_pose()
-                    v,arrived=rtb.p_servo(curr_pose ,T_goal, 1.0, 0.1)
-                    qd=np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
-                    ctrl.set_control(qd[:7])
+                    v,arrived=rtb.p_servo(curr_pose ,T_goal, 1.5, 0.1)
+                    if not arrived:
+                        qd=np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
+                        ctrl.set_control(qd[:7])
+                        motion_taper_counter=2
+                    else:
+                        # ctrl.set_control(np.zeros((7)))
+                        if motion_taper_counter:
+                            ctrl.set_control(qd[:7]*motion_taper_counter*0.2)
+                            motion_taper_counter-=1
+                        else:
+                            ctrl.set_control(np.zeros((7)))
+                        
 
                     # update robot state
                     state = dict()
