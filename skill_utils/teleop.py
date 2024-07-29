@@ -130,8 +130,8 @@ class KeyboardCommandHandler(KeyboardHandler):
         super().__init__()
 
         print('''
-        q - quit\tc - computer control\tg - start recording
-        h - stop recording\tj - delete most recent\ti - incr counter
+        q - quit\tc - computer control\tg - start rec
+        h - stop rec\tj - delete most recent\ti - incr counter
         r - home\tm - vacuum''')
         
     def q(self):
