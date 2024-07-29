@@ -15,6 +15,7 @@ class KeyboardPoseController(KeyboardCommandHandler):
         self.homeq=homeq
         
         super().__init__()
+        print("WASD to move")
 
     @property
     def formatted_pose(self):
@@ -39,37 +40,4 @@ class KeyboardPoseController(KeyboardCommandHandler):
     def d(self):
         # left
         self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
-
-    def r(self):
-        # home
-        if self.real:
-            #real
-            if self.homeq==None:
-                self.panda.move_to_start()
-            else:
-                self.panda.move_to_joint_position(self.homeq)
-            self.update_endeff()
-            self.panda.start_controller(self.ctrl)
-        else:
-            #sim
-            self.panda.q=self.panda.qr
-            self.update_endeff()
-            self.env.step(0.05)
-
-    def m(self):
-        # vacuum
-        # is vacuum on?
-        state=self.gripper.read_once()
-        if state.part_present:
-            try:
-                self.gripper.drop_off(self.gripeps)
-            except:
-                # if unsuccessful
-                self.gripper.stop()
-        else:
-            try:
-                self.gripper.vacuum(3,self.gripeps)
-            except:
-                # if unsuccessful
-                self.gripper.stop()
 
