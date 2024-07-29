@@ -119,13 +119,14 @@ class PoseControl(KeyboardHandler):
         self.pose=SE3.Trans(0,0,-self.moveeps) * self.pose
 
 class KeyboardCommandHandler(KeyboardHandler):
-    def __init__(self):
+    def __init__(self, homeq=None):
         self.endevent=Event()
         self.policyevent=Event()
         self.startevent=Event()
         self.stopevent=Event()
         self.delevent=Event()
         self.stagecounter=0
+        self.homeq=homeq
         
         super().__init__()
 
