@@ -131,7 +131,7 @@ class KeyboardCommandHandler(KeyboardHandler):
 
         print('''
         q - quit\tc - computer control\tg - start rec
-        h - stop rec\tj - delete most recent\ti - incr counter
+        h - stop rec\tj - delete recent\ti - incr counter
         r - home\tm - vacuum''')
         
     def q(self):
