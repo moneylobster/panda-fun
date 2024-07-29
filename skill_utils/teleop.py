@@ -160,19 +160,13 @@ class KeyboardCommandHandler(KeyboardHandler):
 
     def r(self):
         # home
-        if self.real:
-            #real
-            if self.homeq==None:
-                self.panda.move_to_start()
-            else:
-                self.panda.move_to_joint_position(self.homeq)
-            self.update_endeff()
-            self.panda.start_controller(self.ctrl)
+        # real
+        if self.homeq==None:
+            self.panda.move_to_start()
         else:
-            #sim
-            self.panda.q=self.panda.qr
-            self.update_endeff()
-            self.env.step(0.05)
+            self.panda.move_to_joint_position(self.homeq)
+        self.update_endeff()
+        self.panda.start_controller(self.ctrl)
 
     def m(self):
         # vacuum
