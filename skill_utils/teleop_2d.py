@@ -9,10 +9,9 @@ from skill_utils.teleop import KeyboardCommandHandler
 from skill_utils.format_pose import to_format, from_format
 
 class KeyboardPoseController(KeyboardCommandHandler):
-    def __init__(self, pose, homeq=None):
+    def __init__(self, pose):
         self.moveeps=0.01
         self.pose=pose
-        self.homeq=homeq
         
         super().__init__()
         print("WASD to move")
