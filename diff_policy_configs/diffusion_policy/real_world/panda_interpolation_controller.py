@@ -3,7 +3,7 @@ import time
 import enum
 import multiprocessing as mp
 from multiprocessing.managers import SharedMemoryManager
-import scipy.interpolate as si
+# import scipy.interpolate as si
 import scipy.spatial.transform as st
 import numpy as np
 import panda_py
@@ -15,6 +15,8 @@ from diffusion_policy.shared_memory.shared_memory_queue import (
 from diffusion_policy.shared_memory.shared_memory_ring_buffer import SharedMemoryRingBuffer
 from diffusion_policy.common.pose_trajectory_interpolator import PoseTrajectoryInterpolator
 from skill_utils.format_pose import to_format, from_format
+import roboticstoolbox as rtb
+from spatialmath import SE3
 
 def format_to_6d(pose):
     """
@@ -150,23 +152,6 @@ class PandaInterpolationController(mp.Process):
         self.input_queue = input_queue
         self.ring_buffer = ring_buffer
         self.receive_keys = receive_keys
-
-        # update robot state
-        # state = dict()
-        # pstate=panda.get_state()
-        # for key in self.receive_keys:
-        #     state[key[0]] = np.array(getattr(pstate, key[1]))
-        # state['robot_receive_timestamp'] = time.time()
-        # self.ring_buffer.put(state)
-        # self.ready_event.set()
-
-        # self._closed=False #we're never closed
-
-        # self.panda=panda_py.Panda("10.0.0.2")
-
-    # def is_alive(self):
-    #     # idk just keep returning True for now
-    #     return True
     
     # ========= launch method ===========
     def start(self, wait=True):
@@ -242,6 +227,33 @@ class PandaInterpolationController(mp.Process):
     
     def get_all_state(self):
         return self.ring_buffer.get_all()
+
+    # ========= controller implementations ============
+    def controller_setup(self):
+        '''
+        set up and return a controller.
+        '''
+        # use a cartesianimpedance controller
+        tra_stiff=210 #default is 200
+        rot_stiff=50 #default is 10
+        ctrl=controllers.CartesianImpedance(
+            impedance=np.array(
+                [[tra_stiff,0,0,0,0,0],
+                 [0,tra_stiff,0,0,0,0],
+                 [0,0,tra_stiff,0,0,0],
+                 [0,0,0,rot_stiff,0,0],
+                 [0,0,0,0,rot_stiff,0],
+                 [0,0,0,0,0,rot_stiff]]),
+            nullspace_stiffness=0.1,
+            filter_coeff=1.0)
+        return ctrl, {}
+
+    def controller_run(self, ctrl, pose_command, misc):
+        '''
+        send a command using the controller.
+        '''
+        angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
+        ctrl.set_control(pose_command[:3],angsquat)
     
     # ========= main loop in process ============
     def run(self):
@@ -290,19 +302,10 @@ class PandaInterpolationController(mp.Process):
                 poses=[curr_pose]
             )
 
-            # use a cartesianimpedance controller
-            tra_stiff=210 #default is 200
-            rot_stiff=50 #default is 10
-            ctrl=controllers.CartesianImpedance(
-                impedance=np.array(
-                    [[tra_stiff,0,0,0,0,0],
-                     [0,tra_stiff,0,0,0,0],
-                     [0,0,tra_stiff,0,0,0],
-                     [0,0,0,rot_stiff,0,0],
-                     [0,0,0,0,rot_stiff,0],
-                     [0,0,0,0,0,rot_stiff]]),
-                nullspace_stiffness=0.1,
-                filter_coeff=1.0)
+            # create controller
+            ctrl, misc=self.controller_setup()
+            # add panda to misc
+            misc["panda"]=panda
             
             # start controller
             panda.start_controller(ctrl)
@@ -320,10 +323,12 @@ class PandaInterpolationController(mp.Process):
                     # if diff > 0:
                     #     print('extrapolate', diff)
                     pose_command = pose_interp(t_now)
-                    vel = 0.5
-                    acc = 0.5
-                    angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
-                    ctrl.set_control(pose_command[:3],angsquat)
+                    # vel = 0.5
+                    # acc = 0.5
+
+                    # execute command
+                    self.controller_run(ctrl, pose_command, misc)
+                    
                     # assert rtde_c.servoL(pose_command, 
                     #     vel, acc, # dummy, not used by ur5
                     #     dt, 
@@ -373,7 +378,7 @@ class PandaInterpolationController(mp.Process):
                             )
                             last_waypoint_time = t_insert
                             if self.verbose:
-                                print("[PandaPositionalController] New pose target:{} duration:{}s".format(
+                                print("[PandaPositionalController] New pose target:{} duration:{}".format(
                                     target_pose, duration))
                         elif cmd == Command.SCHEDULE_WAYPOINT.value:
                             target_pose = command['target_pose']
@@ -415,3 +420,63 @@ class PandaInterpolationController(mp.Process):
             # rtde_r.disconnect()
             
             self.ready_event.set()
+            
+class PandaInterpolationControllerRRMC(PandaInterpolationController):
+    '''
+    Alternative controller that uses resolved rate motion control
+    '''
+    
+    # ========= controller implementations ============
+    def controller_setup(self):
+        '''
+        set up and return a controller.
+        '''
+        # use a velocity controller
+        ctrl=controllers.IntegratedVelocity()
+        # Initialize roboticstoolbox model
+        panda_rtb = rtb.models.Panda()
+        misc={}
+        misc["panda_rtb"]=panda_rtb
+        return ctrl, misc
+
+    def controller_run(self, ctrl, pose_command, misc):
+        '''
+        send a command using the controller.
+        '''
+        # extract from misc
+        panda=misc["panda"]
+        panda_rtb=misc["panda_rtb"]
+        
+        angsmat=st.Rotation.from_rotvec(pose_command[3:]).as_matrix()
+        T_goal=SE3.Rt(angsmat, t=pose_command[:3])
+        curr_pose=panda.get_pose()
+        v,arrived=rtb.p_servo(curr_pose ,T_goal, 1.5, 0.1)
+        qd=np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
+        ctrl.set_control(qd[:7])
+    
+class PandaInterpolationControllerStrict(PandaInterpolationController):
+    '''
+    Alternative panda controller that uses move_to_pose
+    '''
+    # ========= controller implementations ============
+    def controller_setup(self):
+        '''
+        set up and return a controller.
+        '''
+        # no controller here.
+        return None, {}
+
+    def controller_run(self, ctrl, pose_command, misc):
+        '''
+        send a command using the controller.
+        '''
+        # extract from misc
+        panda=misc["panda"]
+        panda_rtb=misc["panda_rtb"]
+        
+        angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
+        # move_to_pose doesn't seem to be working
+        # panda.move_to_pose(pose_command[:3],angsquat)
+        
+        newq=panda_py.ik(pose_command[:3], angsquat, q_init=panda.q)
+        panda.move_to_joint_position(newq)
