@@ -5,7 +5,11 @@ import time
 import shutil
 import math
 from multiprocessing.managers import SharedMemoryManager
-from diffusion_policy.real_world.panda_interpolation_controller import PandaInterpolationController
+from diffusion_policy.real_world.panda_interpolation_controller import (
+    PandaInterpolationController,
+    PandaInterpolationControllerRRMC,
+    PandaInterpolationControllerStrict
+)
 from diffusion_policy.real_world.multi_realsense import MultiRealsense, SingleRealsense
 from diffusion_policy.real_world.video_recorder import VideoRecorder
 from diffusion_policy.common.timestamp_accumulator import (
@@ -18,6 +22,7 @@ from diffusion_policy.common.replay_buffer import ReplayBuffer
 from diffusion_policy.common.cv2_util import (
     get_image_transform, optimal_row_cols)
 from skill_utils.format_pose import to_format
+import panda_py.constants
 
 DEFAULT_OBS_KEY_MAP = {
     # robot
@@ -152,14 +157,15 @@ class RealEnv:
             )
 
         cube_diag = np.linalg.norm([1,1,1])
-        j_init = np.array([0,-90,-90,-90,90,0]) / 180 * np.pi
+        # j_init = np.array([0,-90,-90,-90,90,0]) / 180 * np.pi
+        j_init=panda_py.constants.JOINT_POSITION_START
         if not init_joints:
             j_init = None
 
         robot = PandaInterpolationController(
             shm_manager=shm_manager,
             robot_ip=robot_ip,
-            frequency=125, # UR5 CB3 RTDE
+            frequency=20, # UR5 CB3 RTDE
             lookahead_time=0.1,
             gain=300,
             max_pos_speed=max_pos_speed*cube_diag,
