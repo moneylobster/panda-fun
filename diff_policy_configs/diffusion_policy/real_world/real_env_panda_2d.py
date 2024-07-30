@@ -19,6 +19,7 @@ from diffusion_policy.common.cv2_util import (
     get_image_transform, optimal_row_cols)
 
 from skill_utils.format_pose import to_format
+import panda_py.constants
 
 # TODO finish this.
 
@@ -155,7 +156,8 @@ class RealEnv:
             )
 
         cube_diag = np.linalg.norm([1,1,1])
-        j_init = np.array([0,-90,-90,-90,90,0]) / 180 * np.pi
+        # j_init = np.array([0,-90,-90,-90,90,0]) / 180 * np.pi
+        j_init=panda_py.constants.JOINT_POSITION_START
         if not init_joints:
             j_init = None
 
@@ -171,7 +173,7 @@ class RealEnv:
             tcp_offset_pose=None,
             payload_mass=None,
             payload_cog=None,
-            joints_init=None,
+            joints_init=j_init,
             joints_init_speed=1.05,
             soft_real_time=False,
             verbose=False,
