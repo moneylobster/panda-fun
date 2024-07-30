@@ -13,7 +13,7 @@ def clip(val,uplim):
     else:
         return val
 
-class MouseTeleop(Thread):
+class MousePose(Thread):
     def __init__(self, pose):
         super().__init__()
         self.stop_event=Event()

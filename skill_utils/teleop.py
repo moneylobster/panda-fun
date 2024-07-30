@@ -9,8 +9,10 @@ import numpy as np
 from spatialmath import SE3, UnitQuaternion
 
 from skill_utils.getch import getch
+from skill_utils.format_pose import to_format, from_format
 
-FREQ=100
+from skill_utils.joystick_teleop import JoystickPose
+from skill_utils.mouse_teleop import MousePose
 
 def translate_input(char):
     '''
@@ -119,14 +121,13 @@ class PoseControl(KeyboardHandler):
         self.pose=SE3.Trans(0,0,-self.moveeps) * self.pose
 
 class KeyboardCommandHandler(KeyboardHandler):
-    def __init__(self, homeq=None):
+    def __init__(self):
         self.endevent=Event()
         self.policyevent=Event()
         self.startevent=Event()
         self.stopevent=Event()
         self.delevent=Event()
         self.stagecounter=0
-        self.homeq=homeq
         
         super().__init__()
 
@@ -161,7 +162,6 @@ class KeyboardCommandHandler(KeyboardHandler):
 
     def r(self):
         # home
-        # real
         if self.homeq==None:
             self.panda.move_to_start()
         else:
@@ -187,9 +187,84 @@ class KeyboardCommandHandler(KeyboardHandler):
                 self.gripper.stop()
 
 
+class Keyboard2DTeleop(KeyboardCommandHandler):
+    '''
+    uses keyboard to control pose.
+    '''
+    def __init__(self, pose):
+        self.moveeps=0.01
+        self.pose=pose
+        
+        super().__init__()
+        print("WASD to move")
+
+    @property
+    def formatted_pose(self):
+        return to_format(self.pose)
+
+    @formatted_pose.setter
+    def formatted_pose(self, val):
+        self.pose=from_format(val)
+
+    def w(self):
+        # forward
+        self.pose=SE3.Trans(-self.moveeps,0,0) * self.pose
+
+    def s(self):
+        # backward
+        self.pose=SE3.Trans(self.moveeps,0,0) * self.pose
+
+    def a(self):
+        # right
+        self.pose=SE3.Trans(0,-self.moveeps,0) * self.pose
+
+    def d(self):
+        # left
+        self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
+
+class KeyboardAndDevice(KeyboardCommandHandler):
+    '''
+    subclass implementing stuff common to keyboard and another device like a mouse
+    '''
+    @property
+    def pose(self):
+        return self.device.pose
+
+    @pose.setter
+    def pose(self,val):
+        self.device.pose=val
+
+    @property
+    def formatted_pose(self):
+        return self.device.formatted_pose
+
+    @formatted_pose.setter
+    def formatted_pose(self, val):
+        self.device.pose=from_format(val)
+
+    def run(self):
+        with self.device as dev:
+            super().run()
+
+class Joystick2DTeleop(KeyboardAndDevice):
+    '''
+    uses joystick to control pose.
+    '''
+    def __init__(self, pose):
+        self.device=JoystickPose(pose)
+        super().__init__()
+
+class Mouse2DTeleop(KeyboardAndDevice):
+    '''
+    uses mouse to control pose.
+    '''
+    def __init__(self, pose):
+        self.device=MousePose(pose)
+        super().__init__()
 
 
-class Teleop():
+FREQ=100
+class TeleopOld():
     def __init__(self, mode="real", ip="10.0.0.2", record=False):
         """
         Multi-threaded teleop interface.

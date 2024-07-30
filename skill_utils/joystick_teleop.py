@@ -14,7 +14,7 @@ def clip(val,uplim):
     else:
         return val
 
-class JoystickTeleop(Thread):
+class JoystickPose(Thread):
     def __init__(self, pose):
         super().__init__()
         self.stop_event=Event()
