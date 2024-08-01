@@ -443,3 +443,9 @@ class RealEnv:
             shutil.rmtree(str(this_video_dir))
         print(f'Episode {episode_id} dropped!')
 
+    def home(self):
+        self.robot.home()
+
+    def vacuum(self):
+        self.robot.vacuum()
+
