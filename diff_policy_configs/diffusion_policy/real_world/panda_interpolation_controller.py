@@ -94,7 +94,7 @@ class PandaInterpolationController(mp.Process):
             assert payload_mass is not None
         if joints_init is not None:
             joints_init = np.array(joints_init)
-            assert joints_init.shape == (6,)
+            assert joints_init.shape == (7,)
 
         super().__init__(name="PandaPositionalController")
         self.robot_ip = robot_ip
