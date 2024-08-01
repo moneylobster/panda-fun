@@ -217,7 +217,7 @@ class RealEnv:
         if wait:
             self.start_wait()
 
-    def stop(self, wait=True):
+    def stop(self, wait=False):
         self.end_episode()
         if self.multi_cam_vis is not None:
             self.multi_cam_vis.stop(wait=False)
