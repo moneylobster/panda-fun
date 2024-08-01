@@ -17,6 +17,7 @@ from diffusion_policy.common.pose_trajectory_interpolator import PoseTrajectoryI
 from skill_utils.format_pose import to_format, from_format
 import roboticstoolbox as rtb
 from spatialmath import SE3
+from datetime import timedelta, datetime
 
 def format_to_6d(pose):
     """
@@ -34,6 +35,8 @@ class Command(enum.Enum):
     STOP = 0
     SERVOL = 1
     SCHEDULE_WAYPOINT = 2
+    HOME = 3
+    VACUUM = 4
 
 
 class PandaInterpolationController(mp.Process):
@@ -152,6 +155,9 @@ class PandaInterpolationController(mp.Process):
         self.input_queue = input_queue
         self.ring_buffer = ring_buffer
         self.receive_keys = receive_keys
+
+        # how long to try to vacuum for
+        self.gripeps=timedelta(seconds=0.5)
     
     # ========= launch method ===========
     def start(self, wait=True):
@@ -265,6 +271,7 @@ class PandaInterpolationController(mp.Process):
         # start rtde
         robot_ip = self.robot_ip
         panda=panda_py.Panda(robot_ip)
+        gripper=panda_py.libfranka.VacuumGripper(robot_ip)
         # rtde_c = RTDEControlInterface(hostname=robot_ip)
         # rtde_r = RTDEReceiveInterface(hostname=robot_ip)
 
@@ -395,6 +402,30 @@ class PandaInterpolationController(mp.Process):
                                 last_waypoint_time=last_waypoint_time
                             )
                             last_waypoint_time = target_time
+                        elif cmd == Command.HOME.value:
+                            # home
+                            if self.joints_init==None:
+                                panda.move_to_start()
+                            else:
+                                panda.move_to_joint_position(self.joints_init)
+                            # recreate controller
+                            ctrl, misc=self.controller_setup()
+                        elif cmd == Command.VACUUM.value:
+                            # vacuum
+                            # is vacuum on?
+                            state=gripper.read_once()
+                            if state.part_present:
+                                try:
+                                    gripper.drop_off(self.gripeps)
+                                except:
+                                    # if unsuccessful
+                                    gripper.stop()
+                            else:
+                                try:
+                                    gripper.vacuum(3,self.gripeps)
+                                except:
+                                    # if unsuccessful
+                                    gripper.stop()
                         else:
                             break
 
