@@ -174,7 +174,7 @@ class RealEnv:
             tcp_offset_pose=None,
             payload_mass=None,
             payload_cog=None,
-            joints_init=None,
+            joints_init=j_init,
             joints_init_speed=1.05,
             soft_real_time=False,
             verbose=False,
