@@ -157,8 +157,8 @@ class RealEnv:
             )
 
         cube_diag = np.linalg.norm([1,1,1])
-        # j_init = np.array([0,-90,-90,-90,90,0]) / 180 * np.pi
-        j_init=panda_py.constants.JOINT_POSITION_START
+        # j_init=panda_py.constants.JOINT_POSITION_START
+        j_init=[0.11763508, 0.54617557, 0.16100469, -2.01013341, -0.14714173, 2.54275774, 1.15632037]
         if not init_joints:
             j_init = None
 
