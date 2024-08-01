@@ -434,11 +434,11 @@ class PandaInterpolationController(mp.Process):
                         elif cmd == Command.HOME.value:
                             # home
                             panda.stop_controller()
-                            if self.joints_init==None:
+                            if type(self.joints_init)==type(None):
                                 panda.move_to_start()
                             else:
                                 panda.move_to_joint_position(self.joints_init)
-                            # recreate controller
+                            # recreate controller
                             ctrl, misc=self.setup(panda)
                         elif cmd == Command.VACUUM.value:
                             # vacuum
