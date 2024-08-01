@@ -279,7 +279,22 @@ class PandaInterpolationController(mp.Process):
         '''
         angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
         ctrl.set_control(pose_command[:3],angsquat)
-    
+        
+    # ========= convenience func ============
+    def setup(self, panda):
+        '''
+        do all the setup stuff
+        '''
+        # create controller
+        ctrl, misc=self.controller_setup()
+        # add panda to misc
+        misc["panda"]=panda
+        
+        # start controller
+        panda.start_controller(ctrl)
+
+        return ctrl, misc
+        
     # ========= main loop in process ============
     def run(self):
         # enable soft real-time
@@ -329,13 +344,8 @@ class PandaInterpolationController(mp.Process):
             )
 
             # create controller
-            ctrl, misc=self.controller_setup()
-            # add panda to misc
-            misc["panda"]=panda
+            ctrl, misc=self.setup(panda)
             
-            # start controller
-            panda.start_controller(ctrl)
-
             iter_idx = 0
             with panda.create_context(frequency=self.frequency) as ctx:
                 while ctx.ok():
@@ -428,9 +438,7 @@ class PandaInterpolationController(mp.Process):
                             else:
                                 panda.move_to_joint_position(self.joints_init)
                             # recreate controller
-                            ctrl, misc=self.controller_setup()
-                            # add panda to misc
-                            misc["panda"]=panda
+                            ctrl, misc=self.setup(panda)
                         elif cmd == Command.VACUUM.value:
                             # vacuum
                             # is vacuum on?
