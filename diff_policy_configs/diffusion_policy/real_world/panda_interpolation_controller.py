@@ -511,7 +511,7 @@ class PandaInterpolationControllerRRMC(PandaInterpolationController):
         angsmat=st.Rotation.from_rotvec(pose_command[3:]).as_matrix()
         T_goal=SE3.Rt(angsmat, t=pose_command[:3])
         curr_pose=panda.get_pose()
-        v,arrived=rtb.p_servo(curr_pose ,T_goal, 1.5, 0.1)
+        v,arrived=rtb.p_servo(curr_pose, T_goal, 1.7, 0.1)
         qd=np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
         ctrl.set_control(qd[:7])
     
