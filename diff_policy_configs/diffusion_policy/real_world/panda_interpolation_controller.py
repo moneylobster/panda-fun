@@ -429,6 +429,8 @@ class PandaInterpolationController(mp.Process):
                                 panda.move_to_joint_position(self.joints_init)
                             # recreate controller
                             ctrl, misc=self.controller_setup()
+                            # add panda to misc
+                            misc["panda"]=panda
                         elif cmd == Command.VACUUM.value:
                             # vacuum
                             # is vacuum on?
