@@ -128,6 +128,8 @@ class KeyboardCommandHandler(KeyboardHandler):
         self.stopevent=Event()
         self.delevent=Event()
         self.stagecounter=0
+        self.homeevent=Event()
+        self.vacuumevent=Event()
         
         super().__init__()
 
@@ -161,30 +163,10 @@ class KeyboardCommandHandler(KeyboardHandler):
         self.stagecounter+=1
 
     def r(self):
-        # home
-        if self.homeq==None:
-            self.panda.move_to_start()
-        else:
-            self.panda.move_to_joint_position(self.homeq)
-        self.update_endeff()
-        self.panda.start_controller(self.ctrl)
+        self.homeevent.set()
 
     def m(self):
-        # vacuum
-        # is vacuum on?
-        state=self.gripper.read_once()
-        if state.part_present:
-            try:
-                self.gripper.drop_off(self.gripeps)
-            except:
-                # if unsuccessful
-                self.gripper.stop()
-        else:
-            try:
-                self.gripper.vacuum(3,self.gripeps)
-            except:
-                # if unsuccessful
-                self.gripper.stop()
+        self.vacuumevent.set()
 
 
 class Keyboard2DTeleop(KeyboardCommandHandler):
@@ -406,5 +388,5 @@ def keyboard_test():
         print("Listening...")
         time.sleep(10)
         
-if __name__=="__main__":
-    keyboard_test()
+# if __name__=="__main__":
+    # keyboard_test()

@@ -366,7 +366,7 @@ class PandaInterpolationController(mp.Process):
                         )
                         last_waypoint_time = t_insert
                         if self.verbose:
-                            print("[PandaPositionalController] New pose target:{} duration:{}s".format(
+                            print("[PandaPositionalController] New pose target:{} duration:{}".format(
                                 target_pose, duration))
                     elif cmd == Command.SCHEDULE_WAYPOINT.value:
                         target_pose = command['target_pose']
