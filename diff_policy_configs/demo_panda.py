@@ -111,6 +111,14 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                         if click.confirm('Are you sure to drop an episode?'):
                             env.drop_episode()
                             is_recording = False
+                    elif teleop.homeevent.is_set():
+                        # home robot
+                        env.home()
+                        teleop.homeevent.clear()
+                    elif teleop.vacuumevent.is_set():
+                        # toggle vacuum
+                        env.vacuum()
+                        teleop.vacuumevent.clear()
                     stage=teleop.stagecounter
                     
                     # visualize
