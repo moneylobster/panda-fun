@@ -224,6 +224,25 @@ class PandaInterpolationController(mp.Process):
         }
         self.input_queue.put(message)
 
+    def home(self):
+        """
+        home the robot
+        """
+        message = {
+            'cmd' : Command.HOME.value
+        }
+        self.input_queue.put(message)
+
+    def vacuum(self):
+        """
+        toggle vacuum
+        """
+        message = {
+            'cmd' : Command.VACUUM.value
+        }
+        self.input_queue.put(message)
+
+
     # ========= receive APIs =============
     def get_state(self, k=None, out=None):
         if k is None:
