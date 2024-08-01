@@ -433,6 +433,7 @@ class PandaInterpolationController(mp.Process):
                             last_waypoint_time = target_time
                         elif cmd == Command.HOME.value:
                             # home
+                            panda.stop_controller()
                             if self.joints_init==None:
                                 panda.move_to_start()
                             else:
