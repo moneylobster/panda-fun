@@ -62,11 +62,12 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
         ) as env:
             cv2.setNumThreads(1)
 
-            # realsense exposure
-            env.realsense.set_exposure(exposure=120, gain=0)
+                        # realsense exposure
+            env.realsense.set_exposure(exposure=400, gain=0)
+            # env.realsense.set_exposure()
             # realsense white balance
-            env.realsense.set_white_balance(white_balance=5900)
-            
+            env.realsense.set_white_balance(white_balance=1000)
+            # env.realsense.set_white_balance()
             time.sleep(1.0)
 
             currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4)).T
@@ -109,9 +110,8 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                     elif teleop.delevent.is_set():
                         # Delete the most recent recorded episode
                         teleop.delevent.clear()
-                        if click.confirm('Are you sure to drop an episode?'):
-                            env.drop_episode()
-                            is_recording = False
+                        env.drop_episode()
+                        is_recording = False
                     elif teleop.homeevent.is_set():
                         # home robot
                         env.home()
