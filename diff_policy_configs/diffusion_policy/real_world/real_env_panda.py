@@ -162,7 +162,7 @@ class RealEnv:
         if not init_joints:
             j_init = None
 
-        robot = PandaInterpolationController(
+        robot = PandaInterpolationControllerRRMC(
             shm_manager=shm_manager,
             robot_ip=robot_ip,
             frequency=20, # UR5 CB3 RTDE
