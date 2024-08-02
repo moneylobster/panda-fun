@@ -120,7 +120,7 @@ task:
     pad_before: 1
     seed: 42
     val_ratio: 0.02
-    zarr_path: data/push.zarr.zip
+    dataset_path: ./push.zarr.zip
   env_runner:
     _target_: diffusion_policy.env_runner.line_image_runner.LineImageRunner
   image_shape:
