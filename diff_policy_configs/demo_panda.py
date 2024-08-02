@@ -139,6 +139,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
                     # )
 
                     # cv2.imshow('default', vis_img)
+                    # cv2.pollKey()
 
                     precise_wait(t_sample)
                     # get teleop command
