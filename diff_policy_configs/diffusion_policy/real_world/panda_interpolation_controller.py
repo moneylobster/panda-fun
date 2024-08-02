@@ -438,7 +438,7 @@ class PandaInterpolationController(mp.Process):
                                 panda.move_to_start()
                             else:
                                 panda.move_to_joint_position(self.joints_init)
-                            # recreate controller
+                            # recreate controller
                             ctrl, misc=self.setup(panda)
                         elif cmd == Command.VACUUM.value:
                             # vacuum

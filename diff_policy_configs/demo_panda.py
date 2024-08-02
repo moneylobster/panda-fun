@@ -62,7 +62,7 @@ def main(output, robot_ip, vis_camera_idx, init_joints, frequency, command_laten
         ) as env:
             cv2.setNumThreads(1)
 
-                        # realsense exposure
+            # realsense exposure
             env.realsense.set_exposure(exposure=400, gain=0)
             # env.realsense.set_exposure()
             # realsense white balance

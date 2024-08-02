@@ -255,7 +255,7 @@ class RealEnv:
         # 30 Hz, camera_receive_timestamp
         k = math.ceil(self.n_obs_steps * (self.video_capture_fps / self.frequency))
         self.last_realsense_data = self.realsense.get(
-            k=k, 
+            k=k,
             out=self.last_realsense_data)
 
         # 125 hz, robot_receive_timestamp
