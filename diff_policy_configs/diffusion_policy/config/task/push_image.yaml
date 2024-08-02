@@ -1,7 +1,7 @@
 name: real_push_image
 
 image_shape: [3, 240, 320]
-dataset_path: push.zarr.zip
+dataset_path: 2d_data
 
 shape_meta: &shape_meta
   # acceptable types: rgb, low_dim
