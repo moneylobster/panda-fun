@@ -271,7 +271,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         print("Started!")
                         iter_idx = 0
                         term_area_start_timestamp = float('inf')
-                        perv_target_pose = None
+                        prev_target_pose = None
                         while True:
                             # calculate timing
                             t_cycle_end = t_start + (iter_idx + steps_per_inference) * dt
@@ -301,11 +301,11 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                             # convert policy action to env actions
                             if delta_action:
                                 assert len(action) == 1
-                                if perv_target_pose is None:
-                                    perv_target_pose = obs['robot_eef_pose'][-1]
-                                this_target_pose = perv_target_pose.copy()
+                                if prev_target_pose is None:
+                                    prev_target_pose = obs['robot_eef_pose'][-1]
+                                this_target_pose = prev_target_pose.copy()
                                 this_target_pose[0:9] += action[-1]
-                                perv_target_pose = this_target_pose
+                                prev_target_pose = this_target_pose
                                 this_target_poses = np.expand_dims(this_target_pose, axis=0)
                             else:
                                 this_target_poses = np.zeros((len(action), len(target_pose)), dtype=np.float64)
