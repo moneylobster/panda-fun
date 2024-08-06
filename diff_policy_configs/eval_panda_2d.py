@@ -164,7 +164,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                 frequency=frequency,
                 n_obs_steps=n_obs_steps,
                 obs_image_resolution=obs_res,
-                obs_float32=True,
+                obs_float32=False,
                 init_joints=init_joints,
                 enable_multi_cam_vis=False,
                 record_raw_video=False,
@@ -258,6 +258,10 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                             # hand control over to the policy
                             teleop.policyevent.clear()
                             break
+                        elif teleop.vacuumevent.is_set():
+                            # toggle vacuum
+                            env.vacuum()
+                            teleop.vacuumevent.clear()
 
                         precise_wait(t_sample)
                         # get teleop command
