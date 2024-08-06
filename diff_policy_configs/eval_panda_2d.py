@@ -309,7 +309,17 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                                 this_target_poses = np.expand_dims(this_target_pose, axis=0)
                             else:
                                 this_target_poses = np.zeros((len(action), len(target_pose)), dtype=np.float64)
-                                this_target_poses[:] = target_pose
+                                # set the default to a random eef pose taken from the
+                                # training data for correct orientation and z level
+                                this_target_poses[:] = np.array([ 0.50536122,
+                                                                  0.47085106,
+                                                                  -0.03834585,
+                                                                  0.71490362,
+                                                                  -0.69914045,
+                                                                  -0.01074457,
+                                                                  -0.69911191,
+                                                                  -0.71497955,
+                                                                  0.00683956])
                                 this_target_poses[:,[0,1]] = action
 
                             # deal with timing
@@ -375,7 +385,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                                 terminate = True
                                 print('Terminated by the timeout!')
 
-                            term_pose = np.array([ 3.40948500e-01,  2.17721816e-01,  4.59076878e-02,  2.22014183e+00, -2.22184883e+00, -4.07186655e-04])
+                            # term_pose = np.array([ 3.40948500e-01,  2.17721816e-01,  4.59076878e-02,  2.22014183e+00, -2.22184883e+00, -4.07186655e-04])
                             curr_pose = obs['robot_eef_pose'][-1]
                             # dist = np.linalg.norm((curr_pose - term_pose)[:2], axis=-1)
                             # if dist < 0.03:
