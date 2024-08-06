@@ -44,7 +44,11 @@ from diffusion_policy.workspace.base_workspace import BaseWorkspace
 from diffusion_policy.policy.base_image_policy import BaseImagePolicy
 from diffusion_policy.common.cv2_util import get_image_transform
 
-from skill_utils.teleop_2d import KeyboardPoseController
+from skill_utils.teleop import (
+    Keyboard2DTeleop,
+    Joystick2DTeleop,
+    Mouse2DTeleop,
+)
 
 OmegaConf.register_new_resolver("eval", eval, replace=True)
 
@@ -60,10 +64,22 @@ OmegaConf.register_new_resolver("eval", eval, replace=True)
 @click.option('--max_duration', '-md', default=60, help='Max duration for each epoch in seconds.')
 @click.option('--frequency', '-f', default=10, type=float, help="Control frequency in Hz.")
 @click.option('--command_latency', '-cl', default=0.01, type=float, help="Latency between receiving SpaceMouse command to executing on Robot in Sec.")
+@click.option('--device', '-d', default="joystick", type=str, help="Which device to use: keyboard, joystick or mouse")
 def main(input, output, robot_ip, match_dataset, match_episode,
          vis_camera_idx, init_joints, 
          steps_per_inference, max_duration,
-         frequency, command_latency):
+         frequency, command_latency, device):
+
+    device=device.lower()
+    if device=="keyboard":
+        teleop_class=Keyboard2DTeleop
+    elif device=="joystick":
+        teleop_class=Joystick2DTeleop
+    elif device=="mouse":
+        teleop_class=Mouse2DTeleop
+    else:
+        raise ValueError(f"Specified device {device} is invalid.")
+    
     # load match_dataset
     match_camera_idx = 0
     episode_first_frame_map = dict()
@@ -87,10 +103,6 @@ def main(input, output, robot_ip, match_dataset, match_episode,
     workspace = cls(cfg)
     workspace: BaseWorkspace
     workspace.load_payload(payload, exclude_keys=None, include_keys=None)
-
-    # TODO: remove these debug stuff later
-    # OBSARR=[]
-    # ACTARR=[]
 
     # hacks for method-specific setup.
     action_offset = 0
@@ -146,34 +158,37 @@ def main(input, output, robot_ip, match_dataset, match_episode,
     print("action_offset:", action_offset)
 
     with SharedMemoryManager() as shm_manager:
-        with KeyboardPoseController() as kb:
-            with RealEnv(
-                    output_dir=output, 
-                    robot_ip=robot_ip, 
-                    frequency=frequency,
-                    n_obs_steps=n_obs_steps,
-                    obs_image_resolution=obs_res,
-                    obs_float32=True,
-                    init_joints=init_joints,
-                    enable_multi_cam_vis=False,
-                    record_raw_video=False,
-                    # number of threads per camera view for video recording (H.264)
-                    thread_per_video=3,
-                    # video recording quality, lower is better (but slower).
-                    video_crf=21,
-                    shm_manager=shm_manager) as env:
+        with RealEnv(
+                output_dir=output, 
+                robot_ip=robot_ip, 
+                frequency=frequency,
+                n_obs_steps=n_obs_steps,
+                obs_image_resolution=obs_res,
+                obs_float32=True,
+                init_joints=init_joints,
+                enable_multi_cam_vis=False,
+                record_raw_video=False,
+                # number of threads per camera view for video recording (H.264)
+                thread_per_video=3,
+                # video recording quality, lower is better (but slower).
+                video_crf=21,
+                shm_manager=shm_manager) as env:
 
-                # cv2.setNumThreads(1)
+            # cv2.setNumThreads(1)
+            
+            # Should be the same as demo
+            # realsense exposure
+            env.realsense.set_exposure(exposure=400, gain=0)
+            # realsense white balance
+            env.realsense.set_white_balance(white_balance=1000)
+            
+            print("Waiting for realsense")
+            time.sleep(1.0)
 
-                # Should be the same as demo
-                # realsense exposure
-                # env.realsense.set_exposure(exposure=120, gain=0)
-                # realsense white balance
-                # env.realsense.set_white_balance(white_balance=5900)
-
-                print("Waiting for realsense")
-                time.sleep(1.0)
-
+            currentpose=np.reshape(env.get_robot_state()['ActualTCPPose'],(4,4)).T
+            print(f"Setting pose to {currentpose}")
+            
+            with teleop_class(currentpose) as teleop:
                 print("Warming up policy inference")
                 obs = env.get_obs()
                 with torch.no_grad():
@@ -233,20 +248,20 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         # )
                         # cv2.imshow('default', vis_img[...,::-1])
 
-                        if kb.endevent.is_set():
+                        if teleop.endevent.is_set():
                             # Exit program
-                            kb.endevent.clear()
+                            teleop.endevent.clear()
                             env.end_episode()
                             exit(0)
-                        elif kb.policyevent.is_set():
+                        elif teleop.policyevent.is_set():
                             # Exit human control loop
                             # hand control over to the policy
-                            kb.policyevent.clear()
+                            teleop.policyevent.clear()
                             break
 
                         precise_wait(t_sample)
                         # get teleop command
-                        target_pose = kb.formatted_pose
+                        target_pose = teleop.formatted_pose
 
                         # execute teleop command
                         env.exec_actions(
@@ -292,11 +307,6 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                                 # this action starts from the first obs step
                                 action = result['action'][0].detach().to('cpu').numpy()
                                 print('Inference latency:', time.time() - s)
-
-                            # TODO: remove these debug stuff later
-                            # print(f"The output was:\n{action}")
-                            # OBSARR.append(obs)
-                            # ACTARR.append(action)
                             
                             # convert policy action to env actions
                             if delta_action:
@@ -371,10 +381,10 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                             # cv2.imshow('default', vis_img[...,::-1])
 
 
-                            if kb.policyevent.is_set():
+                            if teleop.policyevent.is_set():
                                 # Stop episode
                                 # Hand control back to human
-                                kb.policyevent.clear()
+                                teleop.policyevent.clear()
                                 env.end_episode()
                                 print('Stopped.')
                                 break
@@ -414,10 +424,6 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         print("Interrupted!")
                         # stop robot.
                         env.end_episode()
-
-                        # TODO: remove these debug stuff
-                        # np.save("obs.npy",OBSARR)
-                        # np.save("act.npy",ACTARR)
 
                         # also stop entire thing
                         break
