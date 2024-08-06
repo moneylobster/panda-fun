@@ -106,29 +106,6 @@ def diff_at_index(model, dataset, index):
     pred=eval_at_index(model, dataset, index, 8)
     ans=get_answers_at_index(dataset, index, 15)
     return pred-ans
-
-# TODO
-# def get_deltas_for_episode(model, episode):
-#     "evaluate at all indices and compare with expected response"
-#     results=[]
-#     deltas=[]
-#     for index in tqdm.tqdm(range(2,len(episode.obs))):
-#         res=eval_at_index(model, episode, index)
-#         results.append(res[0])
-#         deltas.append(res[0]-to_format(episode.act[index]))
-#     return results, deltas
-
-# TODO
-# def episode_delta_stats(model, episode):
-#     results, deltas=get_deltas_for_episode(model,episode)
-    
-#     print(f"Min: {np.min(np.abs(deltas),0)}\nMax: {np.max(np.abs(deltas),0)}")
-
-#     norms=np.array([np.linalg.norm(i) for i in deltas])
-#     err_thres=0.3
-#     errcnt=len(norms[norms<0.3])
-#     print(f"Total err < {err_thres} count: {errcnt}")
-#     return errcnt
     
 # testing out what sort of response the model gives when prompted with training data
 class Test():
@@ -159,9 +136,11 @@ class Test():
         "plot eval and ans trajs from blue->red"
         colors = cm.rainbow(np.linspace(0, 1, 15))
         plt.subplot(1,2,1)
-        plt.scatter(*(self.eval(index).T), c=colors)
+        plt.scatter(*(t.eval(index).T), c=colors)
+        plt.title("Prediction")
         plt.subplot(1,2,2)
-        plt.scatter(*(self.ans(index).T), c=colors)
+        plt.scatter(*(t.ans(index).T), c=colors)
+        plt.title("Answer")
 
 
 t=Test()
