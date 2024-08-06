@@ -89,8 +89,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
     workspace.load_payload(payload, exclude_keys=None, include_keys=None)
 
     # TODO: remove these debug stuff later
-    OBSARR=[]
-    ACTARR=[]
+    # OBSARR=[]
+    # ACTARR=[]
 
     # hacks for method-specific setup.
     action_offset = 0
@@ -294,23 +294,23 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                                 print('Inference latency:', time.time() - s)
 
                             # TODO: remove these debug stuff later
-                            print(f"The output was:\n{action}")
-                            OBSARR.append(obs)
-                            ACTARR.append(action)
-
+                            # print(f"The output was:\n{action}")
+                            # OBSARR.append(obs)
+                            # ACTARR.append(action)
+                            
                             # convert policy action to env actions
                             if delta_action:
                                 assert len(action) == 1
                                 if prev_target_pose is None:
                                     prev_target_pose = obs['robot_eef_pose'][-1]
                                 this_target_pose = prev_target_pose.copy()
-                                this_target_pose[0:9] += action[-1]
+                                this_target_pose[[0,1]] += action[-1]
                                 prev_target_pose = this_target_pose
                                 this_target_poses = np.expand_dims(this_target_pose, axis=0)
                             else:
                                 this_target_poses = np.zeros((len(action), len(target_pose)), dtype=np.float64)
                                 this_target_poses[:] = target_pose
-                                this_target_poses[:,0:9] = action
+                                this_target_poses[:,[0,1]] = action
 
                             # deal with timing
                             # the same step actions are always the target for
@@ -332,8 +332,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                                 action_timestamps = action_timestamps[is_new]
 
                             # clip actions
-                            this_target_poses[:,:2] = np.clip(
-                                this_target_poses[:,:2], [0.25, -0.45], [0.77, 0.40])
+                            # this_target_poses[:,:2] = np.clip(
+                                # this_target_poses[:,:2], [0.25, -0.45], [0.77, 0.40])
 
                             # execute actions
                             env.exec_actions(
@@ -406,8 +406,8 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                         env.end_episode()
 
                         # TODO: remove these debug stuff
-                        np.save("obs.npy",OBSARR)
-                        np.save("act.npy",ACTARR)
+                        # np.save("obs.npy",OBSARR)
+                        # np.save("act.npy",ACTARR)
 
                         # also stop entire thing
                         break
