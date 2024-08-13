@@ -36,7 +36,7 @@ import scipy.spatial.transform as st
 from diffusion_policy.real_world.real_env_panda import RealEnv
 # from diffusion_policy.real_world.spacemouse_shared_memory import Spacemouse
 from diffusion_policy.common.precise_sleep import precise_wait
-from diffusion_policy.real_world.real_inference_util import (
+from diffusion_policy.real_world.real_inference_util_panda import (
     get_real_obs_resolution, 
     get_real_obs_dict)
 from diffusion_policy.common.pytorch_util import dict_apply

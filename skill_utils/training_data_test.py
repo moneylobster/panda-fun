@@ -18,7 +18,7 @@ from skill_utils.format_pose import to_format, from_format
 from diffusion_policy.common.replay_buffer import ReplayBuffer
 from diffusion_policy.policy.base_image_policy import BaseImagePolicy
 from diffusion_policy.common.pytorch_util import dict_apply
-from diffusion_policy.real_world.real_inference_util import (
+from diffusion_policy.real_world.real_inference_util_panda import (
     get_real_obs_resolution, 
     get_real_obs_dict)
 from diffusion_policy.codecs.imagecodecs_numcodecs import (
@@ -108,7 +108,7 @@ def diff_at_index(model, dataset, index):
     return pred-ans
     
 # testing out what sort of response the model gives when prompted with training data
-class Test():
+class Loader():
     def __init__(self):
         # model
         outputs_dir="/home/romerur30/panda/diffusion_policy/data/outputs"
@@ -125,23 +125,59 @@ class Test():
                                  "checkpoints",checkpoint))
 
         self.dataset=Dataset(os.path.join(rec_dir,dataset_name))
-
+        
     def eval(self, index):
         return eval_at_index(self.model,self.dataset,index,8)
     
     def ans(self, index):
+        "correct answer from dataset"
         return get_answers_at_index(self.dataset,index,15)
 
-    def sidebyside(self,index):
+    def get_episode_bounds(self, index):
+        '''
+        return the start and endpoints of the entire episode.
+        indexed from 0
+        '''
+        if index==0:
+            start=0
+        else:
+            start=self.dataset.episode_ends[index-1]
+        end=self.dataset.episode_ends[index]
+        return (start,end)
+
+    def get_episode_acts(self,index):
+        "return actions taken during episode"
+        return np.array([self.dataset.action[i]
+                         for i in range(*self.get_episode_bounds(index))])
+        
+
+class Tests():
+    def __init__(self, loader):
+        self.loader=loader
+        
+    def sidebyside(self, index, save=False):
         "plot eval and ans trajs from blue->red"
         colors = cm.rainbow(np.linspace(0, 1, 15))
         plt.subplot(1,2,1)
-        plt.scatter(*(t.eval(index).T), c=colors)
+        plt.scatter(*(self.loader.eval(index).T), c=colors)
         plt.title("Prediction")
         plt.subplot(1,2,2)
-        plt.scatter(*(t.ans(index).T), c=colors)
+        plt.scatter(*(self.loader.ans(index).T), c=colors)
         plt.title("Answer")
+        if save:
+            plt.savefig(f"train_vs_fig_obs2_{index}.png")
 
+    def plottraj(self, index, **kwargs):
+        "Plot a single trajectory from start to end"
+        plt.plot(*self.loader.get_episode_acts(index).T, **kwargs)
 
-t=Test()
-t.sidebyside(1000)
+    def plottrajs(self, save=False):
+        "Plot all all trajectories"
+        for i in range(0,len(self.loader.dataset.episode_ends)):
+            self.plottraj(i, color=str(i/len(self.loader.dataset.episode_ends)))
+        if save:
+            plt.savefig("all_trajectories.png")
+    
+l=Loader()
+t=Tests(l)
+t.sidebyside(590)
