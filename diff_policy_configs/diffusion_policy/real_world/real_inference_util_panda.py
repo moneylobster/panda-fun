@@ -11,7 +11,6 @@ def get_real_obs_dict(
     for key, attr in obs_shape_meta.items():
         type = attr.get('type', 'low_dim')
         shape = attr.get('shape')
-        print(f"key {key} has type {type} and shape {shape}")
         if type == 'rgb':
             this_imgs_in = env_obs[key]
             t,hi,wi,ci = this_imgs_in.shape
