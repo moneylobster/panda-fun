@@ -163,6 +163,7 @@ class KeyboardCommandHandler(KeyboardHandler):
         self.stagecounter+=1
 
     def r(self):
+        print("WARNING: the Home command doesn't work super well yet.")
         self.homeevent.set()
 
     def m(self):
