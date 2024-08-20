@@ -534,10 +534,36 @@ class PandaInterpolationControllerStrict(PandaInterpolationController):
         # extract from misc
         panda=misc["panda"]
         panda_rtb=misc["panda_rtb"]
+
+        #impedance cart. and rot. params
+        param1=800
+        param2=160
+        
+        angsmat=st.Rotation.from_rotvec(pose_command[3:]).as_matrix()
+        T_goal=SE3.Rt(angsmat, t=pose_command[:3])
+        panda.move_to_pose(T_goal, impedance=np.diag(param1,param1,param1,param2,param2,param2))
+
+class PandaInterpolationControllerIK(PandaInterpolationController):
+    '''
+    Alternative panda controller that uses inverse kinematics
+    '''
+    # ========= controller implementations ============
+    def controller_setup(self):
+        '''
+        set up and return a controller.
+        '''
+        # no controller here.
+        return None, {}
+
+    def controller_run(self, ctrl, pose_command, misc):
+        '''
+        send a command using the controller.
+        '''
+        # extract from misc
+        panda=misc["panda"]
+        panda_rtb=misc["panda_rtb"]
         
         angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
-        # move_to_pose doesn't seem to be working
-        # panda.move_to_pose(pose_command[:3],angsquat)
         
         newq=panda_py.ik(pose_command[:3], angsquat, q_init=panda.q)
         panda.move_to_joint_position(newq)
