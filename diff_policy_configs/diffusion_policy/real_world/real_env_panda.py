@@ -8,8 +8,8 @@ from multiprocessing.managers import SharedMemoryManager
 from diffusion_policy.real_world.panda_interpolation_controller import (
     PandaInterpolationController,
     PandaInterpolationControllerRRMC,
-    PandaInterpolationControllerStrict
-    PandaInterpolationControllerIK
+    PandaInterpolationControllerStrict,
+    PandaInterpolationControllerIK,
 )
 from diffusion_policy.real_world.multi_realsense import MultiRealsense, SingleRealsense
 from diffusion_policy.real_world.video_recorder import VideoRecorder
