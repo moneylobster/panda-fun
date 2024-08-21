@@ -289,9 +289,10 @@ class PandaInterpolationController(mp.Process):
         ctrl, misc=self.controller_setup()
         # add panda to misc
         misc["panda"]=panda
-        
-        # start controller
-        panda.start_controller(ctrl)
+
+        if ctrl:
+            # start controller
+            panda.start_controller(ctrl)
 
         return ctrl, misc
         
@@ -560,7 +561,7 @@ class PandaInterpolationControllerIK(PandaInterpolationController):
         '''
         # extract from misc
         panda=misc["panda"]
-                
+        
         angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
         
         newq=panda_py.ik(pose_command[:3], angsquat, q_init=panda.q)
