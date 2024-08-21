@@ -533,8 +533,7 @@ class PandaInterpolationControllerStrict(PandaInterpolationController):
         '''
         # extract from misc
         panda=misc["panda"]
-        panda_rtb=misc["panda_rtb"]
-
+        
         #impedance cart. and rot. params
         param1=800
         param2=160
@@ -561,8 +560,7 @@ class PandaInterpolationControllerIK(PandaInterpolationController):
         '''
         # extract from misc
         panda=misc["panda"]
-        panda_rtb=misc["panda_rtb"]
-        
+                
         angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
         
         newq=panda_py.ik(pose_command[:3], angsquat, q_init=panda.q)
