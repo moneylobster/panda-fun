@@ -9,6 +9,7 @@ from diffusion_policy.real_world.panda_interpolation_controller import (
     PandaInterpolationController,
     PandaInterpolationControllerRRMC,
     PandaInterpolationControllerStrict
+    PandaInterpolationControllerIK
 )
 from diffusion_policy.real_world.multi_realsense import MultiRealsense, SingleRealsense
 from diffusion_policy.real_world.video_recorder import VideoRecorder
@@ -162,7 +163,7 @@ class RealEnv:
         if not init_joints:
             j_init = None
 
-        robot = PandaInterpolationControllerRRMC(
+        robot = PandaInterpolationControllerStrict(
             shm_manager=shm_manager,
             robot_ip=robot_ip,
             frequency=20, # UR5 CB3 RTDE
