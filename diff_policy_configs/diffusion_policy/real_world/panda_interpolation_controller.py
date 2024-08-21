@@ -541,7 +541,8 @@ class PandaInterpolationControllerStrict(PandaInterpolationController):
         
         angsmat=st.Rotation.from_rotvec(pose_command[3:]).as_matrix()
         T_goal=SE3.Rt(angsmat, t=pose_command[:3])
-        panda.move_to_pose(T_goal, impedance=np.diag(param1,param1,param1,param2,param2,param2))
+        panda.move_to_pose(T_goal,
+                           impedance=np.diag([param1,param1,param1,param2,param2,param2]))
 
 class PandaInterpolationControllerIK(PandaInterpolationController):
     '''
