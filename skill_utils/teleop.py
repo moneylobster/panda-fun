@@ -134,9 +134,9 @@ class KeyboardCommandHandler(KeyboardHandler):
         super().__init__()
 
         print('''
-        q - quit\tc - computer control\tg - start rec
-        h - stop rec\tj - delete recent\ti - incr counter
-        r - home\tm - vacuum''')
+        q - quit\tc - computer control\tf - start rec
+        g - stop rec\th - delete recent\tt - incr counter
+        m - home\tr - vacuum''')
         
     def q(self):
         # quit program
@@ -147,26 +147,26 @@ class KeyboardCommandHandler(KeyboardHandler):
         # hand control to policy
         self.policyevent.set()
 
-    def g(self):
+    def f(self):
         # start recording
         self.startevent.set()
 
-    def h(self):
+    def g(self):
         # stop recording
         self.stopevent.set()
 
-    def j(self):
+    def h(self):
         # delete most recent episode
         self.delevent.set()
 
-    def i(self):
+    def t(self):
         self.stagecounter+=1
 
-    def r(self):
+    def m(self):
         print("WARNING: the Home command doesn't work super well yet.")
         self.homeevent.set()
 
-    def m(self):
+    def r(self):
         self.vacuumevent.set()
 
 
@@ -216,6 +216,7 @@ class Keyboard3DTeleop(Keyboard2DTeleop):
     def q(self):
         # down
         self.pose=SE3.Trans(0,0,-self.moveeps) * self.pose
+    
         
 class KeyboardAndDevice(KeyboardCommandHandler):
     '''
