@@ -172,7 +172,7 @@ class KeyboardCommandHandler(KeyboardHandler):
 
 class Keyboard2DTeleop(KeyboardCommandHandler):
     '''
-    uses keyboard to control pose.
+    uses keyboard to control pose on a 2D plane.
     '''
     def __init__(self, pose):
         self.moveeps=0.01
@@ -205,6 +205,18 @@ class Keyboard2DTeleop(KeyboardCommandHandler):
         # left
         self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
 
+class Keyboard3DTeleop(Keyboard2DTeleop):
+    '''
+    uses keyboard to control pose in 3D.
+    '''
+    def e(self):
+        # up
+        self.pose=SE3.Trans(0,0,self.moveeps) * self.pose
+
+    def q(self):
+        # down
+        self.pose=SE3.Trans(0,0,-self.moveeps) * self.pose
+        
 class KeyboardAndDevice(KeyboardCommandHandler):
     '''
     subclass implementing stuff common to keyboard and another device like a mouse
