@@ -18,18 +18,18 @@ class JoystickPose(Thread):
     def __init__(self, pose):
         super().__init__()
         self.stop_event=Event()
-        self.pose=pose
+        self.pose=SE3(pose)
         self.moveeps=0.0005
         self.scale=1e-5
         self.uplim=36
 
     @property
     def formatted_pose(self):
-        return to_format(self.pose)
+        return to_format(self.pose.data[0])
 
     @formatted_pose.setter
     def formatted_pose(self, val):
-        self.pose=from_format(val)
+        self.pose=SE3(from_format(val))
 
     def stop(self):
         self.stop_event.set()
@@ -45,7 +45,7 @@ class JoystickPose(Thread):
         with JoystickHandler() as js:
             while not self.stop_event.is_set():
                 cmds=[clip(self.scale*val, self.uplim)*self.moveeps for val in js.cmds]
-                self.pose=SE3.Trans(*cmds) * self.pose
+                self.pose=SE3.Trans(*cmds) @ self.pose
                 time.sleep(0.001)
                 
 class JoystickHandler(Thread):

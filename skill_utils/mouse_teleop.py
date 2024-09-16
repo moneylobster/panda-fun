@@ -17,17 +17,17 @@ class MousePose(Thread):
     def __init__(self, pose):
         super().__init__()
         self.stop_event=Event()
-        self.pose=pose
+        self.pose=SE3(pose)
         self.moveeps=0.0005
         self.uplim=7
 
     @property
     def formatted_pose(self):
-        return to_format(self.pose)
+        return to_format(self.pose.data[0])
 
     @formatted_pose.setter
     def formatted_pose(self, val):
-        self.pose=from_format(val)
+        self.pose=SE3(from_format(val))
 
     def stop(self):
         self.stop_event.set()

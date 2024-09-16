@@ -178,34 +178,34 @@ class Keyboard2DTeleop(KeyboardCommandHandler):
     def __init__(self, pose):
         self.moveeps=0.01
         self.roteps=0.05
-        self.pose=pose
+        self.pose=SE3(pose)
         
         super().__init__()
         print("WASD to move")
 
     @property
     def formatted_pose(self):
-        return to_format(self.pose)
+        return to_format(self.pose.data[0])
 
     @formatted_pose.setter
     def formatted_pose(self, val):
-        self.pose=from_format(val)
+        self.pose=SE3(from_format(val))
 
     def w(self):
         # forward
-        self.pose=SE3.Trans(-self.moveeps,0,0) * self.pose
+        self.pose=SE3.Trans(-self.moveeps,0,0) @ self.pose
 
     def s(self):
         # backward
-        self.pose=SE3.Trans(self.moveeps,0,0) * self.pose
+        self.pose=SE3.Trans(self.moveeps,0,0) @ self.pose
 
     def a(self):
         # right
-        self.pose=SE3.Trans(0,-self.moveeps,0) * self.pose
+        self.pose=SE3.Trans(0,-self.moveeps,0) @ self.pose
 
     def d(self):
         # left
-        self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
+        self.pose=SE3.Trans(0,self.moveeps,0) @ self.pose
 
     def j(self):
         # rotate z - CW
@@ -223,17 +223,17 @@ class Keyboard3DTeleop(Keyboard2DTeleop):
     '''
     def e(self):
         # up
-        self.pose=SE3.Trans(0,0,self.moveeps) * self.pose
+        self.pose=SE3.Trans(0,0,self.moveeps) @ self.pose
 
     def q(self):
         # down
-        self.pose=SE3.Trans(0,0,-self.moveeps) * self.pose
+        self.pose=SE3.Trans(0,0,-self.moveeps) @ self.pose
 
     def i(self):
         # rotate x - CW
         self.pose=SE3.Rt(sm.base.rotx(self.roteps) @ self.pose.R,
                          t=self.pose.t)
-
+        
     def k(self):
         # rotate x - CCW
         self.pose=SE3.Rt(sm.base.rotx(-self.roteps) @ self.pose.R,
@@ -257,7 +257,7 @@ class KeyboardAndDevice(KeyboardCommandHandler):
 
     @formatted_pose.setter
     def formatted_pose(self, val):
-        self.device.pose=from_format(val)
+        self.device.pose=SE3(from_format(val))
 
     def run(self):
         with self.device as dev:
