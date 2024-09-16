@@ -7,6 +7,7 @@ from datetime import timedelta, datetime
 
 import numpy as np
 from spatialmath import SE3, UnitQuaternion
+import spatialmath as sm
 
 from skill_utils.getch import getch
 from skill_utils.format_pose import to_format, from_format
@@ -176,6 +177,7 @@ class Keyboard2DTeleop(KeyboardCommandHandler):
     '''
     def __init__(self, pose):
         self.moveeps=0.01
+        self.roteps=0.05
         self.pose=pose
         
         super().__init__()
@@ -205,6 +207,16 @@ class Keyboard2DTeleop(KeyboardCommandHandler):
         # left
         self.pose=SE3.Trans(0,self.moveeps,0) * self.pose
 
+    def j(self):
+        # rotate z - CW
+        self.pose=SE3.Rt(sm.base.rotz(self.roteps) @ self.pose.R,
+                         t=self.pose.t)
+
+    def l(self):
+        # rotate z - CCW
+        self.pose=SE3.Rt(sm.base.rotz(-self.roteps) @ self.pose.R,
+                         t=self.pose.t)
+
 class Keyboard3DTeleop(Keyboard2DTeleop):
     '''
     uses keyboard to control pose in 3D.
@@ -216,7 +228,16 @@ class Keyboard3DTeleop(Keyboard2DTeleop):
     def q(self):
         # down
         self.pose=SE3.Trans(0,0,-self.moveeps) * self.pose
-    
+
+    def i(self):
+        # rotate x - CW
+        self.pose=SE3.Rt(sm.base.rotx(self.roteps) @ self.pose.R,
+                         t=self.pose.t)
+
+    def k(self):
+        # rotate x - CCW
+        self.pose=SE3.Rt(sm.base.rotx(-self.roteps) @ self.pose.R,
+                         t=self.pose.t)
         
 class KeyboardAndDevice(KeyboardCommandHandler):
     '''
