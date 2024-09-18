@@ -209,17 +209,15 @@ class Keyboard2DTeleop(KeyboardCommandHandler):
 
     def j(self):
         # rotate z - CW
-        self.pose=sm.base.trnorm(
-            SE3.Rt(sm.base.rotz(self.roteps) @ self.pose.R,
-                   t=self.pose.t,
-                   check=False))
+        self.pose=SE3.Rt(sm.base.rotz(self.roteps) @ self.pose.R,
+                         t=self.pose.t,
+                         check=False).norm()
 
     def l(self):
         # rotate z - CCW
-        self.pose=sm.base.trnorm(
-            SE3.Rt(sm.base.rotz(-self.roteps) @ self.pose.R,
-                   t=self.pose.t,
-                   check=False))
+        self.pose=SE3.Rt(sm.base.rotz(-self.roteps) @ self.pose.R,
+                         t=self.pose.t,
+                         check=False).norm()
 
 class Keyboard3DTeleop(Keyboard2DTeleop):
     '''
@@ -235,17 +233,15 @@ class Keyboard3DTeleop(Keyboard2DTeleop):
 
     def i(self):
         # rotate x - CW
-        self.pose=sm.base.trnorm(
-            SE3.Rt(sm.base.rotx(self.roteps) @ self.pose.R,
-                   t=self.pose.t,
-                   check=False))
+        self.pose=SE3.Rt(sm.base.rotx(self.roteps) @ self.pose.R,
+                         t=self.pose.t,
+                         check=False).norm()
         
     def k(self):
         # rotate x - CCW
-        self.pose=sm.base.trnorm(
-            SE3.Rt(sm.base.rotx(-self.roteps) @ self.pose.R,
-                   t=self.pose.t,
-                   check=False))
+        self.pose=SE3.Rt(sm.base.rotx(-self.roteps) @ self.pose.R,
+                         t=self.pose.t,
+                         check=False).norm()
         
 class KeyboardAndDevice(KeyboardCommandHandler):
     '''
