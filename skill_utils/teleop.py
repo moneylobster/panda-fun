@@ -191,6 +191,11 @@ class Keyboard2DTeleop(KeyboardCommandHandler):
     def formatted_pose(self, val):
         self.pose=SE3(from_format(val))
 
+    def rotz(self, amount):
+        self.pose=SE3.Rt(sm.base.rotz(amount) @ self.pose.R,
+                         t=self.pose.t,
+                         check=False).norm()
+
     def w(self):
         # forward
         self.pose=SE3.Trans(-self.moveeps,0,0) @ self.pose
@@ -209,20 +214,21 @@ class Keyboard2DTeleop(KeyboardCommandHandler):
 
     def j(self):
         # rotate z - CW
-        self.pose=SE3.Rt(sm.base.rotz(self.roteps) @ self.pose.R,
-                         t=self.pose.t,
-                         check=False).norm()
+        self.rotz(self.roteps)
 
     def l(self):
         # rotate z - CCW
-        self.pose=SE3.Rt(sm.base.rotz(-self.roteps) @ self.pose.R,
-                         t=self.pose.t,
-                         check=False).norm()
+        self.rotz(-self.roteps)
 
 class Keyboard3DTeleop(Keyboard2DTeleop):
     '''
     uses keyboard to control pose in 3D.
     '''
+    def rotx(self, amount):
+        self.pose=SE3.Rt(sm.base.rotx(amount) @ self.pose.R,
+                         t=self.pose.t,
+                         check=False).norm()
+    
     def e(self):
         # up
         self.pose=SE3.Trans(0,0,self.moveeps) @ self.pose
@@ -233,16 +239,13 @@ class Keyboard3DTeleop(Keyboard2DTeleop):
 
     def i(self):
         # rotate x - CW
-        self.pose=SE3.Rt(sm.base.rotx(self.roteps) @ self.pose.R,
-                         t=self.pose.t,
-                         check=False).norm()
+        self.rotx(self.roteps)
         
     def k(self):
         # rotate x - CCW
-        self.pose=SE3.Rt(sm.base.rotx(-self.roteps) @ self.pose.R,
-                         t=self.pose.t,
-                         check=False).norm()
-        
+        self.rotx(-self.roteps)
+
+
 class KeyboardAndDevice(KeyboardCommandHandler):
     '''
     subclass implementing stuff common to keyboard and another device like a mouse
