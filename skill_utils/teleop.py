@@ -398,13 +398,13 @@ class TeleopOld():
         if state.part_present:
             try:
                 self.gripper.drop_off(self.gripeps)
-            except:
+            except Exception:
                 # if unsuccessful
                 self.gripper.stop()
         else:
             try:
                 self.gripper.vacuum(3,self.gripeps)
-            except:
+            except Exception:
                 # if unsuccessful
                 self.gripper.stop()
 

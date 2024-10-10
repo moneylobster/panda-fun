@@ -33,7 +33,7 @@ if __name__=='__main__':
         try:
             gripper.vacuum(3, timedelta(seconds=1))
             print("Grabbed object.")
-        except:
+        except Exception:
             # The finally block at the end stops the vacuuming with gripper.stop()
             # otherwise it keeps going
             raise RuntimeError("Failed to grab object.")
@@ -50,7 +50,7 @@ if __name__=='__main__':
         # The time argument specifies when to time-out.
         try:
             gripper.drop_off(timedelta(seconds=1))
-        except:
+        except Exception:
             raise RuntimeError("Failed to drop object off.")
     finally:
         # Stop whatever the gripper is doing when program terminates.
