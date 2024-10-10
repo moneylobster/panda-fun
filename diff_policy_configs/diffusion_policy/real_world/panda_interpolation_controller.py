@@ -29,7 +29,7 @@ def format_to_6d(pose):
     pose = np.reshape(pose, (4,4))
     pose_6d=np.hstack((pose[:3,3],st.Rotation.from_matrix(pose[:3,:3]).as_rotvec()))
     return pose_6d
-    
+
 
 class Command(enum.Enum):
     STOP = 0
@@ -46,10 +46,10 @@ class PandaInterpolationController(mp.Process):
     """
 
     def __init__(self,
-            shm_manager: SharedMemoryManager, 
-            robot_ip, 
-            frequency=125, 
-            lookahead_time=0.1, 
+            shm_manager: SharedMemoryManager,
+            robot_ip,
+            frequency=125,
+            lookahead_time=0.1,
             gain=300,
             max_pos_speed=0.25, # 5% of max speed
             max_rot_speed=0.16, # 5% of max speed
@@ -131,7 +131,7 @@ class PandaInterpolationController(mp.Process):
                 ['ActualTCPPose',"O_T_EE"],
                 ['ActualQ',"q"],
                 ['ActualQd',"dq"],
-                
+
                 ['TargetTCPPose',"O_T_EE_d"],
                 ['TargetQ',"q_d"],
                 ['TargetQd',"dq_d"]
@@ -158,7 +158,7 @@ class PandaInterpolationController(mp.Process):
 
         # how long to try to vacuum for
         self.gripeps=timedelta(seconds=0.5)
-    
+
     # ========= launch method ===========
     def start(self, wait=True):
         super().start()
@@ -166,7 +166,7 @@ class PandaInterpolationController(mp.Process):
             self.start_wait()
         if self.verbose:
             print(f"[PandaPositionalController] Controller process spawned at {self.pid}")
-        
+
 
     def stop(self, wait=True):
         message = {
@@ -179,10 +179,10 @@ class PandaInterpolationController(mp.Process):
     def start_wait(self):
         self.ready_event.wait(self.launch_timeout)
         assert self.is_alive()
-    
+
     def stop_wait(self):
         self.join()
-    
+
     @property
     def is_ready(self):
         return self.ready_event.is_set()
@@ -191,10 +191,10 @@ class PandaInterpolationController(mp.Process):
     def __enter__(self):
         self.start()
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
-        
+
     # ========= command methods ============
     def servoL(self, pose, duration=0.1):
         """
@@ -211,7 +211,7 @@ class PandaInterpolationController(mp.Process):
             'duration': duration
         }
         self.input_queue.put(message)
-    
+
     def schedule_waypoint(self, pose, target_time):
         assert target_time > time.time()
         pose=format_to_6d(pose)
@@ -249,7 +249,7 @@ class PandaInterpolationController(mp.Process):
             return self.ring_buffer.get(out=out)
         else:
             return self.ring_buffer.get_last_k(k=k,out=out)
-    
+
     def get_all_state(self):
         return self.ring_buffer.get_all()
 
@@ -279,7 +279,7 @@ class PandaInterpolationController(mp.Process):
         '''
         angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
         ctrl.set_control(pose_command[:3],angsquat)
-        
+
     # ========= convenience func ============
     def setup(self, panda):
         '''
@@ -295,7 +295,7 @@ class PandaInterpolationController(mp.Process):
             panda.start_controller(ctrl)
 
         return ctrl, misc
-        
+
     # ========= main loop in process ============
     def run(self):
         # enable soft real-time
@@ -324,7 +324,7 @@ class PandaInterpolationController(mp.Process):
                 #     assert rtde_c.setPayload(self.payload_mass, self.payload_cog)
                 # else:
                 #     assert rtde_c.setPayload(self.payload_mass)
-            
+
             # init pose
             if self.joints_init is not None:
                 panda.move_to_joint_position(self.joints_init)
@@ -346,7 +346,7 @@ class PandaInterpolationController(mp.Process):
 
             # create controller
             ctrl, misc=self.setup(panda)
-            
+
             iter_idx = 0
             with panda.create_context(frequency=self.frequency) as ctx:
                 while ctx.ok():
@@ -365,11 +365,11 @@ class PandaInterpolationController(mp.Process):
 
                     # execute command
                     self.controller_run(ctrl, pose_command, misc)
-                    
-                    # assert rtde_c.servoL(pose_command, 
+
+                    # assert rtde_c.servoL(pose_command,
                     #     vel, acc, # dummy, not used by ur5
-                    #     dt, 
-                    #     self.lookahead_time, 
+                    #     dt,
+                    #     self.lookahead_time,
                     #     self.gain)
 
                     # update robot state
@@ -400,7 +400,7 @@ class PandaInterpolationController(mp.Process):
                         elif cmd == Command.SERVOL.value:
                             # since curr_pose always lag behind curr_target_pose
                             # if we start the next interpolation with curr_pose
-                            # the command robot receive will have discontinouity 
+                            # the command robot receive will have discontinouity
                             # and cause jittery robot behavior.
                             target_pose = command['target_pose']
                             duration = float(command['duration'])
@@ -448,13 +448,13 @@ class PandaInterpolationController(mp.Process):
                             if state.part_present:
                                 try:
                                     gripper.drop_off(self.gripeps)
-                                except:
+                                except Exception:
                                     # if unsuccessful
                                     gripper.stop()
                             else:
                                 try:
                                     gripper.vacuum(3,self.gripeps)
-                                except:
+                                except Exception:
                                     # if unsuccessful
                                     gripper.stop()
                         else:
@@ -480,14 +480,14 @@ class PandaInterpolationController(mp.Process):
             # rtde_c.stopScript()
             # rtde_c.disconnect()
             # rtde_r.disconnect()
-            
+
             self.ready_event.set()
-            
+
 class PandaInterpolationControllerRRMC(PandaInterpolationController):
     '''
     Alternative controller that uses resolved rate motion control
     '''
-    
+
     # ========= controller implementations ============
     def controller_setup(self):
         '''
@@ -508,14 +508,14 @@ class PandaInterpolationControllerRRMC(PandaInterpolationController):
         # extract from misc
         panda=misc["panda"]
         panda_rtb=misc["panda_rtb"]
-        
+
         angsmat=st.Rotation.from_rotvec(pose_command[3:]).as_matrix()
         T_goal=SE3.Rt(angsmat, t=pose_command[:3])
         curr_pose=panda.get_pose()
         v,arrived=rtb.p_servo(curr_pose, T_goal, 1.7, 0.1)
         qd=np.linalg.pinv(panda_rtb.jacobe(panda.q)) @ v
         ctrl.set_control(qd[:7])
-    
+
 class PandaInterpolationControllerStrict(PandaInterpolationController):
     '''
     Alternative panda controller that uses move_to_pose
@@ -534,11 +534,11 @@ class PandaInterpolationControllerStrict(PandaInterpolationController):
         '''
         # extract from misc
         panda=misc["panda"]
-        
+
         #impedance cart. and rot. params
         param1=800
         param2=160
-        
+
         angsmat=st.Rotation.from_rotvec(pose_command[3:]).as_matrix()
         T_goal=SE3.Rt(angsmat, t=pose_command[:3])
         panda.move_to_pose(T_goal,
@@ -562,8 +562,10 @@ class PandaInterpolationControllerIK(PandaInterpolationController):
         '''
         # extract from misc
         panda=misc["panda"]
-        
+
         angsquat=st.Rotation.from_rotvec(pose_command[3:]).as_quat()
-        
+
         newq=panda_py.ik(pose_command[:3], angsquat, q_init=panda.q)
         panda.move_to_joint_position(newq)
+
+
