@@ -48,6 +48,8 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
     instead we compute an afterimage and pass that through.
     """
     def forward(self, obs_dict):
+        print("DEBUGG")
+        print(f"Obsdict: {obs_dict}")
         batch_size = None
         features = list()
         # process rgb input
@@ -65,10 +67,13 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 imgs.append(img)
             # (N*B,C,H,W)
             imgs = torch.cat(imgs, dim=0)
+            print(f"nb,c,h,w {imgs.shape}")
             # (N*B,D)
             feature = self.key_model_map['rgb'](imgs)
+            print(f"nb,d {feature.shape}")
             # (N,B,D)
             feature = feature.reshape(-1,batch_size,*feature.shape[1:])
+            print(f"n,b,d {feature.shape}")
             # (B,N,D)
             feature = torch.moveaxis(feature,0,1)
             # (B,N*D)
