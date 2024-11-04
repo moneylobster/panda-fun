@@ -67,13 +67,10 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 imgs.append(img)
             # (N*B,C,H,W)
             imgs = torch.cat(imgs, dim=0)
-            print(f"nb,c,h,w {imgs.shape}")
             # (N*B,D)
             feature = self.key_model_map['rgb'](imgs)
-            print(f"nb,d {feature.shape}")
             # (N,B,D)
             feature = feature.reshape(-1,batch_size,*feature.shape[1:])
-            print(f"n,b,d {feature.shape}")
             # (B,N,D)
             feature = torch.moveaxis(feature,0,1)
             # (B,N*D)
@@ -83,6 +80,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
             # run each rgb obs to independent models
             for key in self.rgb_keys:
                 img = obs_dict[key]
+                print(f"imgshape {img.shape}")
                 if batch_size is None:
                     batch_size = img.shape[0]
                 else:
@@ -91,6 +89,8 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 img = self.key_transform_map[key](img)
                 feature = self.key_model_map[key](img)
                 features.append(feature)
+                print(f"lastimgshape {img.shape}")
+                print(f"featshape {feature.shape}")
         
         # process lowdim input
         for key in self.low_dim_keys:
