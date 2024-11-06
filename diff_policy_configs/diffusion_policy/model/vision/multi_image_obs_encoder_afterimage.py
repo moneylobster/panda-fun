@@ -50,8 +50,9 @@ def test_create_afterimage():
 
 class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
     """Everything is the same as MultiImageObsEncoder, except to
-    generate the encoding, we do not pass each image from the model,
-    instead we compute an afterimage and pass that through.
+    generate the encoding, we first compute an afterimage and pass
+    that through the encoder. This means an additional n_obs_steps
+    parameter is needed.
     """
 
     def __init__(self,
