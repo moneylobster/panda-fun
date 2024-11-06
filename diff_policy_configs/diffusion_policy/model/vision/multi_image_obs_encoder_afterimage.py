@@ -2,7 +2,6 @@ from typing import Dict, Tuple, Union
 import torch
 import torch.nn as nn
 from diffusion_policy.model.vision.multi_image_obs_encoder import MultiImageObsEncoder
-import numpy as np
 
 # A ImagePolicy takes observation dictionary:
 #     "key0": Tensor of shape (B,To,*)
@@ -76,7 +75,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
         """
         super().__init__()
         self.n_obs_steps = n_obs_steps
-        self.ke
+        self.afterimage_map=AfterimageGenerator(n_obs_steps, "linear")
     
     def forward(self, obs_dict):
         print("DEBUGG")
@@ -111,18 +110,19 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
             # run each rgb obs to independent models
             for key in self.rgb_keys:
                 img = obs_dict[key]
-                print(f"imgshape {img.shape}") # yields torch.Size([1, 3, 240, 320])
+                # print(f"imgshape {img.shape}") # yields torch.Size([1, 3, 240, 320])
                 # or 128, 3, 240, 320
                 if batch_size is None:
                     batch_size = img.shape[0]
                 else:
                     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
+                img = self.afterimage_map.forward(img)
                 img = self.key_transform_map[key](img)
                 feature = self.key_model_map[key](img)
                 features.append(feature)
-                print(f"lastimgshape {img.shape}") # yields torch.Size([1, 3, 216, 288])
-                print(f"featshape {feature.shape}") # yields torch.Size([1, 512]) or 128,512
+                # print(f"lastimgshape {img.shape}") # yields torch.Size([1, 3, 216, 288])
+                # print(f"featshape {feature.shape}") # yields torch.Size([1, 512]) or 128,512
         
         # process lowdim input
         for key in self.low_dim_keys:
