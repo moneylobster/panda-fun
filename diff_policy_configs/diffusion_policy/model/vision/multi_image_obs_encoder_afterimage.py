@@ -74,7 +74,14 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
         Assumes rgb input: B,C,H,W
         Assumes low_dim input: B,D
         """
-        super().__init__()
+        super().__init__(shape_meta,
+                         rgb_model,
+                         resize_shape,
+                         crop_shape,
+                         random_crop,
+                         use_group_norm,
+                         share_rgb_model,
+                         imagenet_norm)
         self.n_obs_steps = n_obs_steps
         self.afterimage_map=AfterimageGenerator(n_obs_steps, "linear")
     
