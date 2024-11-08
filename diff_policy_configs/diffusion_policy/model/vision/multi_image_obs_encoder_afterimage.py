@@ -17,6 +17,7 @@ from diffusion_policy.model.vision.multi_image_obs_encoder import MultiImageObsE
 
 class AfterimageGenerator():
     def __init__(self, n_obs_steps, schedule_type):
+        self.n_obs_steps=n_obs_steps
         self.schedule = self.create_schedule(n_obs_steps, schedule_type)
         
     def create_schedule(self, n_obs_steps, schedule_type):
@@ -31,19 +32,23 @@ class AfterimageGenerator():
     
     def forward(self, images):
         """Create an afterimage from images according to weight schedule."""
+        # reshape first
+        images_shaped=images.reshape(images.shape[0]//self.n_obs_steps, self.n_obs_steps, *images.shape[1:])
         # basically a weighted avg
-        return (self.schedule.view(self.schedule.shape[0],1,1,1) * images).sum(dim=0)/self.schedule.sum() # way slower than the np version idk why
+        return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
         # return np.average(images, axis=0, weights=self.schedule)
     
 def test_create_afterimage():
     import skimage.io as io
     import numpy as np
+    n=5
     imgs=[io.imread("brazil_renovated.jpg")]
-    for i in range(1,10):
+    for i in range(1,n):
         imgs.append(np.roll(imgs[0],i*10,1))
-    print(np.array(imgs).shape)
-    ag=AfterimageGenerator(10, "linear")
-    res=ag.forward(torch.Tensor(imgs))
+    tt_one=torch.Tensor(imgs)
+    tt=torch.concat([tt_one for i in range(2)])
+    ag=AfterimageGenerator(n, "linear")
+    res=ag.forward(tt)
     print(res.shape)
     return res
     
@@ -101,6 +106,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 else:
                     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
+                img = self.afterimage_map.forward(img)
                 img = self.key_transform_map[key](img)
                 imgs.append(img)
             # (N*B,C,H,W)
