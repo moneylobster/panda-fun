@@ -33,7 +33,7 @@ class AfterimageGenerator():
     def forward(self, images):
         """Create an afterimage from images according to weight schedule."""
         # reshape first
-        images_shaped=images.reshape(images.shape[0]//self.n_obs_steps, self.n_obs_steps, *images.shape[1:])
+        images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
         # basically a weighted avg
         return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
         # return np.average(images, axis=0, weights=self.schedule)
@@ -91,8 +91,6 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
         self.afterimage_map=AfterimageGenerator(n_obs_steps, "linear")
     
     def forward(self, obs_dict):
-        print("DEBUGG")
-        print(f"Obsdict: {obs_dict}")
         batch_size = None
         features = list()
         # process rgb input
