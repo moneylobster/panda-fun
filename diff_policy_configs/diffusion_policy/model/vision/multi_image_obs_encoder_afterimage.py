@@ -31,9 +31,13 @@ class AfterimageGenerator():
             raise NotImplementedError(f"Unsupported schedule type {schedule_type}")
     
     def forward(self, images):
-        """Create an afterimage from images according to weight schedule."""
-        # reshape first
-        images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
+        """Create an afterimage from images according to weight schedule.
+        This needs the images to come in as multiples of n_obs_steps, if larger than it."""
+        if images.shape[0]>=self.n_obs_steps:
+            # reshape first
+            images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
+        else:
+            images_shaped=images.reshape(-1,*images.shape)
         # basically a weighted avg
         return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
         # return np.average(images, axis=0, weights=self.schedule)
