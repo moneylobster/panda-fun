@@ -30,19 +30,27 @@ class AfterimageGenerator():
         else:
             raise NotImplementedError(f"Unsupported schedule type {schedule_type}")
     
-    def forward(self, images):
+    def afterimage(self, images):
         """Create an afterimage from images according to weight schedule.
         This needs the images to come in as multiples of n_obs_steps, if larger than it."""
         self.schedule=self.schedule.to(images) # should only take time the first time
         if images.shape[0]>=self.n_obs_steps:
             # reshape first
-            images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
+            # TODO do this using nn.Unfold for padding etc
+            unfolder=nn.Unfold(kernel_size=(self.n_obs_steps, *images.shape[1:]))
+            images_shaped=unfolder(images)
+            # images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
         else:
             images_shaped=images.reshape(-1,*images.shape)
+        return images_shaped
         # basically a weighted avg
         return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
         # return np.average(images, axis=0, weights=self.schedule)
-    
+
+
+def unfold_test():
+    pass
+        
 def test_create_afterimage():
     import skimage.io as io
     import numpy as np
@@ -50,10 +58,10 @@ def test_create_afterimage():
     imgs=[io.imread("brazil_renovated.jpg")]
     for i in range(1,n):
         imgs.append(np.roll(imgs[0],i*10,1))
-    tt_one=torch.Tensor(imgs)
+    tt_one=torch.Tensor(np.array(imgs))
     tt=torch.concat([tt_one for i in range(2)])
     ag=AfterimageGenerator(n, "linear")
-    res=ag.forward(tt)
+    res=ag.afterimage(tt)
     print(res.shape)
     return res
     
@@ -109,7 +117,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 else:
                     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
-                img = self.afterimage_map.forward(img)
+                img = self.afterimage_map.afterimage(img)
                 img = self.key_transform_map[key](img)
                 imgs.append(img)
             # (N*B,C,H,W)
@@ -134,7 +142,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 else:
                     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
-                img = self.afterimage_map.forward(img)
+                img = self.afterimage_map.afterimage(img)
                 img = self.key_transform_map[key](img)
                 feature = self.key_model_map[key](img)
                 features.append(feature)
