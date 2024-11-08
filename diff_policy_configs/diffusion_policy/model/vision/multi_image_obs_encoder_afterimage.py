@@ -33,6 +33,7 @@ class AfterimageGenerator():
     def forward(self, images):
         """Create an afterimage from images according to weight schedule.
         This needs the images to come in as multiples of n_obs_steps, if larger than it."""
+        self.schedule=self.schedule.to(images) # should only take time the first time
         if images.shape[0]>=self.n_obs_steps:
             # reshape first
             images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
