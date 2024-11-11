@@ -35,10 +35,12 @@ class AfterimageGenerator():
         This needs the images to come in as multiples of n_obs_steps, if larger than it."""
         self.schedule=self.schedule.to(images) # should only take time the first time
         if images.shape[0]>=self.n_obs_steps:
-            # reshape first
-            # TODO do this using nn.Unfold for padding etc
-            unfolder=nn.Unfold(kernel_size=(self.n_obs_steps, *images.shape[1:]))
-            images_shaped=unfolder(images)
+            # add padding (from the start, since the most recent one is the last element i think)
+            # need to add padding so that when folded we end up with the same number of elements
+            # 0001234 for 4 so To-1
+            images_pad=torch.swapaxes(F.pad(torch.swapaxes(tt, 0, 3), (self.n_obs.steps-1,0), "constant", 0), 0,3)
+            # images_pad=nn.functional.pad(images, (self.n_obs_steps-1,0), "constant", 0)
+            images_shaped=images_pad.unfold(0, self.n_obs_steps, 1)
             # images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
         else:
             images_shaped=images.reshape(-1,*images.shape)
@@ -46,10 +48,6 @@ class AfterimageGenerator():
         # basically a weighted avg
         return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
         # return np.average(images, axis=0, weights=self.schedule)
-
-
-def unfold_test():
-    pass
         
 def test_create_afterimage():
     import skimage.io as io
