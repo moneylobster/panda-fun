@@ -38,7 +38,9 @@ class AfterimageGenerator():
             # add padding (from the start, since the most recent one is the last element i think)
             # need to add padding so that when folded we end up with the same number of elements
             # 0001234 for 4 so To-1
-            images_pad=torch.swapaxes(F.pad(torch.swapaxes(tt, 0, 3), (self.n_obs.steps-1,0), "constant", 0), 0,3)
+            images_pad=torch.swapaxes(nn.functional.pad(torch.swapaxes(tt, 0, 3),
+                                                        (self.n_obs.steps-1,0), "constant", 0),
+                                      0,3)
             # images_pad=nn.functional.pad(images, (self.n_obs_steps-1,0), "constant", 0)
             images_shaped=images_pad.unfold(0, self.n_obs_steps, 1)
             # images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
