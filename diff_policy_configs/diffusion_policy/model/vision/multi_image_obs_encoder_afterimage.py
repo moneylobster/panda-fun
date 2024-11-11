@@ -62,6 +62,12 @@ def test_create_afterimage():
     print(res.shape)
     return res
     
+def plot_afterimage(imgs):
+    import skimage.io as io
+    plt.tight_layout()
+    for i in range(imgs.shape[0]):
+        plt.subplot(2,5,i+1)
+        io.imshow(a[i].numpy().astype(np.int32))
 
 class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
     """Everything is the same as MultiImageObsEncoder, except to
