@@ -44,7 +44,6 @@ class AfterimageGenerator():
             # images_shaped=images.reshape(-1, self.n_obs_steps, *images.shape[1:])
         else:
             images_shaped=images.reshape(-1,*images.shape)
-        print(f"IMAGES SHAPE {images_shaped}")
         # basically a weighted avg
         return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
         # return np.average(images, axis=0, weights=self.schedule)
