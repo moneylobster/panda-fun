@@ -15,9 +15,9 @@ import torch.nn as nn
 # Its get_normalizer method returns a LinearNormalizer with keys "key0","key1","action".
 
 class AfterimageGenerator():
-    def __init__(self, n_obs_steps, schedule_type):
-        self.n_obs_steps=n_obs_steps
-        self.schedule = self.create_schedule(n_obs_steps, schedule_type)
+    def __init__(self, afterimage_horizon, schedule_type):
+        self.afterimage_horizon=afterimage_horizon
+        self.schedule = self.create_schedule(afterimage_horizon, schedule_type)
         
     def create_schedule(self, n_obs_steps, schedule_type):
         """Create a schedule. n_obs_steps is the obs. horizon.
@@ -33,19 +33,18 @@ class AfterimageGenerator():
         """Create an afterimage from images according to weight schedule.
         This needs the images to come in as multiples of n_obs_steps, if larger than it."""
         self.schedule=self.schedule.to(images) # should only take time the first time
-        if images.shape[0]>=self.n_obs_steps:
+        if images.shape[0]>=self.afterimage_horizon:
             # add padding (from the start, since the most recent one
             # is the last element i think) so that when folded we end
             # up with the same number of elements
             images_pad=nn.functional.pad(images.swapaxes(0, 3),
-                                         (self.n_obs_steps-1,0), "constant", 0).swapaxes(0,3)
-            images_shaped=images_pad.unfold(0, self.n_obs_steps, 1)
+                                         (self.afterimage_horizon-1,0), "constant", 0).swapaxes(0,3)
+            images_shaped=images_pad.unfold(0, self.afterimage_horizon, 1)
             images_shaped=images_shaped.permute(0,4,1,2,3)
         else:
             images_shaped=images.reshape(-1,*images.shape)
         # basically a weighted avg
         return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
-        # return np.average(images, axis=0, weights=self.schedule)
         
 def test_create_afterimage():
     import skimage.io as io

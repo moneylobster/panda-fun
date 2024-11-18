@@ -10,7 +10,7 @@ shape_meta: ${task.shape_meta}
 exp_name: "default"
 
 horizon: 16
-n_obs_steps: 8
+n_obs_steps: 2
 n_action_steps: 8
 n_latency_steps: 0
 dataset_obs_steps: ${n_obs_steps}
@@ -43,7 +43,7 @@ policy:
       _target_: diffusion_policy.model.vision.model_getter.get_resnet
       name: resnet18
       weights: null
-    n_obs_steps: ${n_obs_steps}
+    afterimage_horizon: 10
     resize_shape: [240, 320]
     crop_shape: [216, 288] # ch, cw 240x320 90%
     random_crop: True
