@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from diffusion_policy.model.vision.multi_image_obs_encoder import MultiImageObsEncoder
 from diffusion_policy.common.afterimage_utils import AfterimageGenerator
+import cv2
 
 class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
     """Everything is the same as MultiImageObsEncoder, except to
@@ -73,7 +74,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
             # run each rgb obs to independent models
             for key in self.rgb_keys:
                 img = obs_dict[key]
-                # print(f"imgshape {img.shape}") # yields torch.Size([1, 3, 240, 320])
+                print(f"imgshape {img.shape}") # yields torch.Size([1, 3, 240, 320])
                 # or 128, 3, 240, 320
                 if batch_size is None:
                     batch_size = img.shape[0]
@@ -82,6 +83,8 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 assert img.shape[1:] == self.key_shape_map[key]
                 img = self.afterimage_map.afterimage(img)
                 img = self.key_transform_map[key](img)
+                cv2.imwrite("Camimg.png", img)
+                print("saved as camimg")
                 feature = self.key_model_map[key](img)
                 features.append(feature)
                 # print(f"lastimgshape {img.shape}") # yields torch.Size([1, 3, 216, 288])
