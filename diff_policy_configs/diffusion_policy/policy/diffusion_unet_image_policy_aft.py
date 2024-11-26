@@ -209,7 +209,7 @@ class DiffusionUnetImagePolicyAfterimage(BaseImagePolicy):
             # reshape B, T, ... to B*T
             this_nobs = dict_apply(nobs, 
                 lambda x: x[:,:self.n_obs_steps,...].reshape(-1,*x.shape[2:]))
-            this_nobs["camera_0"]=nobs["camera_0"][:,:,...].reshape(-1,*nobs["camera_0"].shape[2:])
+            this_nobs["camera_0"]=nobs["camera_0"][:,:self.afterimage_horizon+self.n_obs_steps-1,...].reshape(-1,*nobs["camera_0"].shape[2:])
             nobs_features = self.obs_encoder(this_nobs)
             # reshape back to B, Do
             global_cond = nobs_features.reshape(batch_size, -1)
