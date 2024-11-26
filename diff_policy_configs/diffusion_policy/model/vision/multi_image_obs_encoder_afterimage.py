@@ -3,6 +3,13 @@ import torch
 import torch.nn as nn
 from diffusion_policy.model.vision.multi_image_obs_encoder import MultiImageObsEncoder
 from diffusion_policy.common.afterimage_utils import AfterimageGenerator
+import IPython
+import plotly
+import plotly.express as px
+
+def show(img):
+    fig=px.imshow(img.cpu().transpose(0,2))
+    plotly.offline.plot(fig,filename="plot.html")
 
 class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
     """Everything is the same as MultiImageObsEncoder, except to
@@ -83,6 +90,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 img = self.key_transform_map[key](img)
                 feature = self.key_model_map[key](img)
                 features.append(feature)
+                IPython.embed()
         
         # process lowdim input
         for key in self.low_dim_keys:
