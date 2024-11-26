@@ -157,12 +157,17 @@ def main(input, output, robot_ip, match_dataset, match_episode,
     print("steps_per_inference:", steps_per_inference)
     print("action_offset:", action_offset)
 
+    if "afterimage_horizon" in cfg.keys():
+        env_obs_steps=cfg.afterimage_horizon+cfg.n_obs_steps-1
+    else:
+        env_obs_steps=cfg.n_obs_steps
+
     with SharedMemoryManager() as shm_manager:
         with RealEnv(
                 output_dir=output, 
                 robot_ip=robot_ip, 
                 frequency=frequency,
-                n_obs_steps=n_obs_steps,
+                n_obs_steps=env_obs_steps,
                 obs_image_resolution=obs_res,
                 obs_float32=False,
                 init_joints=init_joints,
