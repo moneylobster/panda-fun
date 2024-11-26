@@ -47,6 +47,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                          share_rgb_model,
                          imagenet_norm)
         self.afterimage_horizon = afterimage_horizon
+        self.n_obs_dict = n_obs_dict
         self.afterimage_map = AfterimageGenerator(afterimage_horizon, n_obs_steps, "linear")
             
     def forward(self, obs_dict):
@@ -59,7 +60,8 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
             for key in self.rgb_keys:
                 img = obs_dict[key]
                 if batch_size is None:
-                    batch_size = img.shape[0]
+                    # B* aft+To-1
+                    batch_size = img.shape[0]/(self.afterimage_horizon+self.n_obs_steps-1)
                 else:
                     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
@@ -85,7 +87,8 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 # should yield torch.Size([aft_horizon+To-1(*batch if training), 3, 240, 320])
                 IPython.embed()
                 if batch_size is None:
-                    batch_size = img.shape[0]
+                    # B* aft+To-1
+                    batch_size = img.shape[0]/(self.afterimage_horizon+self.n_obs_steps-1)
                 else:
                     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
