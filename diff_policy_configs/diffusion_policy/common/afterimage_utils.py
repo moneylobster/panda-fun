@@ -15,8 +15,9 @@ import torch.nn as nn
 # Its get_normalizer method returns a LinearNormalizer with keys "key0","key1","action".
 
 class AfterimageGenerator():
-    def __init__(self, afterimage_horizon, schedule_type):
+    def __init__(self, afterimage_horizon, n_obs_steps, schedule_type):
         self.afterimage_horizon=afterimage_horizon
+        self.n_obs_steps=n_obs_steps
         self.schedule = self.create_schedule(afterimage_horizon, schedule_type)
         
     def create_schedule(self, afterimage_horizon, schedule_type):
@@ -40,12 +41,19 @@ class AfterimageGenerator():
             # line below was to pad for a rolling input, this isn't currently the case
             # images_pad=nn.functional.pad(images.swapaxes(0, 3),
             #                              (self.afterimage_horizon-1,0), "constant", 0).swapaxes(0,3)
-            images_shaped=images.unfold(0, self.afterimage_horizon, 1)
-            images_shaped=images_shaped.permute(0,4,1,2,3)
+            images_sep=images.reshape(-1,self.afterimage_horizon-self.n_obs_steps-1,*images.shape[1:])
+            # [B,aft+To-1,C,H,W]
+            images_shaped=images_sep.unfold(1, self.afterimage_horizon, 1)
+            # [B,To,C,H,W,aft]
+            images_shaped=images_shaped.permute(0,1,5,2,3,4)
+            # [B,To,aft,C,H,W]
+            avg=(self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=2)/self.schedule.sum()
+            # [B,To,C,H,W]
+            return avg.reshape(-1, *images.shape[1:]) # [B*To,C,H,W]
         else:
             images_shaped=images.reshape(-1,*images.shape)
-        # basically a weighted avg
-        return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum()
+            # basically a weighted avg
+            return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum()
         
 def test_create_afterimage():
     import skimage.io as io
