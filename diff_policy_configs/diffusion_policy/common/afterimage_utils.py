@@ -26,7 +26,9 @@ class AfterimageGenerator():
         - linear
         """
         if schedule_type=="linear":
-            return torch.linspace(0,1,afterimage_horizon)
+            return torch.linspace(0,1,afterimage_horizon)/(torch.linspace(0,1,afterimage_horizon).sum())
+        elif schedule_type=="equal":
+            return torch.ones(afterimage_horizon)/afterimage_horizon
         else:
             raise NotImplementedError(f"Unsupported schedule type {schedule_type}")
     
