@@ -44,6 +44,7 @@ policy:
       _target_: diffusion_policy.model.vision.model_getter.get_resnet
       name: resnet18
       weights: null
+    n_obs_steps: ${n_obs_steps}
     afterimage_horizon: ${afterimage_horizon}
     resize_shape: [240, 320]
     crop_shape: [216, 288] # ch, cw 240x320 90%
