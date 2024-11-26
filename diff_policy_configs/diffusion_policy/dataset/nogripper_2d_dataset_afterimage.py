@@ -24,7 +24,6 @@ from diffusion_policy.common.normalize_util import (
     get_identity_normalizer_from_stat,
     array_to_stats
 )
-from diffusion_policy.common.afterimage_utils import AfterimageGenerator
 
 # TODO maybe subclass from NoGripper2dDataset instead?
 
@@ -36,6 +35,7 @@ class Nogripper2dDatasetAfterimage(BaseImageDataset):
             pad_before=0,
             pad_after=0,
             n_obs_steps=None,
+            afterimage_horizon=None,
             n_latency_steps=0,
             use_cache=False,
             seed=42,
@@ -115,8 +115,10 @@ class Nogripper2dDatasetAfterimage(BaseImageDataset):
         key_first_k = dict()
         if n_obs_steps is not None:
             # only take first k obs from images
-            for key in rgb_keys + lowdim_keys:
+            for key in lowdim_keys:
                 key_first_k[key] = n_obs_steps
+            for key in rgb_keys:
+                key_first_k[key] = afterimage_horizon
 
         val_mask = get_val_mask(
             n_episodes=replay_buffer.n_episodes, 
@@ -142,6 +144,7 @@ class Nogripper2dDatasetAfterimage(BaseImageDataset):
         self.rgb_keys = rgb_keys
         self.lowdim_keys = lowdim_keys
         self.n_obs_steps = n_obs_steps
+        self.afterimage_horizon=afterimage_horizon
         self.val_mask = val_mask
         self.horizon = horizon
         self.n_latency_steps = n_latency_steps
@@ -191,7 +194,7 @@ class Nogripper2dDatasetAfterimage(BaseImageDataset):
         # since the rest will be discarded anyway.
         # when self.n_obs_steps is None
         # this slice does nothing (takes all)
-        T_slice = slice(self.n_obs_steps)
+        T_slice = slice(self.afterimage_horizon)
 
         obs_dict = dict()
         for key in self.rgb_keys:
