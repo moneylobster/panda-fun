@@ -47,7 +47,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                          share_rgb_model,
                          imagenet_norm)
         self.afterimage_horizon = afterimage_horizon
-        self.n_obs_dict = n_obs_dict
+        self.n_obs_steps = n_obs_steps
         self.afterimage_map = AfterimageGenerator(afterimage_horizon, n_obs_steps, "linear")
             
     def forward(self, obs_dict):
