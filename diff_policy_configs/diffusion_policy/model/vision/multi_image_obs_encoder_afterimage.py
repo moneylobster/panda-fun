@@ -84,6 +84,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 img = obs_dict[key]
                 print(f"imgshape {img.shape}")
                 # should yield torch.Size([aft_horizon+To-1(*batch if training), 3, 240, 320])
+                IPython.embed()
                 if batch_size is None:
                     batch_size = img.shape[0]
                 else:
