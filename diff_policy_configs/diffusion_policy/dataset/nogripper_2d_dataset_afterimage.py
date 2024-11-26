@@ -118,7 +118,7 @@ class Nogripper2dDatasetAfterimage(BaseImageDataset):
             for key in lowdim_keys:
                 key_first_k[key] = n_obs_steps
             for key in rgb_keys:
-                key_first_k[key] = afterimage_horizon
+                key_first_k[key] = afterimage_horizon + n_obs_steps - 1
 
         val_mask = get_val_mask(
             n_episodes=replay_buffer.n_episodes, 
@@ -194,7 +194,7 @@ class Nogripper2dDatasetAfterimage(BaseImageDataset):
         # since the rest will be discarded anyway.
         # when self.n_obs_steps is None
         # this slice does nothing (takes all)
-        T_slice = slice(self.afterimage_horizon)
+        T_slice = slice(self.afterimage_horizon+self.n_obs_steps-1)
 
         obs_dict = dict()
         for key in self.rgb_keys:
