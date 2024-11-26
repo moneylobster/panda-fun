@@ -61,7 +61,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 img = obs_dict[key]
                 if batch_size is None:
                     # B* aft+To-1
-                    batch_size = img.shape[0]/(self.afterimage_horizon+self.n_obs_steps-1)
+                    batch_size = img.shape[0]//(self.afterimage_horizon+self.n_obs_steps-1)
                 else:
                     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
@@ -85,12 +85,12 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                 img = obs_dict[key]
                 print(f"imgshape {img.shape}")
                 # should yield torch.Size([aft_horizon+To-1(*batch if training), 3, 240, 320])
-                if batch_size is None:
-                    # B* aft+To-1
-                    batch_size = img.shape[0]/(self.afterimage_horizon+self.n_obs_steps-1)
-                    print(f"Batch size {batch_size}")
-                else:
-                    assert batch_size == img.shape[0]
+                # if batch_size is None:
+                #     # B* aft+To-1
+                #     batch_size = img.shape[0]//(self.afterimage_horizon+self.n_obs_steps-1)
+                #     print(f"Batch size {batch_size}")
+                # else:
+                #     assert batch_size == img.shape[0]
                 assert img.shape[1:] == self.key_shape_map[key]
                 img = self.afterimage_map.afterimage(img)
                 img = self.key_transform_map[key](img)
@@ -100,11 +100,11 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
         # process lowdim input
         for key in self.low_dim_keys:
             data = obs_dict[key]
-            if batch_size is None:
-                batch_size = data.shape[0]
-            else:
-                print(f"Batch size {batch_size}, data shape {data.shape}")
-                assert batch_size == data.shape[0]
+            # if batch_size is None:
+            #     batch_size = data.shape[0]
+            # else:
+            #     print(f"Batch size {batch_size}, data shape {data.shape}")
+            #     assert batch_size == data.shape[0]
             assert data.shape[1:] == self.key_shape_map[key]
             features.append(data)
         
