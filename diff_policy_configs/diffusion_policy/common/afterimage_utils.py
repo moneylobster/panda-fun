@@ -41,7 +41,7 @@ class AfterimageGenerator():
             # line below was to pad for a rolling input, this isn't currently the case
             # images_pad=nn.functional.pad(images.swapaxes(0, 3),
             #                              (self.afterimage_horizon-1,0), "constant", 0).swapaxes(0,3)
-            images_sep=images.reshape(-1,self.afterimage_horizon-self.n_obs_steps-1,*images.shape[1:])
+            images_sep=images.reshape(-1,self.afterimage_horizon+self.n_obs_steps-1,*images.shape[1:])
             # [B,aft+To-1,C,H,W]
             images_shaped=images_sep.unfold(1, self.afterimage_horizon, 1)
             # [B,To,C,H,W,aft]
