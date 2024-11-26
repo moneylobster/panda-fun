@@ -3,13 +3,13 @@ import torch
 import torch.nn as nn
 from diffusion_policy.model.vision.multi_image_obs_encoder import MultiImageObsEncoder
 from diffusion_policy.common.afterimage_utils import AfterimageGenerator
-import IPython
-import plotly
-import plotly.express as px
+# import IPython
+# import plotly
+# import plotly.express as px
 
-def show(img):
-    fig=px.imshow(img.cpu().transpose(0,2))
-    plotly.offline.plot(fig,filename="plot.html")
+# def show(img):
+#     fig=px.imshow(img.cpu().transpose(0,2))
+#     plotly.offline.plot(fig,filename="plot.html")
 
 class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
     """Everything is the same as MultiImageObsEncoder, except to
