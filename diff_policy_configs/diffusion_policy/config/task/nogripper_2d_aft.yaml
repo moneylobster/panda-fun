@@ -19,7 +19,7 @@ env_runner:
   _target_: diffusion_policy.env_runner.real_pusht_image_runner.RealPushTImageRunner
 
 dataset:
-  _target_: diffusion_policy.dataset.nogripper_2d_dataset.Nogripper2dDatasetAfterimage
+  _target_: diffusion_policy.dataset.nogripper_2d_dataset_afterimage.Nogripper2dDatasetAfterimage
   shape_meta: *shape_meta
   dataset_path: ${task.dataset_path}
   horizon: ${horizon}
