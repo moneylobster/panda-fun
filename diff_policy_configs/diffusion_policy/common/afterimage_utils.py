@@ -19,32 +19,33 @@ class AfterimageGenerator():
         self.afterimage_horizon=afterimage_horizon
         self.schedule = self.create_schedule(afterimage_horizon, schedule_type)
         
-    def create_schedule(self, n_obs_steps, schedule_type):
-        """Create a schedule. n_obs_steps is the obs. horizon.
+    def create_schedule(self, afterimage_horizon, schedule_type):
+        """Create a schedule. afterimage_horizon is the obs. horizon.
         Schedule types:
         - linear
         """
         if schedule_type=="linear":
-            return torch.linspace(0,1,n_obs_steps)
+            return torch.linspace(0,1,afterimage_horizon)
         else:
             raise NotImplementedError(f"Unsupported schedule type {schedule_type}")
     
     def afterimage(self, images):
         """Create an afterimage from images according to weight schedule.
-        This needs the images to come in as multiples of n_obs_steps, if larger than it."""
+        IMAGES is supposed to be of size [aft_horizon+To-1, 3, H, W]."""
         self.schedule=self.schedule.to(images) # should only take time the first time
         if images.shape[0]>=self.afterimage_horizon:
             # add padding (from the start, since the most recent one
             # is the last element i think) so that when folded we end
             # up with the same number of elements
-            images_pad=nn.functional.pad(images.swapaxes(0, 3),
-                                         (self.afterimage_horizon-1,0), "constant", 0).swapaxes(0,3)
-            images_shaped=images_pad.unfold(0, self.afterimage_horizon, 1)
+            # line below was to pad for a rolling input, this isn't currently the case
+            # images_pad=nn.functional.pad(images.swapaxes(0, 3),
+            #                              (self.afterimage_horizon-1,0), "constant", 0).swapaxes(0,3)
+            images_shaped=images.unfold(0, self.afterimage_horizon, 1)
             images_shaped=images_shaped.permute(0,4,1,2,3)
         else:
             images_shaped=images.reshape(-1,*images.shape)
         # basically a weighted avg
-        return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum() # way slower than the np version idk why
+        return (self.schedule.view(self.schedule.shape[0],1,1,1) * images_shaped).sum(dim=1)/self.schedule.sum()
         
 def test_create_afterimage():
     import skimage.io as io
