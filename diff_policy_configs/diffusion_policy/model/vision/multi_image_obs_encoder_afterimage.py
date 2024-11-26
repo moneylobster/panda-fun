@@ -48,6 +48,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                          imagenet_norm)
         self.afterimage_horizon = afterimage_horizon
         self.afterimage_map = AfterimageGenerator(afterimage_horizon, n_obs_steps, "linear")
+        print(f" HELLO IM the encoder and i have aft as {afterimage_horizon} and To as {n_obs_steps}")
     
     def forward(self, obs_dict):
         batch_size = None
