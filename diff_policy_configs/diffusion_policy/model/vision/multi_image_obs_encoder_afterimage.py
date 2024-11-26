@@ -7,8 +7,8 @@ from diffusion_policy.common.afterimage_utils import AfterimageGenerator
 class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
     """Everything is the same as MultiImageObsEncoder, except to
     generate the encoding, we first compute an afterimage and pass
-    that through the encoder. This means an additional n_obs_steps
-    parameter is needed.
+    that through the encoder. This means an additional
+    afterimage_horizon parameter is needed.
     """
 
     def __init__(self,
