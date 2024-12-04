@@ -29,6 +29,8 @@ class AfterimageGenerator():
             return torch.linspace(0,1,afterimage_horizon)
         elif schedule_type=="equal":
             return torch.ones(afterimage_horizon)
+        elif schedule_type=="exponential":
+            return torch.exp(torch.linspace(0,1,afterimage_horizon))
         else:
             raise NotImplementedError(f"Unsupported schedule type {schedule_type}")
     
