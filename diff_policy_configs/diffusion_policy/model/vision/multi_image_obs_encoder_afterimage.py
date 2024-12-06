@@ -23,6 +23,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                  rgb_model: Union[nn.Module, Dict[str,nn.Module]],
                  n_obs_steps,
                  afterimage_horizon,
+                 afterimage_schedule,
                  resize_shape: Union[Tuple[int,int], Dict[str,tuple], None]=None,
                  crop_shape: Union[Tuple[int,int], Dict[str,tuple], None]=None,
                  random_crop: bool=True,
@@ -48,7 +49,7 @@ class MultiImageObsEncoderAfterimage(MultiImageObsEncoder):
                          imagenet_norm)
         self.afterimage_horizon = afterimage_horizon
         self.n_obs_steps = n_obs_steps
-        self.afterimage_map = AfterimageGenerator(afterimage_horizon, n_obs_steps, "linear")
+        self.afterimage_map = AfterimageGenerator(afterimage_horizon, n_obs_steps, afterimage_schedule)
             
     def forward(self, obs_dict):
         batch_size = None
