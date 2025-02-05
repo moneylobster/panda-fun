@@ -35,7 +35,7 @@ def main(cfg: OmegaConf):
     cls = hydra.utils.get_class(cfg._target_)
 
     mp.spawn(cls,
-             args=(world_size,),
+             args=(world_size, cfg),
              nprocs=world_size,
              join=True)
 
