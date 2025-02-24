@@ -36,7 +36,7 @@ def main(cfg: OmegaConf):
 
     mp.spawn(cls,
              args=(cfg.world_size, cfg),
-             nprocs=world_size,
+             nprocs=cfg.world_size,
              join=True)
 
 if __name__ == "__main__":
